@@ -45,14 +45,14 @@ class LoadPageAdm
         if (!$this->checkPageExists()) {
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Página não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
-            die("Página não encontrada!<br>");
+            die("Erro 002: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
         }
 
         // Verificar se a classe existe
         if (!$this->checkControllersExists()) {
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Controller não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
-            die("Controller não encontrada!");
+            die("Erro 003: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
         }
     }
     /**
@@ -119,7 +119,7 @@ class LoadPageAdm
         } else {
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Método não encontrado.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
-            die("Método não encontrado.");
+            die("Erro 004: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
         }
     }
 }

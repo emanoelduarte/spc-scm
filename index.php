@@ -5,6 +5,10 @@ use Routes\PageController;
 //Carregar Composer
 require './vendor/autoload.php';
 
+// Instanciar a dependência de variaves de ambiente
+$dotenv = Dotenv\Dotenv::createUnsafeImmutable(__DIR__);
+$dotenv->load();
+
 // Instanciar a classe page controller
 $url = new PageController();
 
