@@ -116,4 +116,5 @@ git branch
 002 - LoadPageAdm.php - Página não encontrada
 003 - LoadPageAdm.php - Controller não encontrada
 004 - LoadPageAdm.php - Método não encontrada
+005 - LoadViewService.php - Falha em encontrar a View
 
