@@ -1,0 +1,21 @@
+{
+    "name": "adms/daman",
+    "version": "1.0.0",
+    "description": "Sistema de Pedido de Compra DMA Arquitetura e Engenharia",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app",
+            "Routes\\": "routes"
+        }
+    },
+    "authors": [
+        {
+            "name": "Emanoel",
+            "email": "emanoel@emanoel.com.br"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^3.10"
+    }
+}
