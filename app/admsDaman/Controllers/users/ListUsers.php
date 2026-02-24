@@ -23,6 +23,9 @@ class ListUsers
 
         $this->data['users'] = $listUsers->getAllUsers();
 
+        // Criar o título da página
+        $this->data['title_head'] = "Listar Usuários";
+
         // Carregar a View do Listar Usuários
         $loadView = new LoadViewService("admsDaman/Views/users/list", $this->data);
         $loadView->loadView();

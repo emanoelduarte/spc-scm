@@ -54,6 +54,9 @@ class ViewUser
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Usuário", ['id' => (int) $id]);
 
+        // Criar o título da página
+        $this->data['title_head'] = "Visualizar Usuário";
+
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/view", $this->data);
         $loadView->loadView();

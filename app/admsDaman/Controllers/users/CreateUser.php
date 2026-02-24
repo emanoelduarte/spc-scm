@@ -66,6 +66,10 @@ class CreateUser
 
     public function viewCreateUser()
     {
+
+        // Criar o título da página
+        $this->data['title_head'] = "Cadastrar Usuário";
+
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/create", $this->data);
         $loadView->loadView();
