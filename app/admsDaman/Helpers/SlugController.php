@@ -10,7 +10,7 @@ namespace App\admsDaman\Helpers;
  * e posteriormente carregar a página correspondente. Ela utiliza helpers para limpar a URL e formatar o nome da c
  * 
  * @author Emanoel <emanoel@emanoel.com.br>
- * @package App\adms\Controllers\Services
+ * @package App\admsDaman\Controllers\Services
  */
 class SlugController 
 {

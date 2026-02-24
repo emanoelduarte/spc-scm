@@ -2,7 +2,6 @@
 
 namespace Routes;
 
-use App\adms\Helpers\GenereteLog;
 use App\admsDaman\Helpers\GenerateLog;
 
 /* Classe LoadPageAdm
@@ -26,9 +25,9 @@ class LoadPageAdm
     private string $classLoad;
 
     /** @var array $listPgPublic Recebe a lista de páginas públicas */
-    private array $listPgPublic = ["Login", "Error403"];
+    private array $listPgPublic = ["Login", "Error403", "NewUser", "ForgotPassword", "ResetPassword"];
     /** @var array $listPgPrivate Recebe a lista de páginas privadas */
-    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser", "UpdatePasswordUser"];
+    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser"];
 
     /** @var array $listDirectory Recebe a lista de diretórios com as controllers */
     private array $listDirectory = ["login", "dashboard", "users", "errors"];
@@ -49,17 +48,29 @@ class LoadPageAdm
         $this->urlController = $urlController;
         $this->urlParameter = $urlParameter;
 
+        // var_dump($this->urlController, $this->urlParameter);
+
         // Verifica se existe a página
         if (!$this->checkPageExists()) {
+
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Página não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
-            die("Erro 002: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
+
+            // Criar mensagem de erro
+            $_SESSION['error'] = "Necessário está logado para acessar uma página restrita.";
+
+            //Redirecionar o usuario para a pagina de login
+            // Redirecionar o usuário para a página de listar usuário
+            header("Location: {$_ENV['URL_ADM']}login");
+            exit();
         }
 
         // Verificar se a classe existe
         if (!$this->checkControllersExists()) {
+
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Controller não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+
             die("Erro 003: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
         }
     }
@@ -76,11 +87,31 @@ class LoadPageAdm
             return true;
         }
 
-        // Verificar se existe a página no array de páginas públicas
-        if (in_array($this->urlController, $this->listPgPrivate)) {
+        // Chamar o método para verificar se existe a página no array de página privada
+        if ($this->checkPagePrivateExists()) {
             return true;
         }
+
         return false;
+    }
+
+    private function checkPagePrivateExists(): bool
+    {
+        // Veririficar se a página existe no array de páginas privadas
+        if (!in_array($this->urlController, $this->listPgPrivate)) {
+            return false;
+        }
+
+        // Verifico se o usuário está logado
+        if ((!isset($_SESSION['user_id'])) and (!isset($_SESSION['user_name'])) and (!isset($_SESSION['user_email']))) {
+
+            // Chama método para salvar o log em caso de erro
+            GenerateLog::generateLog("error", "Usuário tentou acessar página privada sem uma sessão iniciada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -122,11 +153,16 @@ class LoadPageAdm
         $classLoad = new $this->classLoad();
 
         if (method_exists($classLoad, "index")) {
+            // Chama método para salvar o log em caso de sucesso
+            GenerateLog::generateLog("info", "Página acessada com sucesso.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+
             // Carrega o método da classe passando o parametro caso haja
             $classLoad->{"index"}($this->urlParameter);
         } else {
+
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Método não encontrado.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+
             die("Erro 004: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
         }
     }

@@ -73,7 +73,7 @@ mkdir database/migrations/
 
 Criar a migrations.
 ```
-vendor/bin/phinx create AdmsUsers -c database/phinx.php
+vendor/bin/phinx create AdmsDamanUsers -c database/phinx.php
 ```
 
 Executar as migrations.
@@ -91,7 +91,7 @@ mkdir database/seeds/
 ```
 Criar seed (arquivo)
 ```
-vendor/bin/phinx seed:create AddAdmsUsers -c database/phinx.php
+vendor/bin/phinx seed:create AddAdmsDamanUsers -c database/phinx.php
 ```
 Executar as seed
 ```
@@ -123,4 +123,5 @@ git branch
 003 - LoadPageAdm.php - Controller não encontrada
 004 - LoadPageAdm.php - Método não encontrada
 005 - LoadViewService.php - Falha em encontrar a View
+006 - LoadPageAdm.php - Usuário não logado tentou acessar paágina privada
 
