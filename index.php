@@ -1,5 +1,7 @@
 <?php
 
+session_start(); // Inicia a sessão para se trabalhar com vaviáveis de sessão
+
 use Routes\PageController;
 
 //Carregar Composer

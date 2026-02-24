@@ -18,6 +18,7 @@
     "require": {
         "monolog/monolog": "^3.10",
         "vlucas/phpdotenv": "^5.6",
-        "robmorgan/phinx": "^0.16.10"
+        "robmorgan/phinx": "^0.16.10",
+        "rakit/validation": "^1.4"
     }
 }

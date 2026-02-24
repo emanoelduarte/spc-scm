@@ -53,5 +53,36 @@ class UsersRepository extends DbConnection
         }
         return false;
     }
+
+    /**
+     * Cadastrar novo Usuário
+     * @param array $data Dados do usuário
+     * @return bool Sucesso ou falha
+     */
+    public function createUser(array $data): bool
+    {
+        try {
+            // Criar a Query para cadastrar os dados
+            $sql = 'INSERT INTO adms_daman_users (name, email, username, password, created_at) 
+            VALUES (:name, :email, :username, :password, :created_at)';
+
+            // Preparar a query para inserir os dados no banco de dados
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links pelos valores passados no array
+            $stmt->bindValue(':name', $data['name'], PDO::PARAM_STR);
+            $stmt->bindValue(':email', $data['email'], PDO::PARAM_STR);
+            $stmt->bindValue(':username', $data['email'], PDO::PARAM_STR);
+            $stmt->bindValue(':password', password_hash($data['password'], PASSWORD_DEFAULT));
+            $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+            // Executar a querry para cadastrar no banco de dados
+            return $stmt->execute();
+        }catch(Exception $e) {
+             // Chamar método para salvar o log
+            GenerateLog::generateLog("error", "Usuário tentou cadastrar usuário existente", ['email' => $data['email']]);
+            return false;
+        }
+    }
     
 }

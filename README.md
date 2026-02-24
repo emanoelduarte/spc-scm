@@ -5,6 +5,8 @@
 * Composer;
 
 ## Como rodar o projeto baixado
+Duplicar o arquivo ".env.exemple" e renomear para ".env"<br>
+Alterar no arquivo .env as credênciais do banco de dados.<br>
 
 Instalar as dependências.
 ```
@@ -18,9 +20,11 @@ Executar as seed
 ```
 vendor/bin/phinx seed:run -c database/phinx.php
 ```
+Instalar a biblioteca para validar o formulário
+```
+composer require "rakit/validation"
+```
 
-uplicar o arquivo ".env.exemple" e renomear para ".env"<br>
-Alterar no arquivo .env as credênciais do banco de dados.<br>
 
 Instalar a biblioteca gerenciar variáveis de ambiente
 ```
