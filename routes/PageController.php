@@ -56,10 +56,10 @@ class PageController
     }
 
     /**
-     * Carregar página/controller
-     * Instanciar a classe para validar e carregar a página/controler
+     * Este método instancia a classe `LoadPageAdm`, responsável por validar e carregar a página correspondente.
+     * Ele passa o nome da controller e o parâmetro extraído da URL para o método `loadPageAdm` da classe `LoadPageAdm`.
      * 
-     * @param void
+     * @return void
      */
     public function loadPage(): void
     {

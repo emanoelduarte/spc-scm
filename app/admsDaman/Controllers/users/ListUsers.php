@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\users;
 
+use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -10,18 +11,23 @@ class ListUsers
      /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
 
+    /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
+    private int $limitResult = 2;
+
     /**
      * Recuperar os ultimos usuários
      * 
      * @return void
      */
-    public function index(): void
+    public function index(string|int $page = 1): void
     {
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listUsers = new UsersRepository();
         $listUsers->getAllUsers();
 
-        $this->data['users'] = $listUsers->getAllUsers();
+        $this->data['users'] = $listUsers->getAllUsers((int) $page, (int) $this->limitResult);
+
+        $this->data['pagination'] = PaginationService::generatePagination((int) $listUsers->getAmountUsers(), (int) $this->limitResult, (int) $page, 'list-users');
 
         // Criar o título da página
         $this->data['title_head'] = "Listar Usuários";

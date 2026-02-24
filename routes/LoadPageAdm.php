@@ -5,6 +5,14 @@ namespace Routes;
 use App\adms\Helpers\GenereteLog;
 use App\admsDaman\Helpers\GenerateLog;
 
+/* Classe LoadPageAdm
+ * 
+ *  @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
+ * 
+ * Esta classe é responsável por carregar a página de administração solicitada, verificando se a página e a controller existem, 
+ * e se o método necessário está presente na controller. Ela também registra logs de erros ou acessos bem-sucedidos.
+ * 
+ */
 class LoadPageAdm
 {
 

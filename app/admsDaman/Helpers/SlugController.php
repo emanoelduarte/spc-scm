@@ -3,9 +3,14 @@
 namespace App\admsDaman\Helpers;
 
 /**
- * Converter a controller enviada na URL para o formato da classe
+ * Recebe a URL e manipula a mesma
+ * Classe PageController
  * 
- * @author Emanoel <emanoel.c.duarte@hotmail.com>
+ * Esta classe é responsável por receber a URL da aplicação, manipulá-la para extrair o nome da controller e o parâmetro, 
+ * e posteriormente carregar a página correspondente. Ela utiliza helpers para limpar a URL e formatar o nome da c
+ * 
+ * @author Emanoel <emanoel@emanoel.com.br>
+ * @package App\adms\Controllers\Services
  */
 class SlugController 
 {

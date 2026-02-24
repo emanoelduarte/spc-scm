@@ -7,6 +7,8 @@
 ## Como rodar o projeto baixado
 Duplicar o arquivo ".env.exemple" e renomear para ".env"<br>
 Alterar no arquivo .env as credênciais do banco de dados.<br>
+Criar o banco de dados com a COLLAACTION "utf8mb4_unicode_ci"<br>
+Alterar no arquivo .env o endereço da aplicação na variável de ambiente URL_ADM
 
 Instalar as dependências.
 ```
@@ -24,11 +26,11 @@ Instalar a biblioteca para validar o formulário
 ```
 composer require "rakit/validation"
 ```
-
-
 Instalar a biblioteca gerenciar variáveis de ambiente
 ```
 composer require vlucas/phpdotenv
+```
+Acessar o projeto: [Acessar](http://localhost/spcscm/)
 ```
 
 ## Sequencia para criar o projeto

@@ -43,6 +43,8 @@ if ($this->data['users'] ?? false) {
 
     <?php
     endforeach;
+    // Adiconar o arquivo de paginação
+    require_once './app/admsDaman/Views/partials/pagination.php';
 } else {
     echo "<p style='color: #f00;'>Nenhum Usuário encontrado</p>";
 }
