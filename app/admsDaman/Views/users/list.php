@@ -20,7 +20,9 @@ if ($this->data['users'] ?? false) {
         echo "Nome: $name<br>";
         echo "Email: $email<br>";
         echo "Username: $username<br>";
-        echo "<a href='{$_ENV['URL_ADM']}view-user/$id'>Detalhes</a>";
+        echo "<a href='{$_ENV['URL_ADM']}view-user/$id'>Detalhes</a><br>";
+        echo "<a href='{$_ENV['URL_ADM']}view-user/$id'>Visualizar</a><br>";
+        echo "<a href='{$_ENV['URL_ADM']}update-user/$id'>Editar</a><br>";
         echo "<hr>";
     }
 } else {

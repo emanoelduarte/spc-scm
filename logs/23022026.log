@@ -1,8 +1,0 @@
-[2026-02-23T16:11:59.908146+00:00] name.ERROR: Página não encontrada. {"pagina":"ListUser","parametro":""} []
-[2026-02-23T16:15:21.821426+00:00] name.ERROR: Controller não encontrada. {"pagina":"Error403","parametro":""} []
-[2026-02-23T16:16:36.210542+00:00] name.ERROR: Controller não encontrada. {"pagina":"Error403","parametro":""} []
-[2026-02-23T16:18:26.793346+00:00] name.ERROR: Controller não encontrada. {"pagina":"Error403","parametro":""} []
-[2026-02-23T16:21:08.108126+00:00] name.ERROR: Controller não encontrada. {"pagina":"Error403","parametro":""} []
-[2026-02-23T16:32:46.493920+00:00] name.ALERT: Falha na conexão com o banco de dados. {"error":"SQLSTATE[HY000] [1049] Unknown database 'spcdaman'"} []
-[2026-02-23T19:01:01.629209+00:00] name.ALERT: Falha na conexão com o banco de dados. {"error":"SQLSTATE[HY000] [1049] Unknown database 'spcdaman'"} []
-[2026-02-23T19:08:28.059347+00:00] name.ALERT: Falha na conexão com o banco de dados. {"error":"SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: YES)"} []

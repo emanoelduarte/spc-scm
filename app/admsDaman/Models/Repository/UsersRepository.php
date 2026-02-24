@@ -84,5 +84,55 @@ class UsersRepository extends DbConnection
             return false;
         }
     }
+
+    /**
+     * Editar os dados do usuário
+     * @param array $data Dados atualizados do usuário
+     * @return bool Sucesso ou Falha | true|false
+     */
+    public function updateUser(array $data): bool
+    {
+        // Usar try e catch para gerencia exceção/erro
+        try { // Permanece no try se não houver nenhum erro
+
+            // Query para atualizar o usuário
+            $sql = "UPDATE adms_daman_users 
+            SET name = :name, email = :email, username = :username, updated_at = :updated_at";
+
+            // Condição para indicar qual registo editar
+            $sql .= ' WHERE id = :id';
+
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
+
+            //Substitui os links pelos valores
+            $stmt->bindValue(':name', $data['name'], PDO::PARAM_STR);
+            $stmt->bindValue(':email', $data['email'], PDO::PARAM_STR);
+            $stmt->bindValue(':username', $data['username'], PDO::PARAM_STR);
+            $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
+            $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
+
+            // Executar a Query
+            $stmt->execute();
+
+            // Receber a quantidade de linhas que foram afetadas
+            $affectedRowns = $stmt->rowCount();
+
+            //Verificar a quantidade de linhas afetadas
+            if ($affectedRowns > 0) {
+                return true;
+            } else {
+                // Chamar método para salvar o log
+                GenerateLog::generateLog("error", "Usuário não editado.", ['id' => $data['id']]);
+
+                return false;
+            }
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
+            // Chamar método para salvar o log
+            GenerateLog::generateLog("error", "Usuário não editado.", ['id' => $data['id'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
     
 }

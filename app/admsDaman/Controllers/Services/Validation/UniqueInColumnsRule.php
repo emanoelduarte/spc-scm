@@ -38,7 +38,7 @@ class UniqueInColumnsRule extends Rule
             foreach ($columns as $column) {
 
                 // Verificar se existe Registro valor fornecido
-                if (!$validateUniqueValue->getRecord($table, $column, $value)) {
+                if (!$validateUniqueValue->getRecord($table, $column, $value, $except)) {
                     return false; // Se algum registro já possui o valor que o usuário tá enviando, para não cadastrar no banco nesse caso
                 }
             }

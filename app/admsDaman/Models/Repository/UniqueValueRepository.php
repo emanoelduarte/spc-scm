@@ -17,16 +17,26 @@ class UniqueValueRepository extends DbConnection
      * @return bool Retornar falso se o valor fornecido já estiver cadastrado, verdadeiro caso contrário
      */
 
-    public function getRecord($table, $column, $value)
+    public function getRecord($table, $column, $value, $except = null)
     {
         // Query para recuperar o registro do banco de dados
         $sql = "SELECT COUNT(id) as count FROM `{$table}` WHERE `{$column}` = :value";
+
+        // Se houver um ID de excessão, adicionar a condição à consulta
+        if ($except !== null) {
+            $sql .= " AND `id` != :exept";
+        }
 
         // Preparar a Querry
         $stmt = $this->getConnection()->prepare($sql);
 
         // Substituir o link pelo valor
         $stmt->bindParam('value', $value, PDO::PARAM_STR);
+
+        // Substitui o link da exeção se existir
+        if ($except !== null) {
+            $stmt->bindParam(':exept', $except, PDO::PARAM_INT);
+        }
 
         // Executar a querry
         $stmt->execute();
