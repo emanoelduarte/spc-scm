@@ -53,8 +53,8 @@ class CreateUser
                 // Criar a mensagem de sucesso ao cadastrar
                 $_SESSION['success'] = "Usuário cadastrado com sucesso!";
 
-                // Redirecionar o usuário para a página de listar usuário
-                header("Location: {$_ENV['URL_ADM']}list-users");
+                // Redirecionar o usuário para a página de visualizar usuário
+                header("Location: {$_ENV['URL_ADM']}view-user/$result");
 
                 return;
             }else {

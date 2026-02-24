@@ -33,10 +33,11 @@ abstract class DbConnection
 
             //Conexão sem a porta
             // Conexão com a porta
-            $this->connect = new PDO("mysql:host=localhost;dbname=" . $dbname, "root", "");
-            $this->connect = new PDO("mysql:host={$_ENV['DB_HOST']};dbname=" . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
+             if (!isset($this->connect)) {
+                $this->connect = new PDO("mysql:host={$_ENV['DB_HOST']};dbname=" . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
 
             // echo "Conexão com o banco de dados realizada com sucesso!<br>";
+             }
 
             return $this->connect;
         }catch(Exception $err) {
