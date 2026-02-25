@@ -14,11 +14,11 @@ include './app/admsDaman/Views/partials/alerts.php';
 <form action="" method="POST">
 
     <!-- Campo oculto para o token CSRF para proteger o formulário contra ataques de falsificação de solicitação entre site -->
-    <input type="hidden" name="csrf_token" value="<?php echo CSRFHelper::generateCSRFToken('form_forgot_password'); ?>" id="">
+    <input type="hidden" name="csrf_token" value="<?= CSRFHelper::generateCSRFToken('form_forgot_password'); ?>" id="">
 
     <!-- Campo para email -->
     <label for="email"> E-mail: </label>
-    <input type="email" name="email" id="email" value="<?php echo $this->data['form']['email'] ?? ''; ?>" placeholder="Seu melhor email"><br><br>
+    <input type="email" name="email" id="email" value="<?= $this->data['form']['email'] ?? ''; ?>" placeholder="Seu melhor email"><br><br>
 
     <button type="submit">Recuperar Senha</button>
 

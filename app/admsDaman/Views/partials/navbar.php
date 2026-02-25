@@ -1,7 +1,7 @@
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-nav">
     <?php // Navbar Brand 
     ?>
-    <a class="navbar-brand ps-3" href="<?php echo $_ENV['URL_ADM'] ?>dashboard"><?php echo $_ENV['APP_NAME'] ?></a>
+    <a class="navbar-brand ps-3" href="<?= $_ENV['URL_ADM'] ?>dashboard"><?= $_ENV['APP_NAME'] ?></a>
     <?php // Sidebar Toggle 
     ?>
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
@@ -20,7 +20,7 @@
                 <li>
                     <hr class="dropdown-divider" />
                 </li>
-                <li><a class="dropdown-item" href="<?php echo $_ENV['URL_ADM'] ?>logout">Sair</a></li>
+                <li><a class="dropdown-item" href="<?= $_ENV['URL_ADM'] ?>logout">Sair</a></li>
             </ul>
         </li>
     </ul>

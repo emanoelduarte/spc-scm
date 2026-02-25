@@ -65,6 +65,9 @@ class UpdateUser
         // Criar o título da página
         $this->data['title_head'] = "Editar Usuário";
 
+        // Ativar o item de Menu
+        $this->data['menu'] = "list-users";
+
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/update", $this->data);
         $loadView->loadView();

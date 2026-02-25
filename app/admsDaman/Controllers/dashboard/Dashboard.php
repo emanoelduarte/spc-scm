@@ -14,6 +14,9 @@ class Dashboard
         // Criar o título da página
         $this->data['title_head'] = "Dashboard";
 
+        // Ativar o item de Menu
+        $this->data['menu'] = "dashboard";
+
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/dashboard/dashboard", $this->data);
         $loadView->loadView();

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="<?php echo $_ENV['APP_LOCALE']; ?>">
+<html lang="<?= $_ENV['APP_LOCALE']; ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/image/icon/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/image/icon/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/css/sbadmin.css">
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/sbadmin.css">
 
-    <link rel="stylesheet" href="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/css/styles_admin.css">
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/styles_admin.css">
 
-    <link rel="stylesheet" href="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/bootstrap.min.css">
 
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
@@ -39,7 +39,7 @@
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; <?php echo $_ENV['APP_NAME'] . " " . date("y"); ?></div>
+                        <div class="text-muted">Copyright &copy; <?= $_ENV['APP_NAME'] . " " . date("y"); ?></div>
                         <div>
                             <a href="#" class="text-decoration-none">Política de Privacidade</a>
                             &middot;
@@ -52,8 +52,8 @@
         </div>
     </div>
 
-    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
-    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
 
 </body>
 </html>

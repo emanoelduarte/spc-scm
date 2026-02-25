@@ -57,6 +57,9 @@ class ViewUser
         // Criar o título da página
         $this->data['title_head'] = "Visualizar Usuário";
 
+        // Ativar o item de Menu
+        $this->data['menu'] = "list-users";
+
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/view", $this->data);
         $loadView->loadView();

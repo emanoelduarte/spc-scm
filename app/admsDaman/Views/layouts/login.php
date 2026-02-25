@@ -39,7 +39,7 @@
 
 </body>
 
-<script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
-<script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
+<script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
+<script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
 
 </html>

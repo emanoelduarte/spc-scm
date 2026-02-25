@@ -1,12 +1,12 @@
 
 <!DOCTYPE html>
-<html lang="<?php echo $_ENV['APP_LOCALE']; ?>">
+<html lang="<?= $_ENV['APP_LOCALE']; ?>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="<?php echo $_ENV['URL_ADM']; ?>/public/admsDaman/image/icon/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= $_ENV['URL_ADM']; ?>/public/admsDaman/image/icon/favicon.ico" type="image/x-icon">
 
     <title>
         <?php

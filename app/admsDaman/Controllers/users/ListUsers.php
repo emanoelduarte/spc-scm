@@ -12,7 +12,7 @@ class ListUsers
     private array|string|null $data = null;
 
     /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
-    private int $limitResult = 2;
+    private int $limitResult = 10;
 
     /**
      * Recuperar os ultimos usuários
@@ -31,6 +31,9 @@ class ListUsers
 
         // Criar o título da página
         $this->data['title_head'] = "Listar Usuários";
+
+        // Ativar o item de Menu
+        $this->data['menu'] = "list-users";
 
         // Carregar a View do Listar Usuários
         $loadView = new LoadViewService("admsDaman/Views/users/list", $this->data);
