@@ -25,7 +25,7 @@ class LoadPageAdm
     private string $classLoad;
 
     /** @var array $listPgPublic Recebe a lista de páginas públicas */
-    private array $listPgPublic = ["Login", "Error403", "NewUser", "ForgotPassword", "ResetPassword"];
+    private array $listPgPublic = ["Login", "Error403", "NewUser", "ForgotPassword", "ResetPassword", "RecoverPassword"];
     /** @var array $listPgPrivate Recebe a lista de páginas privadas */
     private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser"];
 

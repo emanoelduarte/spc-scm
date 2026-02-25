@@ -93,9 +93,13 @@ Criar seed (arquivo)
 ```
 vendor/bin/phinx seed:create AddAdmsDamanUsers -c database/phinx.php
 ```
-Executar as seed
+Executar as sdee
 ```
 vendor/bin/phinx seed:run -c database/phinx.php
+```
+Instalar a biblioteca para enviar e-mail com php
+```
+composer require phpmailer/phpmailer
 ```
 
 ## Como usar o GitHub

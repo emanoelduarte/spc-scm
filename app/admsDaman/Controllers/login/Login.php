@@ -11,6 +11,7 @@ use App\admsDaman\Views\Services\LoadViewService;
  * Controller Login
  * 
  * @author Emanoel <emanoel.c.duarte@hotmail.com>
+ * @package App\adms\Controllers\login
  */
 class Login 
 {

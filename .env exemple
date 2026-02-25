@@ -1,0 +1,29 @@
+# Informações do projeto
+APP_NAME=Daman
+VERSION=1.0.0
+APP_TIMEZONE=America/Sao_Paulo
+APP_LOCALE=pt-BR
+
+# Email do administrador
+EMAIL_ADM=emanoel@damanarqeng.com.br
+
+#URL do projeto
+URL_ADM=http://localhost/spcscm/
+NAME_ADM=Emanoel
+
+#Ambiente do projeto
+APP_ENV=development
+
+# Credenciais do banco de dados
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=spcdaman
+DB_PORT=3306
+
+# credenciais do servidor de e-mail
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_USERNAME=ba916d47f0541e
+MAIL_PASSWORD=42a14865c8fdb4
+MAIL_PORT=587
+MAIL_ENCRYPTION=PHPMailer::ENCRYPTION_STARTTLS

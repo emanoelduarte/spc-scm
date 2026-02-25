@@ -9,11 +9,31 @@ use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\ResetPasswordRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
+/**
+ * Controller responsável pela recuperação de senha.
+ *
+ * Esta classe gerencia o processo de recuperação de senha para usuários esquecidos.
+ * Ela lida com a validação do e-mail, geração de chaves para redefinição de senha,
+ * e envio de instruções por e-mail. Também carrega as visualizações apropriadas com
+ * mensagens de erro ou sucesso.
+ * 
+ * @author Emanoel <emanoel.c.duarte@hotmail.com>
+ * @package App\adms\Controllers\login
+ */
 class ForgotPassword
 {
 
     /** @var array|string|null $dados Recebe os dados que devem ser enviados para a VIEW */
     private array|string|null $data = null;
+
+    /**
+     * Método principal da classe, responsável por iniciar o processo de recuperação de senha.
+     *
+     * Verifica se o formulário foi submetido e se o token CSRF é válido. Se o token for válido, 
+     * chama o método para processar a recuperação de senha; caso contrário, carrega a visualização do formulário.
+     * 
+     * @return void
+     */
     public function index(): void
     {
 
@@ -31,6 +51,13 @@ class ForgotPassword
         }
     }
 
+     /**
+     * Carrega a visualização para a página de recuperação de senha.
+     *
+     * Configura os dados necessários, como o título da página, e carrega a view correspondente.
+     * 
+     * @return void
+     */
     private function viewForgotPassword(): void
     {
         // Criar o título da página
@@ -41,6 +68,16 @@ class ForgotPassword
         $loadView->loadView();
     }
 
+    /**
+     * Processa a solicitação de recuperação de senha.
+     *
+     * Valida o e-mail fornecido, verifica se o usuário existe no banco de dados, 
+     * e, se válido, gera uma chave de recuperação e envia um e-mail com as instruções.
+     * Em caso de sucesso, redireciona o usuário para a página de login; caso contrário, 
+     * recarrega a visualização com mensagens de erro.
+     * 
+     * @return void
+     */
     private function forgotPassword(): void
     {
         // Instaciar a classe que valida os dados do formulário com Rakit
@@ -74,29 +111,54 @@ class ForgotPassword
         }
 
          // Instanciar o serviço para gerar a chave
-        $valueGenerateKey = GenerateKeyService::generateKey();
+        // $valueGenerateKey = GenerateKeyService::generateKey();
 
-        $this->data['form']['key'] = $valueGenerateKey['key'];
-        $this->data['form']['recover_password'] = $valueGenerateKey['encryptedKey'];
+        // Instanciar o serviço para recuperar a senha
+        $recoverPassword = new RecoverPassword();
+        $resultrecoverPassword = $recoverPassword->recoverPassword($this->data);
 
-        // Instaciar o repositório para editar o recover_password no banco de dados
-        $userUpdate = new ResetPasswordRepository();
-        $result = $userUpdate->updateForgotPassword($this->data['form']);
+        
 
+        // Verificar se enviou o e-mail com sucesso
+        if (!$resultrecoverPassword) {
 
-        // Acessa o IF se o repositório retornou TRUE
-        if ($result) {
-            // Criar a mensagem de sucesso ao editar
-            $_SESSION['success'] = "Um email de recuperação foi enviado para o email informado! - {$_ENV['URL_ADM']}reset-password/{$this->data['form']['key']}";
+        // $this->data['form']['key'] = $valueGenerateKey['key'];
+        // $this->data['form']['recover_password'] = $valueGenerateKey['encryptedKey'];
 
-            // Redirecionar o usuário para a página de login
-             header("Location: {$_ENV['URL_ADM']}login");
-        }else {
-            // Criar a mensagem de erro ao tentar editar
-            $this->data['errors'][] = "E-mail de recuperação não enviado, tente novamente ou entre em contato com o e-mail {$_ENV['EMAIL_ADM']}";
+        // Chamar o método para salvar o log em caso de erro
+        GenerateLog::generateLog("error", "E-mail de recuperação de senha não enviado!", ['email' => (string) $this->data['form']['email']]);
 
-            // Chamar o método carregar a view
+        // Criar mensagem de erro para apresentar ao usuário
+        $_SESSION['error'] = "E-mail de recuperação não enviado, tente novamente ou entre em contato com o e-mail {$_ENV['EMAIL_ADM']}";
+
+        // Chamar o método para carregar a VIEW
             $this->viewForgotPassword();
+            return;
         }
+
+        // Criar a mensagem de sucesso ao editar
+        $_SESSION['success'] = "Um email de recuperação foi enviado para o email informado! Acesse sua caixa de e-mail para recuperar a senha.";
+
+        header("Location: {$_ENV['URL_ADM']}login");
+
+        // // Instaciar o repositório para editar o recover_password no banco de dados
+        // $userUpdate = new ResetPasswordRepository();
+        // $result = $userUpdate->updateForgotPassword($this->data['form']);
+
+
+        // // Acessa o IF se o repositório retornou TRUE
+        // if ($result) {
+        //     // Criar a mensagem de sucesso ao editar
+        //     $_SESSION['success'] = "Um email de recuperação foi enviado para o email informado! - {$_ENV['URL_ADM']}reset-password/{$this->data['form']['key']}";
+
+        //     // Redirecionar o usuário para a página de login
+        //      header("Location: {$_ENV['URL_ADM']}login");
+        // }else {
+        //     // Criar a mensagem de erro ao tentar editar
+        //     $this->data['errors'][] = "E-mail de recuperação não enviado, tente novamente ou entre em contato com o e-mail {$_ENV['EMAIL_ADM']}";
+
+        //     // Chamar o método carregar a view
+        //     $this->viewForgotPassword();
+        // }
     }
 }

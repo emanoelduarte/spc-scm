@@ -18,7 +18,7 @@ class ResetPasswordRepository extends DbConnection
     public function getUser(string $email): array|bool
     {
         // Query para recuperar o registro do banco de dados
-        $sql = "SELECT id, email, recover_password, validate_recover_password 
+        $sql = "SELECT id, name, email, recover_password, validate_recover_password 
         FROM adms_daman_users 
         WHERE email = :email";
 
@@ -38,6 +38,9 @@ class ResetPasswordRepository extends DbConnection
     public function updateForgotPassword(array $data): bool
     {
 
+    // var_dump($data);
+    //     exit;
+
         // Usar try e catch para gerenciar exceção/erro
         try {  // Permanece no try se não houver nenhum erro
 
@@ -53,9 +56,9 @@ class ResetPasswordRepository extends DbConnection
 
             // Substituir os links da QUERY pelo valor
             $stmt->bindValue(':recover_password', $data['recover_password'], PDO::PARAM_STR);
-            $stmt->bindValue(':validate_recover_password', date("Y-m-d H:i:s", strtotime('+1hour')), PDO::PARAM_STR);
+            $stmt->bindValue(':validate_recover_password', $data['validate_recover_password'], PDO::PARAM_STR);
             $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
-            $stmt->bindValue(':email', $data['email'], PDO::PARAM_STR);
+            $stmt->bindValue(':email', $data['form']['email'], PDO::PARAM_STR);
 
             // Executar a QUERY
             return $stmt->execute();
