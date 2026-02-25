@@ -4,22 +4,22 @@ use App\admsDaman\Helpers\CSRFHelper;
 
 ?>
 <div class="container-fluid px-4">
-    <div class="mb-1 hstack gap-2">
+    <div class="mb-1 d-flex flex-column flex-sm-row gap-2">
         <h2 class="mt-3">Usuários</h2>
-        <ol class="breadcrumb mb-3 mt-3 ms-auto">
+        <ol class="breadcrumb mb-3 mt-0 mt-sm-3 ms-auto">
             <li class="breadcrumb-item">
                 <a class="text-decoration-none" href="<?= $_ENV['URL_ADM'] ?>dashboard">Dashboard</a>
             </li>
             <li class="breadcrumb-item">
                 <a class="text-decoration-none" href="<?= $_ENV['URL_ADM'] ?>list-users">Usuários</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Editar Usuário</li>
+            <li class="breadcrumb-item active" aria-current="page">Editar</li>
             </li>
         </ol>
     </div>
     <div class="card mb-4 border-light shadow">
         <div class="card-header hstack gap-2">
-            <span>Editar Usuário</span>
+            <span>Editar</span>
             <span class="ms-auto d-sm-flex flex-row">
                 <a href="<?= $_ENV['URL_ADM'] . 'list-users'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
                 <a href="<?= $_ENV['URL_ADM'] . 'view-user/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>

@@ -93,7 +93,7 @@ Criar seed (arquivo)
 ```
 vendor/bin/phinx seed:create AddAdmsDamanUsers -c database/phinx.php
 ```
-Executar as sdee
+Executar as seeds
 ```
 vendor/bin/phinx seed:run -c database/phinx.php
 ```

@@ -55,5 +55,13 @@
     <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
     <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
 
+    <?php // Inclui o sweetalert2 para botões de alerda de uma cdn 
+    ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <?php // Inclui o arquivo script_admin que tratará diretamente a função de confirmar ações 
+    ?>
+    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/script_admin.js"></script>
+
 </body>
 </html>

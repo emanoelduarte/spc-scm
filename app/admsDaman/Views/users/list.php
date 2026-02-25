@@ -61,13 +61,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
 
                                     <?php  // Formulário para envio dos dados para deletar Usuário 
                                     ?>
-                                    <form action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
+                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
 
                                         <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
                                         <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="return confirm('Tem certeza que deseja apagar este registro?')"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
 
                                     </form>
 
