@@ -1,9 +1,5 @@
 <?php
 
-echo "<a href='{$_ENV['URL_ADM']}list-users'>Listar usuários</a><br>";
-echo "<a href='{$_ENV['URL_ADM']}update-user/" . ($this->data['user']['id'] ?? '') . "'>Editar </a><br><br>";
-echo "<a href='{$_ENV['URL_ADM']}update-password-user/" . ($this->data['user']['id']) ."'>Editar Senha</a><br>";
-
 // Incluir arquivo rsponsável por alerta
 include './app/admsDaman/Views/partials/alerts.php';
 

@@ -65,7 +65,7 @@ class ForgotPassword
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/login/forgotPassword", $this->data);
-        $loadView->loadView();
+        $loadView->loadViewLogin();
     }
 
     /**
@@ -110,9 +110,6 @@ class ForgotPassword
             return;
         }
 
-         // Instanciar o serviço para gerar a chave
-        // $valueGenerateKey = GenerateKeyService::generateKey();
-
         // Instanciar o serviço para recuperar a senha
         $recoverPassword = new RecoverPassword();
         $resultrecoverPassword = $recoverPassword->recoverPassword($this->data);
@@ -121,9 +118,6 @@ class ForgotPassword
 
         // Verificar se enviou o e-mail com sucesso
         if (!$resultrecoverPassword) {
-
-        // $this->data['form']['key'] = $valueGenerateKey['key'];
-        // $this->data['form']['recover_password'] = $valueGenerateKey['encryptedKey'];
 
         // Chamar o método para salvar o log em caso de erro
         GenerateLog::generateLog("error", "E-mail de recuperação de senha não enviado!", ['email' => (string) $this->data['form']['email']]);
@@ -140,25 +134,5 @@ class ForgotPassword
         $_SESSION['success'] = "Um email de recuperação foi enviado para o email informado! Acesse sua caixa de e-mail para recuperar a senha.";
 
         header("Location: {$_ENV['URL_ADM']}login");
-
-        // // Instaciar o repositório para editar o recover_password no banco de dados
-        // $userUpdate = new ResetPasswordRepository();
-        // $result = $userUpdate->updateForgotPassword($this->data['form']);
-
-
-        // // Acessa o IF se o repositório retornou TRUE
-        // if ($result) {
-        //     // Criar a mensagem de sucesso ao editar
-        //     $_SESSION['success'] = "Um email de recuperação foi enviado para o email informado! - {$_ENV['URL_ADM']}reset-password/{$this->data['form']['key']}";
-
-        //     // Redirecionar o usuário para a página de login
-        //      header("Location: {$_ENV['URL_ADM']}login");
-        // }else {
-        //     // Criar a mensagem de erro ao tentar editar
-        //     $this->data['errors'][] = "E-mail de recuperação não enviado, tente novamente ou entre em contato com o e-mail {$_ENV['EMAIL_ADM']}";
-
-        //     // Chamar o método carregar a view
-        //     $this->viewForgotPassword();
-        // }
     }
 }

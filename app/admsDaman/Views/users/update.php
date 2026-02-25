@@ -4,9 +4,6 @@ use App\admsDaman\Helpers\CSRFHelper;
 
 echo "<h3>Editar Usuário</h3>";
 
-echo "<a href='{$_ENV['URL_ADM']}list-users'>Listar usuários</a><br>";
-echo "<a href='{$_ENV['URL_ADM']}view-user/" . ($this->data['form']['id'] ?? '') . "'>Visualizar </a><br><br>";
-
 // Incluir arquivo rsponsável por alerta
 include './app/admsDaman/Views/partials/alerts.php';
 

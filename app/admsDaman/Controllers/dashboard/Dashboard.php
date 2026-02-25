@@ -11,7 +11,6 @@ class Dashboard
 
     public function index()
     {
-        echo "Dashboard";
         // Criar o título da página
         $this->data['title_head'] = "Dashboard";
 

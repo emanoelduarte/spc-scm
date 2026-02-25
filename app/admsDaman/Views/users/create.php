@@ -4,8 +4,6 @@ use App\admsDaman\Helpers\CSRFHelper;
 
 echo "<h3>Cadastrar Usuário</h3>";
 
-echo "<a href='{$_ENV['URL_ADM']}list-users'>Listar usuários</a><br><br>";
-
 // Incluir arquivo rsponsável por alerta
 include './app/admsDaman/Views/partials/alerts.php';
 

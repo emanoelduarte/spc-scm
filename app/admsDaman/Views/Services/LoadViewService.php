@@ -35,4 +35,26 @@ class LoadViewService
         }
 
     }
+
+    /**
+     * Carregar a View Login.
+     * Verificar se o arquivo existe. Se existir ele carrega o Layout Login,  que carregrá a view. Se não existir deve apresentar um erro de carregamento.
+     * 
+     * @return void
+     * 
+     * @throws Exception Se o arquivo da VIEW não for encontrado, exibe uma mensagem de erro e encerra a execução
+     */
+
+    public function loadViewLogin(): void
+    {
+        // Definir o caminho da View
+        $this->view = './app/' . $this->nameView . '.php';
+        if (file_exists($this->view)) {
+
+            // Incluir o layout
+            include './app/admsDaman/Views/layouts/login.php';
+        } else {
+            die("Erro 005: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
+        }
+    }
 }

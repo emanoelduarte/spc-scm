@@ -50,7 +50,7 @@ class Login
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/login/login", $this->data);
-        $loadView->loadView();
+        $loadView->loadViewLogin();
     }
 
     /**
