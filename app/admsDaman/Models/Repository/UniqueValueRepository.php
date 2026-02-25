@@ -17,7 +17,7 @@ class UniqueValueRepository extends DbConnection
      * @return bool Retornar falso se o valor fornecido já estiver cadastrado, verdadeiro caso contrário
      */
 
-    public function getRecord($table, $column, $value, $except = null)
+    public function getRecord($table, $column, $value, $except = null): bool
     {
         // Query para recuperar o registro do banco de dados
         $sql = "SELECT COUNT(id) as count FROM `{$table}` WHERE `{$column}` = :value";

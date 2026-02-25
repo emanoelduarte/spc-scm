@@ -48,8 +48,6 @@ class LoadPageAdm
         $this->urlController = $urlController;
         $this->urlParameter = $urlParameter;
 
-        // var_dump($this->urlController, $this->urlParameter);
-
         // Verifica se existe a página
         if (!$this->checkPageExists()) {
 

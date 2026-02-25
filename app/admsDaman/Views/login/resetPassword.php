@@ -2,24 +2,20 @@
 
 use App\admsDaman\Helpers\CSRFHelper;
 
-echo "<h3>Editar Senha</h3>";
+echo "<h3>Nova Senha</h3>";
 
-echo "<a href='{$_ENV['URL_ADM']}list-users'>Listar usuários</a><br>";
-echo "<a href='{$_ENV['URL_ADM']}view-user/" . ($this->data['form']['id'] ?? '') . "'>Visualizar </a><br><br>";
-
-// Incluir arquivo rsponsável por alerta
+// Incluir arquivo responsável por alerta
 include './app/admsDaman/Views/partials/alerts.php';
 
 ?>
 
 <form action="" method="POST">
 
-    <input type="hidden" name="csrf_token" value="<?php echo CSRFHelper::generateCSRFToken('form_edit_password_user'); ?>" id="">
+    <input type="hidden" name="csrf_token" value="<?php echo CSRFHelper::generateCSRFToken('form_reset_password'); ?>" id="">
 
-    <input type="hidden" name="id" id="id" value="<?php echo $this->data['form']['id'] ?? ''; ?>">
-
-    <!-- Campo oculto do e-mail do usuário -->
-    <input type="hidden" name="email" id="email" value="<?php echo $this->data['form']['email'] ?? ''; ?>">
+    <!-- Campo e-mail do usuário -->
+    <label for="email"> E-mail: </label>
+    <input type="email" name="email" id="email" value="<?php echo $this->data['form']['email'] ?? ''; ?>" placeholder="Seu melhor email"><br><br>
 
     <!-- Campo senha do usuário -->
     <label for="password"> Senha: </label>

@@ -103,7 +103,7 @@ class UpdatePasswordUser
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {
             // Criar a mensagem de sucesso ao editar
-            $_SESSION['success'] = "Usuário editado com sucesso!";
+            $_SESSION['success'] = "Senha editado com sucesso!";
 
             // Redirecionar o usuário para a página de visualizar usuário
             header("Location: {$_ENV['URL_ADM']}view-user/{$this->data['form']['id']}");
@@ -111,7 +111,7 @@ class UpdatePasswordUser
             return;
         } else {
             // Criar a mensagem de erro ao tentar editar
-            $this->data['errors'][] = "Usuário não editado!";
+            $this->data['errors'][] = "Senha não editada!";
 
             // Chamar o método carregar a view
             $this->viewUpdatePasswordUser();

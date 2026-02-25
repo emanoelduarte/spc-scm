@@ -4,13 +4,21 @@ namespace App\admsDaman\Controllers\Services\Validation;
 
 use Rakit\Validation\Validator;
 
-class ValidationUserPasswordService
+/**
+ * Classe ValidationEmailService
+ * 
+ * Esta classe é responsável por validar o campo email e para recuperar a senha do usuário.
+ * Ela garante que a senha atenda a critérios específicos de segurança.
+ * 
+ * @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
+ * @package App\admsDaman\Controllers\Services\Validation
+ */
+class ValidationEmailService
 {
     /**
-     * Validar os dados do formulário com dependencia Rakit.
      * 
      * @param array $data Dados do formulário.
-     * @return array Lista de Erros.
+     * @return array Lista de Erros. Se não houver erros, o array será vazio.
      */
     public function validate(array $data): array
     {
@@ -21,25 +29,17 @@ class ValidationUserPasswordService
         // Instaciar a classe de validação
         $validator = new Validator();
 
-        // Definir as regras de validação
+        // definir as regras de validação
         $validation = $validator->make($data, [
-            'email'                 => 'required|email',
-            'password'              => 'required|min:6|regex:/[A-Z]/|regex:/[^\w\s]/',
-            'confirm_password'      => 'required|same:password',
+            'email' => 'required|email'
         ]);
 
+        // Definir mensagens personalizadas
         $validation->setMessages([
             'email:required' => 'O campo e-mail é obrigatório.',
-            'email:email' => 'O campo e-mail deve ser um e-mail válido.',
-
-            'password:required'         => 'O campo senha é obrigatório.',
-            'password:min'              => 'A senha deve ter no mínimo 6 caracters.',
-            'password:regex'            => 'A senha deve ter pelo menos uma letra minúscula e um caractere especial.',
-            'confirm_password:required' => 'Você deve confirmar a senha.',
-            'confirm_password:same'     => 'As senhas precisam concidir',
-
+            'email:email' => 'O campo e-mail deve ser um e-mail válido.'
         ]);
-        
+
         // Validar dados
         $validation->validate();
 

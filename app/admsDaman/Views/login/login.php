@@ -27,5 +27,7 @@ include './app/admsDaman/Views/partials/alerts.php';
 
 </form>
 
+<a href="<?php echo $_ENV['URL_ADM'] ?>forgot-password">Recuperar senha</a><br><br>
+
 Usuário: emanoel@damanarqeng.com.br<br><br>
 Senha: 123456A#<br>
