@@ -1,0 +1,62 @@
+:root {
+    --main-color: #2a231b;
+    --site-color: #fff;
+    --soft-color2: #848484;
+    --soft-color: #e7e7e7;
+    --active-color: #c4943f;
+    --first-color: #f0f0f0;
+    --second-color: #c0c0c0;
+    --third-color: #1f2e38;
+    --fourth-color: #c3d7db;
+    --pd-now: #FFEB3B;
+    --pd-analise: #9E9E9E;
+    --pd-orcamento: #8ef1d9;
+    --pd-compra-parcial: #FF9800;
+    --pd-comprado: #2196F3;
+    --pd-entregue: #4CAF50;
+    --pd-cancelado: #F44336;
+}
+
+.bg-nav {
+    background-color: var(--main-color);
+}
+
+.sb-sidenav-five {
+    background-color: #f9fafc;
+    box-shadow: 0 8px 14px rgba(0, 0, 0, .10), 0 8px 8px rgba(0, 0, 0, .10) !important;
+}
+
+.sb-sidenav-five .sb-sidenav-menu .sb-sidenav-menu-heading {
+    color: rgba(41, 41, 41, 0.5);
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link {
+    color: rgba(41, 41, 41, 0.9);
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link .sb-nav-link-icon {
+    color: rgba(41, 41, 41, 0.9);
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link .sb-sidenav-collapse-arrow {
+    color: rgba(41, 41, 41, 0.25);
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link:hover {
+    color: #181818;
+    background-color: #f0efef;
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link.active {
+    color: #181818;
+    background-color: #f0efef;
+}
+
+.sb-sidenav-five .sb-sidenav-menu .nav-link.active .sb-nav-link-icon {
+    color: #181818;
+    background-color: #f0efef;
+}
+
+.sb-sidenav-five .sb-sidenav-footer {
+    background-color: #eeeded;
+}

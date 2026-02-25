@@ -7,7 +7,7 @@
 ## Como rodar o projeto baixado
 Duplicar o arquivo ".env.exemple" e renomear para ".env"<br>
 Alterar no arquivo .env as credênciais do banco de dados.<br>
-Criar o banco de dados com a COLLAACTION "utf8mb4_unicode_ci"<br>
+Criar o banco de dados com a COLLACTION "utf8mb4_unicode_ci"<br>
 Alterar no arquivo .env o endereço da aplicação na variável de ambiente URL_ADM
 
 Instalar as dependências.

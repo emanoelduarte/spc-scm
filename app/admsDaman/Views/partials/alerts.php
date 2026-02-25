@@ -1,9 +1,9 @@
 <?php
 
 // Usar operador Ternário para verificar se existe a mensagem de sucesso e erro
-echo isset($_SESSION['success']) ? "<p style='color: #086;'>{$_SESSION['success']}</p>" : "";
+echo isset($_SESSION['success']) ? "<div class='alert alert-success' role='alert'>{$_SESSION['success']}</div>" : "";
 
-echo isset($_SESSION['error']) ? "<p style='color: #f00;'>{$_SESSION['error']}</p>" : "";
+echo isset($_SESSION['error']) ? "<div class='alert alert-danger' role='alert'>{$_SESSION['error']}</div>" : "";
 
 // Destrua o que estiver na sessão
 unset($_SESSION['success'], $_SESSION['error']);
@@ -13,6 +13,6 @@ unset($_SESSION['success'], $_SESSION['error']);
 if (isset($this->data['errors'])) {
 
     foreach ($this->data['errors'] as $error) {
-        echo "<p style='color: #f00;'>$error</p>";
+        echo "<div class='alert alert-danger' role='alert'>$error</div>";
     }
 }
