@@ -25,7 +25,7 @@ class LoadPageAdm
     private string $classLoad;
 
     /** @var array $listPgPublic Recebe a lista de páginas públicas */
-    private array $listPgPublic = ["Login", "Error403", "NewUser", "ForgotPassword", "ResetPassword", "RecoverPassword"];
+    private array $listPgPublic = ["Login", "Error403", "NewUser", "Logout", "ForgotPassword", "ResetPassword", "RecoverPassword"];
     /** @var array $listPgPrivate Recebe a lista de páginas privadas */
     private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser"];
 
@@ -58,9 +58,7 @@ class LoadPageAdm
             $_SESSION['error'] = "Necessário está logado para acessar uma página restrita.";
 
             //Redirecionar o usuario para a pagina de login
-            // Redirecionar o usuário para a página de listar usuário
             header("Location: {$_ENV['URL_ADM']}login");
-            exit();
         }
 
         // Verificar se a classe existe
@@ -97,11 +95,11 @@ class LoadPageAdm
     {
         // Veririficar se a página existe no array de páginas privadas
         if (!in_array($this->urlController, $this->listPgPrivate)) {
-            return false;
+        return false;
         }
 
         // Verifico se o usuário está logado
-        if ((!isset($_SESSION['user_id'])) and (!isset($_SESSION['user_name'])) and (!isset($_SESSION['user_email']))) {
+        if ((!isset($_SESSION['user_id'])) || (!isset($_SESSION['user_name'])) || (!isset($_SESSION['user_email']))) {
 
             // Chama método para salvar o log em caso de erro
             GenerateLog::generateLog("error", "Usuário tentou acessar página privada sem uma sessão iniciada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
