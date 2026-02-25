@@ -12,10 +12,21 @@
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
                     Usuários
                 </a>
+                
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-orders')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-orders">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    Pedidos
+                </a>
+                
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-access-levels')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-access-levels">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>
+                    Níveis de Acesso
+                </a>
 
-                    <a class="nav-link" href="<?= $_ENV['URL_ADM'] ?>logout">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
-                    Sair
+
+                <a class="nav-link" href="<?= $_ENV['URL_ADM'] ?>logout">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
+                Sair
                 </a>
             </div>
         </div>
