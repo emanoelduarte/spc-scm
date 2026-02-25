@@ -9,6 +9,8 @@
 
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/sbadmin.css">
 
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/styles_admin.css">
+
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/bootstrap.min.css">
 
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -18,7 +20,7 @@
     </title>
 </head>
 
-<body class="bg-primary">
+<body class="bg-nav">
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
             <main>

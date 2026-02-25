@@ -31,7 +31,7 @@ Instalar a biblioteca gerenciar variáveis de ambiente
 composer require vlucas/phpdotenv
 ```
 Acessar o projeto: [Acessar](http://localhost/spcscm/)
-```
+
 
 ## Sequencia para criar o projeto
 Criar o arquivo composer.jason com a instrução básica
