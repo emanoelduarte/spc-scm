@@ -53,8 +53,13 @@ class ViewUser
         }
 
         // Instanciar o Repository para recuperar os níveis de acesso do usuário
+        // $this->data['userAccessLevels'] = $viewUserAccessLevels->getUsersAccessLevels((int) $id);
+        
         $viewUserAccessLevels = new UsersAccessLevelsRepository();
-        $this->data['userAccessLevels'] = $viewUserAccessLevels->getUsersAccessLevels((int) $id);
+        $this->data['userAccessLevelsArray'] = $viewUserAccessLevels->getUsersAccessLevelsArray((int) $id);
+
+        // Instanciar o Repository para recuperar os níveis de acesso com menor prioridade de maior prioridade do usuário
+        $this->data['lowerPriorityAccessLevels'] = $viewUserAccessLevels->getLowerPriorityAccessLevels();
 
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Usuário", ['id' => (int) $id]);

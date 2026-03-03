@@ -84,8 +84,51 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
         </div>
     </div>
 
-    <?php
-    var_dump($this->data['userAccessLevels']);
-    ?>
+     <div class="card mb-4 border-light shadow">
+        <div class="card-header d-flex flex-column flex-sm-row gap-2">
+            <span>Permições do Usuário</span>
+        </div>
+
+        <div class="card-body">
+            <?php
+                // Verificar se há níveis de acesso do usuário com menor prioridade
+                if ($this->data['lowerPriorityAccessLevels'] ?? false): ?>
+
+            <dl class="row">
+                <dt class="col-sm-3">Níveis de acesso: </dt>
+                <dd class="col-sm-9">
+            </dl>
+            <form action="#" method="POST">
+                <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
+
+            <?php
+                // Percorre a array de níveis de acesso do usuário
+                foreach ($this->data['lowerPriorityAccessLevels'] as $lowerPriorityAccessLevel) {
+
+                // Extrair o Array pela coluna de níveis de acesso
+                extract($lowerPriorityAccessLevel);
+                
+                // Verificar se o nível de acesso atual ($id) está no array de níveis de acesso do usuário
+                $userAccessLevels = $this->data['userAccessLevelsArray'] ? $this->data['userAccessLevelsArray'] : [];
+
+                $checked = in_array($id, $userAccessLevels) ? 'checked' : ''; ?>
+
+                <div class="form-check form-switch">
+
+                    <input type="checkbox" name="userAccessLevels<?= $id ?>" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" <?= $checked ?>>
+
+                    <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
+                </div>
+
+            <?php } ?>
+                <div class="col-12">
+                        <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
+                    </div>
+                </form>
+         <?php
+            else :
+                echo "div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";endif; ?>
+        </div>
+     </div>
 
 </div>
