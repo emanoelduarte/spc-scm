@@ -3,6 +3,7 @@
 namespace App\admsDaman\Controllers\users;
 
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -50,6 +51,10 @@ class ViewUser
 
             return;
         }
+
+        // Instanciar o Repository para recuperar os níveis de acesso do usuário
+        $viewUserAccessLevels = new UsersAccessLevelsRepository();
+        $this->data['userAccessLevels'] = $viewUserAccessLevels->getUsersAccessLevels((int) $id);
 
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Usuário", ['id' => (int) $id]);

@@ -16,7 +16,7 @@ class AAADatabaseSeeder extends AbstractSeed
     {
         return [
             'AddAdmsDamanUsers',
-            'AddAdmsDamanAcessLevels',
+            'AddAdmsDamanAccessLevels',
             'AddAdmsDamanUsersAccessLevels',
         ];
     }

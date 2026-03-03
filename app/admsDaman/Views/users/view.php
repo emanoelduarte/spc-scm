@@ -84,4 +84,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
         </div>
     </div>
 
+    <?php
+    var_dump($this->data['userAccessLevels']);
+    ?>
+
 </div>
