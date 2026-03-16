@@ -18,6 +18,9 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsDamanUsers',
             'AddAdmsDamanAccessLevels',
             'AddAdmsDamanUsersAccessLevels',
+            'AddAdmsPackagesPagesSeeder',
+            'AddAdmsGroupsPagesSeeder',
+            'AddAdmsPagesSeeder',
         ];
     }
 }
