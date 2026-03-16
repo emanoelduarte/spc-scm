@@ -27,7 +27,7 @@ class LoadPageAdm
     /** @var array $listPgPublic Recebe a lista de páginas públicas */
     private array $listPgPublic = ["Login", "Error403", "NewUser", "Logout", "ForgotPassword", "ResetPassword", "RecoverPassword"];
     /** @var array $listPgPrivate Recebe a lista de páginas privadas */
-    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser", "UpdatePasswordUser", "ListAccessLevels", "ViewAccessLevel", "UpdateAccessLevel", "CreateAccessLevel", "DeleteAccessLevel", "ListOrders"];
+    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser", "UpdatePasswordUser", "ListAccessLevels", "ViewAccessLevel", "UpdateAccessLevel", "CreateAccessLevel", "DeleteAccessLevel", "UpdateUserAccessLevels", "ListOrders"];
 
     /** @var array $listDirectory Recebe a lista de diretórios com as controllers */
     private array $listDirectory = ["login", "dashboard", "users", "errors", "accessLevels", "orders"];

@@ -4,6 +4,7 @@
 use App\admsDaman\Helpers\CSRFHelper;
 
 $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
+$csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_level');
 ?>
 <div class="container-fluid px-4">
     <div class="mb-1 d-flex flex-column flex-sm-row gap-2">
@@ -86,7 +87,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
 
      <div class="card mb-4 border-light shadow">
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
-            <span>Permições do Usuário</span>
+            <span>Permissões do Usuário</span>
         </div>
 
         <div class="card-body">
@@ -98,8 +99,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
                 <dt class="col-sm-3">Níveis de acesso: </dt>
                 <dd class="col-sm-9">
             </dl>
-            <form action="#" method="POST">
-                <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
+            <form action="<?= $_ENV['URL_ADM']; ?>update-user-access-levels" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_update_access_level ?>">
+
+                    <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
 
             <?php
                 // Percorre a array de níveis de acesso do usuário
@@ -115,7 +118,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
 
                 <div class="form-check form-switch">
 
-                    <input type="checkbox" name="userAccessLevels<?= $id ?>" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" <?= $checked ?>>
+                    <input type="checkbox" name="userAccessLevels[<?= $id ?>]" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" value="<?= $id ?>" <?= $checked ?>>
 
                     <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
                 </div>
@@ -127,7 +130,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
                 </form>
          <?php
             else :
-                echo "div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";endif; ?>
+                echo "<div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";endif; ?>
         </div>
      </div>
 

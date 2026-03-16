@@ -16,7 +16,7 @@ use App\admsDaman\Views\Services\LoadViewService;
  * Caso haja algum problema, como um nível de acesso não encontrado ou dados inválidos, mensagens de erro são exibidas e registradas.
  * 
  * @author Emanoel <emanoel.c.duarte@hotmail.com>
- * @package App\adms\Controllers\accessLevels;
+ * @package App\admsDaaman\Controllers\accessLevels;
  */
 class UpdateAccessLevel
 {
