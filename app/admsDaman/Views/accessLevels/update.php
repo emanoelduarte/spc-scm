@@ -51,7 +51,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                    <button type="submit" class="btn btn-warning btn-sm" onclick="showLoading()">Editar</button>
                 </div>
 
             </form>

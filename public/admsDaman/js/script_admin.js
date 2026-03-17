@@ -17,5 +17,12 @@ function confirmDeletion(event, id) {
             document.getElementById(`formDelete${id}`).submit();
         }
     });
+}
+
+// Bloquear página inteira e exibir um ícone de carregamento (spinner) no centro da página
+function showLoading() {
+
+    // Exibe o overlay com o spinner
+    document.getElementById('loadingOverlay').classList.remove('d-none');
 
 }

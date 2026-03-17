@@ -41,7 +41,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-sm">Cadastrar</button>
+                    <button type="submit" class="btn btn-primary btn-sm" onclick="showLoading()">Cadastrar</button>
                 </div>
 
             </form>

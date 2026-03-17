@@ -23,6 +23,9 @@
 </head>
 
 <body class="sb-nav-fixed">
+    
+    <?php include 'app/admsDaman/Views/partials/loadingOverlay.php' ?>
+
     <?php include 'app/admsDaman/Views/partials/navbar.php' ?>
 
     <div id="layoutSidenav">
