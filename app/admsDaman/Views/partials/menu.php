@@ -23,6 +23,11 @@
                     Níveis de Acesso
                 </a>
 
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-packages')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-packages">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
+                    Pacotes
+                </a>
+
 
                 <a class="nav-link" href="<?= $_ENV['URL_ADM'] ?>logout">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>

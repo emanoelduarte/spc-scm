@@ -21,12 +21,12 @@ class PaginationService
     {
 
         // Calcular a ultima página
-        $lasPage = (int) ceil($totalRecords / $limitResult);
+        $lastPage = (int) ceil($totalRecords / $limitResult);
 
         // Retornar os dados da paginação
         return [
             'amount_records' => $totalRecords,
-            'last_page' => $lasPage,
+            'last_page' => $lastPage,
             'current_page' => $currentPage == 0 ? 1 : $currentPage,
             'url_controller' => $urlController
         ];
