@@ -13,6 +13,7 @@ NAME_ADM=Emanoel
 
 #Ambiente do projeto
 APP_ENV=development
+APP_DEBUG=true
 
 # Credenciais do banco de dados
 DB_HOST=localhost
