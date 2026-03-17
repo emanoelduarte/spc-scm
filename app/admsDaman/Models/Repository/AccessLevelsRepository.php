@@ -230,5 +230,22 @@ class AccessLevelsRepository extends DbConnection
             return false;
         }
     }
+
+    public function getAllAccessLevelsSelect()
+    {
+        // Query para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name, order_levels 
+        FROM adms_daman_access_levels
+        ORDER BY name ASC';
+
+        // Preparar a Query
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a Query
+        $stmt->execute();
+
+        // Ler os Registos e retornar os dados com fetchAll
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
