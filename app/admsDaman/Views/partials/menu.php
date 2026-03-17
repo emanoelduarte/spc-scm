@@ -28,6 +28,11 @@
                     Pacotes
                 </a>
 
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-groups-pages')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-groups-pages">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    Grupos
+                </a>
+
 
                 <a class="nav-link" href="<?= $_ENV['URL_ADM'] ?>logout">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
