@@ -21,8 +21,6 @@ class AccessLevelPageSyncService
         $pages = new PagesRepository();
         $resultPages = $pages->getPagesArray();
 
-        var_dump($resultPages);
-
         // Instanciar o Repository 'AccessLevelsRepository' e recuperar todas os níveis de acessso em um array do banco de dados.
         $accessLevels = new AccessLevelsRepository();
         $resultAccessLevels = $accessLevels->getAllAccessLevelsSelect();
@@ -42,21 +40,15 @@ class AccessLevelPageSyncService
             $accessLevelPages[$id] = $resultAccessLevelsPages ? $resultAccessLevelsPages : [];
         }
 
-        var_dump($accessLevelPages);
-
         // Percorrer as páginas do nível de acesso e verificar se o nível de acesso tem permissão para cadastrar página
         foreach ($accessLevelPages as $acessLevelId => $accessLevelPages) {
             // Comprar as páginas que o nível de acesso não possui permissão e criar o array com essas páginas
-            $noAccessLevelPages = array_values(array_diff($resultPages, $accessLevelPages));
-
-            var_dump($noAccessLevelPages);
+            $noAccessLevelPages[$acessLevelId] = array_values(array_diff($resultPages, $accessLevelPages));
         }
-
-        var_dump($resultAccessLevels);
 
         // Chamar o método do repositório cadastrar página para nível de acesso
 
-        return false;
+        return $accessLevelsPages->createPagesAccessLevel($noAccessLevelPages);
     }
 }
 ?>

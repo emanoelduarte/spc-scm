@@ -15,7 +15,6 @@ class AccessLevelPageSync
 
         // Se a sincronização entre nível de acesso e página for bem-sucedida
         if ($resultAccessLevelPage) {
-
             // Mensagem de Sucesso
             $_SESSION['success'] = "Sincronização entre nível de acesso e página realizada com sucesso!";
         } else {
@@ -24,7 +23,7 @@ class AccessLevelPageSync
         }
 
         // Redirecionar para a página listar nível de acesso
-        // header("Location: {$_ENV['URL_ADM']}list-access-levels");
+        header("Location: {$_ENV['URL_ADM']}list-access-levels");
 
         return;
     }
