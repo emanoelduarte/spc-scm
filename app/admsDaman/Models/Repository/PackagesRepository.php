@@ -224,5 +224,30 @@ class PackagesRepository extends DbConnection
             return false;
         }
     }
+
+    /**
+     * Recuperar todos os pacotes, para preencher o select de forma dinâmica na hora de cadastrar um novo pacote.
+     *
+     * Este método retorna uma lista de pacotes da tabela `adms_packages_pages`.
+     *
+     * @return array Lista de pacotes recuperados do banco de dados.
+     */
+    public function getAllPackagesSelect()
+    {
+
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name 
+                FROM adms_daman_packages_pages
+                ORDER BY id ASC';
+
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a QUERY
+        $stmt->execute();
+
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
