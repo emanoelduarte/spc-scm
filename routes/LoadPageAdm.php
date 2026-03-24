@@ -27,10 +27,10 @@ class LoadPageAdm
     /** @var array $listPgPublic Recebe a lista de páginas públicas */
     private array $listPgPublic = ["Login", "Error403", "NewUser", "Logout", "ForgotPassword", "ResetPassword", "RecoverPassword"];
     /** @var array $listPgPrivate Recebe a lista de páginas privadas */
-    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser", "UpdatePasswordUser", "ListAccessLevels", "ViewAccessLevel", "UpdateAccessLevel", "CreateAccessLevel", "DeleteAccessLevel", "UpdateUserAccessLevels", "AccessLevelPageSync", "ListPackages", "CreatePackage", "ViewPackage", "UpdatePackage", "DeletePackage", "ListGroupsPages", "ViewGroupPage", "CreateGroupPage", "UpdateGroupPage", "DeleteGroupPage", "ListPages", "ViewPage", "CreatePage", "UpdatePage", "DeletePage", "ListOrders",];
+    private array $listPgPrivate = ["Dashboard", "ListUsers", "ViewUser", "CreateUser", "UpdateUser", "DeleteUser", "UpdatePasswordUser", "ListAccessLevels", "ViewAccessLevel", "UpdateAccessLevel", "CreateAccessLevel", "DeleteAccessLevel", "UpdateUserAccessLevels", "AccessLevelPageSync", "ListPackages", "CreatePackage", "ViewPackage", "UpdatePackage", "DeletePackage", "ListGroupsPages", "ViewGroupPage", "CreateGroupPage", "UpdateGroupPage", "DeleteGroupPage", "ListPages", "ViewPage", "CreatePage", "UpdatePage", "DeletePage", "ListOrders", "ListProjects", "ViewProject", "CreateProject", "UpdateProject", "DeleteProject"];
 
     /** @var array $listDirectory Recebe a lista de diretórios com as controllers */
-    private array $listDirectory = ["login", "dashboard", "users", "errors", "accessLevels", "orders", "packages", "groupsPages", "pages"];
+    private array $listDirectory = ["login", "dashboard", "users", "errors", "accessLevels", "orders", "packages", "groupsPages", "pages","projects"];
     /** @var array $listPackages Recebe a lista de pacotes com as controllers */
     private array $listPackages = ["admsDaman"];
 

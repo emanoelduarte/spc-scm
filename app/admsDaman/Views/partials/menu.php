@@ -17,6 +17,10 @@
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
                     Pedidos
                 </a>
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-projects')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-projects">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                    Projetos
+                </a>
                 
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-access-levels')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-access-levels">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>
