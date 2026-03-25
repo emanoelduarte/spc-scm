@@ -27,6 +27,11 @@
                     Níveis de Acesso
                 </a>
 
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-categories')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-categories">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-tags"></i></div>
+                    Categorias
+                </a>
+
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-packages')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-packages">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
                     Pacotes
