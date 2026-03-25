@@ -2,6 +2,8 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\PaginationService;
+use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 /**
@@ -9,23 +11,24 @@ use App\admsDaman\Views\Services\LoadViewService;
  */
 class ListOrders 
 {
-    /** @var array|string|null $dados Recebe os dados que devem ser enviados para a VIEW */
+    /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
-    
-    public function index() : void 
-    {
-        $this->viewListOrders();
-    }
 
-    /**
-     * Instanciar a classe responsável em carregar a VIEW e enviar os dados para View.
-     * 
-     * @return void
-     */
-    private function viewListOrders(): void
+    /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
+    private int $limitResult = 10;
+    
+    public function index(string|int $page = 1) : void 
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Nível de Acesso";
+        // Instanciar o Repository para recuperar os registros do banco de dados
+        $listOrders = new OrdersRepository();
+        $listOrders->getAllOrders();
+
+       $this->data['orders'] = $listOrders->getAllOrders((int) $page, (int) $this->limitResult);
+
+       $this->data['pagination'] = PaginationService::generatePagination((int) $listOrders->getAmountOrders(), (int) $this->limitResult, (int) $page, 'list-orders');
+
+       // Criar o título da página
+        $this->data['title_head'] = "Pedidos";
 
         $this->data['menu'] = "list-orders";
 
