@@ -9,3 +9,6 @@
 
 # Ignora o arquivo de variaveis de ambiente
 .env
+
+# Arquivo de anotações
+Notations

@@ -23,7 +23,12 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsPagesSeeder',
             'AddAdmsDamanProjects',
             'AddAdmsDamanSuppliersTypes',
-            'AddAdmsDamanSuppliers'
+            'AddAdmsDamanSuppliers',
+            'AddAdmsDamanCategories',
+            'AddAdmsDamanOrdersStatus',
+            'AddAdmsDamanOrdersTypes',
+            'AddAdmsDamanOrders',
+            'AddAdmsDamanOrderItems'
         ];
     }
 }

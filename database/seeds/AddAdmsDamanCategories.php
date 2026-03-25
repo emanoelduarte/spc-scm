@@ -167,7 +167,7 @@ class AddAdmsDamanCategories extends AbstractSeed
             ];
         }
 
-        ## 12 SERRALHERIA
+        ## 13 SERRALHERIA
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'SERRALHERIA'])->fetch();
 
