@@ -75,76 +75,60 @@ class OrdersRepository extends DbConnection
      * 
      * @return array|bool Pedido recuperado do banco de dados
      */
-    public function getOrder(int $id_pedido): array|bool
+    public function getOrder(int $idPedido): array|bool
     {
         try {
-            $sql = 'SELECT ado.adms_daman_order_types_id
-            FROM adms_daman_orders AS ado
-            INNER JOIN adms_daman_order_types AS adot ON adot.id=ado.adms_daman_order_types_id
-            WHERE ado.id = :id';
+            // Consultar pedido e itens de compra
+            $order = 'SELECT ado.id, ado.adms_daman_order_types_id, ado.adms_daman_category_id, ado.adms_daman_user_id, 
+                ado.adms_daman_project_id, 
+                ado.service, ado.expected_receipt_date, ado.observation, ado.adms_daman_order_status_id, ado.status_date, ado.created_at, ado.updated_at, ado.rental_contract, ado.rental_period,
 
-            // Preparar a Query
-            $stmt = $this->getConnection()->prepare($sql);
+                adot.name AS order_name_type,
+                adc.name AS category_name,
+                adu.name AS usr_name,
+                adp.name AS project_name, adp.address AS project_adrress,
+                ados.name AS order_status
 
-            // Substiruir os links pelos valores 
-            $stmt->bindValue(':id', $id_pedido, PDO::PARAM_INT);
-
-            // Executar a Query
-            $stmt->execute();
+                FROM adms_daman_orders AS ado
+                INNER JOIN adms_daman_order_types AS adot ON adot.id=ado.adms_daman_order_types_id
+                INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
+                INNER JOIN adms_daman_users AS adu ON adu.id=ado.adms_daman_user_id
+                INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
+                INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
+                WHERE ado.id = :id';
             
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt_order = $this->getConnection()->prepare($order);
+            $stmt_order->bindValue(':id', $idPedido, PDO::PARAM_INT);
 
-            if($result['adms_daman_order_types_id'] == 1) {
+            $stmt_order->execute();
 
-                // Consultar pedido e itens de compra
-                $order = 'SELECT ado.id, ado.adms_daman_order_types_id, ado.adms_daman_category_id, ado.adms_daman_user_id, ado.adms_daman_project_id, 
-                        ado.service, ado.observation, ado.adms_daman_order_status_id, ado.status_date, ado.created_at, ado.updated_at,
-
-                        adot.name AS order_name_type,
-                        adc.name AS category_name,
-                        adu.name AS usr_name,
-                        adp.name AS project_name,
-                        ados.name AS order_status
-
-                        FROM adms_daman_orders AS ado
-                        INNER JOIN adms_daman_order_types AS adot ON adot.id=ado.adms_daman_order_types_id
-                        INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
-                        INNER JOIN adms_daman_users AS adu ON adu.id=ado.adms_daman_user_id
-                        INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
-                        INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
-                        WHERE ado.id = :id';
-                
-                $stmt_order = $this->getConnection()->prepare($order);
-                $stmt_order->bindValue(':id', $id_pedido, PDO::PARAM_INT);
-                
-                $items = 'SELECT adoi.description, adoi.unit, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.adms_daman_order_status_id
-                        
-                        FROM adms_daman_order_items AS adoi
-                        INNER JOIN adms_daman_order_status AS ados ON ados.id=adoi.adms_daman_order_status_id
-                        WHERE adoi.adms_daman_order_id = :id';
-
-                $stmt_items = $this->getConnection()->prepare($items);
-                $stmt_items->bindValue(':id', $id_pedido, PDO::PARAM_INT);
-
-                $stmt_order->execute();
-                $stmt_items->execute();
-
-                $orderData = $stmt_order->fetch(PDO::FETCH_ASSOC);
-                $itemsData = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
-
-                $resultado = [
-                    'order' => $orderData,
-                    'items' => $itemsData
-                ];
-
-                return $resultado;
-            }
+            return $stmt_order->fetch(PDO::FETCH_ASSOC);
 
         }catch(Exception $err) {
-            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $id_pedido]);
+            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $idPedido]);
             die("Pedido não encontrado " . $err->getMessage());
         }
         return false;
+    }
+
+    public function getItems(int $idPedido): array|bool {
+
+        // Consultar Itens de Compra
+        $items = 'SELECT adoi.description, adoi.unit, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_order_status_id
+                
+            FROM adms_daman_order_items AS adoi
+            INNER JOIN adms_daman_order_status AS ados ON ados.id=adoi.adms_daman_order_status_id
+            WHERE adoi.adms_daman_order_id = :id';
+
+        $stmt_items = $this->getConnection()->prepare($items);
+
+        $stmt_items->bindValue(':id', $idPedido, PDO::PARAM_INT);
+
+        $stmt_items->execute();
+
+        $itemsData = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+        return $itemsData;
     }
 }
 ?>
