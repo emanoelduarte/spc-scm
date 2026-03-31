@@ -204,4 +204,26 @@ class CategoriesRepository extends DbConnection
             return false;
         }
     }
+
+    /**
+     * Recuperar uma Categoria específica
+     * 
+     * @return array|bool Categoria recuperada do banco de dados
+     */
+    public function getAllCategoriesSelect(): array|bool
+    {
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name 
+                FROM adms_daman_categories
+                ORDER BY id ASC';
+
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a QUERY
+        $stmt->execute();
+
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

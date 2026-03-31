@@ -1,0 +1,96 @@
+<?php
+
+namespace App\admsDaman\Controllers\Services\Validation;
+
+use Rakit\Validation\Validator;
+
+/**
+ * Classe ValidationOrderService
+ * 
+ * Esta classe é responsável por validar os campos de pedido em um formulário de criação de um novo pedido.
+ * Ela garante que todos os campos ou ao menos os mais importantes atenda a critérios específicos de segurança e confirmação.
+ * 
+ *  @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
+ * @package App\admsDaman\Controllers\Services\Validation
+ */
+class ValidationOrderService
+{
+    /**
+     * Validar os dados do formulário com dependencia Rakit.
+     * 
+     * Este método valida os inumeros campos de pedidos, garantindo que todos sejam preenchidos da forma correta.
+     * 
+     * @param array $data Dados do formulário.
+     * @return array Lista de Erros. Se não houver erros, o array será vazio.
+     */
+    public function validate(array $data): array
+    {
+
+        // Criar o array que deve receber as mensagens de erro
+        $errors = [];
+
+        // Instaciar a classe de validação
+        $validator = new Validator();
+
+        // Definir as regras de validação
+        $rules = [];
+
+        if(isset($data['adms_daman_order_types_id']) && $data['adms_daman_order_types_id'] == 1){
+            $rules['adms_daman_order_types_id'] = 'required|integer';
+            $rules['adms_daman_category_id'] = 'required|integer';
+            $rules['adms_daman_project_id'] = 'required|integer';
+            $rules['service'] = 'required';
+            $rules['expected_receipt_date'] = 'required|date';
+            $rules['observation'] = 'required';
+        } else {
+            $rules['adms_daman_order_types_id'] = 'required|integer';
+            $rules['adms_daman_category_id'] = 'required|integer';
+            $rules['adms_daman_project_id'] = 'required|integer';
+            $rules['service'] = 'required';
+            $rules['expected_receipt_date'] = 'required|date';
+            $rules['observation'] = 'required';
+            $rules['rental_period'] = 'required|integer';
+        }
+
+        // Definir mensagens personalizadas
+        $messages = [
+            'adms_daman_order_types_id:required' => 'Tipo de pedido não pode ser vazio.',
+            'adms_daman_order_types_id:integer'  => 'Dados inválidos.',
+            'adms_daman_category_id:required'    => 'Categoria, não pode ser vazia.',
+            'adms_daman_category_id:integer'     => 'Dados inválidos.',
+            'adms_daman_project_id:required'     => 'Obra não pode ser vazio.',
+            'adms_daman_project_id:integer'      => 'Dados inválidos.',
+            'service:required'                   => 'Serviço não pode ser vazio.',
+            'expected_receipt_date:required'     => 'Previsão de recebimento não pode ser vazio.',
+            'expected_receipt_date:date'         => 'Selecione uma data válida',
+            'observation:required'               => 'Por favor, indique alguma observação para este pedido.',
+            'rental_period:required'             => 'Por favor, indique o periodo de locação dos equipamentos.',
+            'rental_period:integer'              => 'Dados inválidos.',
+        ];
+
+
+        // Criar o validador com os dados e regras fornecidas
+        $validation = $validator->make($data, $rules);
+
+        //Definir as mensagens de erro personalizadas
+        $validation->setMessages($messages);
+
+        // Validar dados
+        $validation->validate();
+
+        // Retornar os erros se houver
+        if ($validation->fails()) {
+
+            // Recuperar os erros
+            $arrayErrors = $validation->errors();
+
+            // Percorre o array de erros
+            // firstofAll - obter a primeira mensagem de erro para cada campo validado.
+            foreach ($arrayErrors->firstOfAll() as $key => $message) {
+                $errors[$key] = $message;
+            }
+        }
+
+        return $errors;
+    }
+}

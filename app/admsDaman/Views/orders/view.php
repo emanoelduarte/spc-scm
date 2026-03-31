@@ -94,6 +94,7 @@
                 <table class="table table-striped mb-0">
                     <thead class="table-dark">
                         <tr>
+                            <th>Item</th>
                             <th>Descrição</th>
                             <th>Unidade</th>
                             <?php if ($order_name_type == 'LOCAÇÃO'): ?>
@@ -108,8 +109,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($this->data['items'] as $item): ?>
+                        <?php 
+                        // Iniciar a variável contadora
+                        $qtd_items = 0;
+                        foreach ($this->data['items'] as $item): 
+                        ?>
                             <tr>
+                                <td><?= $qtd_items += 1?></td>
                                 <td><?= $item['description'] ?></td>
                                 <td><?= $item['unit'] ?></td>
 
@@ -118,9 +124,20 @@
                                     <td><?= $item['returned_quantity'] ?></td>
                                 <?php else: ?>
                                     <td><?= $item['quantity'] ?></td>
-                                    <td><?= $item['purchased_quantity'] ?></td>
+                                    <td>
+                                        <?php
+
+                                        $purchased_quantity = $item['purchased_quantity'] ?? '0';
+                                        echo number_format($unit_price, 2, '.', ','); 
+
+                                        ?>
+                                    </td>
                                 <?php endif; ?>
-                                <td><?= $item['unit_price'] ?></td>
+                                <td><?php
+                                    $unit_price = $item['unit_price'] ?? '0.00';
+                                    echo "R$ " . number_format($unit_price, 2, ',', '.');
+                                    ?>
+                                </td>
 
                                 <?php if ($order_name_type == 'LOCAÇÃO'): ?>
                                     <td>
@@ -128,7 +145,7 @@
                                     </td>
                                 <?php else: ?>
                                     <td>
-                                    R$ <?= number_format($item['purchased_quantity'] * $item['unit_price'], 2, ',', '.') ?>
+                                        R$ <?= number_format($item['purchased_quantity'] * $item['unit_price'], 2, ',', '.') ?>
                                     </td>
                                 <?php endif; ?>
                             </tr>
@@ -138,6 +155,6 @@
             </div>
         </div>
     <?php else : ?>
-            <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
+        <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
     <?php endif ?>
 </div>

@@ -1,5 +1,5 @@
 <?php
-    
+
 namespace App\admsDaman\Models\Repository;
 
 use App\admsDaman\Helpers\GenerateLog;
@@ -48,7 +48,7 @@ class OrdersRepository extends DbConnection
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-     /**
+    /**
      * Recuperar a quantidade total de pedidos para paginação.
      *
      * Este método retorna a quantidade total de pedidos na tabela `adms_daman_orders`, útil para a paginação.
@@ -96,22 +96,143 @@ class OrdersRepository extends DbConnection
                 INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
                 INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
                 WHERE ado.id = :id';
-            
+
             $stmt_order = $this->getConnection()->prepare($order);
             $stmt_order->bindValue(':id', $idPedido, PDO::PARAM_INT);
 
             $stmt_order->execute();
 
             return $stmt_order->fetch(PDO::FETCH_ASSOC);
-
-        }catch(Exception $err) {
+        } catch (Exception $err) {
             GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $idPedido]);
             die("Pedido não encontrado " . $err->getMessage());
         }
         return false;
     }
 
-    public function getItems(int $idPedido): array|bool {
+    /** Método para criar pedido 
+     * 
+     */
+    public function createOrder(array $data): bool|int
+    {
+        // Usar try e catch para gerenciar exceção/erro
+        try { // Permanece no try se não houver nenhum erro
+
+
+            if ($data['adms_daman_order_types_id'] == 1) {
+                // QUERY cadastrar pedido Compra
+                $sql = 'INSERT INTO adms_daman_orders 
+                    (adms_daman_order_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_order_status_id, created_at) 
+
+                    VALUES (:adms_daman_order_types_id, :adms_daman_category_id, :adms_daman_user_id, :adms_daman_project_id, :service, :expected_receipt_date, 
+                    :observation, :adms_daman_order_status_id, :created_at)';
+
+                // Preparar a QUERY
+                $stmt = $this->getConnection()->prepare($sql);
+
+                // Substituir os links da QUERY pelo valor
+                $stmt->bindValue(':adms_daman_order_types_id', $data['adms_daman_order_types_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
+                $stmt->bindValue(':expected_receipt_date', $data['expected_receipt_date']);
+                $stmt->bindValue(':observation', $data['observation'], PDO::PARAM_STR);
+                $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
+                $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+            } else {
+                // QUERY cadastrar pedido Locação
+                $sql = 'INSERT INTO adms_daman_orders 
+                    (adms_daman_order_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_order_status_id, created_at, rental_period) 
+
+                    VALUES (:adms_daman_order_types_id, :adms_daman_category_id, :adms_daman_user_id, :adms_daman_project_id, :service, :expected_receipt_date, 
+                    :observation, :adms_daman_order_status_id, :created_at, :rental_period)';
+
+                // Preparar a QUERY
+                $stmt = $this->getConnection()->prepare($sql);
+
+                // Substituir os links da QUERY pelo valor
+                $stmt->bindValue(':adms_daman_order_types_id', $data['adms_daman_order_types_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
+                $stmt->bindValue(':expected_receipt_date', $data['expected_receipt_date']);
+                $stmt->bindValue(':observation', $data['observation'], PDO::PARAM_STR);
+                $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
+                $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+                $stmt->bindValue(':rental_period', $data['rental_period'], PDO::PARAM_INT);
+            }
+
+            // Executar a QUERY
+            $result = $stmt->execute();
+
+            // Retornar o ID do pedido recém cadastrado
+
+            if ($result) {
+                // 2. PEGA O ID AQUI (imediatamente após o insert do pedido)
+                $orderId = $this->getConnection()->lastInsertId();
+
+                // Chama o método para cadastar os itens
+                $this->createItems($data, $orderId);
+            }
+
+            // retorna o ultimo id inserido de pedido
+            return $orderId;
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Pedido não cadastrado.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    public function createItems(array $data, int $orderId): bool|int
+    {
+        // Usar try e catch para gerenciar exceção/erro
+        try { // Permanece no try se não houver nenhum erro
+
+            $descriptions = $data['description'];
+            $quantities   = $data['quantity'];
+            $units        = $data['unit'];
+
+            foreach ($descriptions as $index => $desc) {
+                $quantity = $quantities[$index];
+                $unit     = $units[$index];
+                // salvar no banco
+
+                // QUERY cadastrar pedido Compra
+                $sql = 'INSERT INTO adms_daman_order_items 
+                    (adms_daman_order_id, description, unit, quantity, adms_daman_order_status_id, created_at) 
+                    VALUES (:adms_daman_order_id, :description, :unit, :quantity, :adms_daman_order_status_id, :created_at)';
+
+                // Preparar a QUERY
+                $stmt = $this->getConnection()->prepare($sql);
+
+                // Substituir os links da QUERY pelo valor
+                $stmt->bindValue(':adms_daman_order_id', $orderId, PDO::PARAM_INT);
+                $stmt->bindValue(':description', $desc, PDO::PARAM_STR);
+                $stmt->bindValue(':unit', $unit, PDO::PARAM_STR);
+                $stmt->bindValue(':quantity', $quantity);
+                $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
+                $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+                $stmt->execute();
+            }
+            // Executar a QUERY
+            return true;
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Itens não cadastrados.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    public function getItems(int $idPedido): array|bool
+    {
 
         // Consultar Itens de Compra
         $items = 'SELECT adoi.description, adoi.unit, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_order_status_id
@@ -131,4 +252,3 @@ class OrdersRepository extends DbConnection
         return $itemsData;
     }
 }
-?>

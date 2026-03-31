@@ -215,4 +215,26 @@ class ProjectsRepository extends DbConnection
             return false;
         }
     }
+
+    /**
+     * Recuperar uma obra específica
+     * 
+     * @return array|bool Obra recuperada do banco de dados
+     */
+    public function getAllProjectsSelect(): array|bool
+    {
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name 
+                FROM adms_daman_projects
+                ORDER BY id ASC';
+
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a QUERY
+        $stmt->execute();
+
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

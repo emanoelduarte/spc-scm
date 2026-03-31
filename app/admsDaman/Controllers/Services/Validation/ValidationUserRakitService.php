@@ -61,7 +61,12 @@ class ValidationUserRakitService
             'username:min'              => 'O usuário deve ter no mínimo 8 caracters.',
             'username:regex'            => 'O nome de usuário não pode ter espaço em branco.',
             'username:uniqueInColumns'  => 'Já existe um registro com este usuário de acesso.',
-            'confirm_password:same'     => 'As senhas precisam concidir',
+            'password:required'         => 'O campo senha é obrigatório.',
+            'password:min'              => 'O senha precisa ter no mínimo 6 caracters.',
+            'password:regex'            => 'O senha precisa ter no mínimo uma letra maiúscula e um caractere especial.',
+            'confirm_password:required' => 'O campo confirmar senha é obrigatório.',
+            'confirm_password:same'     => 'As senhas precisam concidir.',
+
         ];
 
          // Criar o validador com os dados e regras fornecidas
