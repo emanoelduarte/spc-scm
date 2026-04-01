@@ -35,23 +35,23 @@ class ValidationOrderService
         // Definir as regras de validação
         $rules = [];
 
-        if(isset($data['adms_daman_order_types_id']) && $data['adms_daman_order_types_id'] == 1){
+        if(isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 1 || $data['adms_daman_order_types_id'] == '')){
             $rules['adms_daman_order_types_id'] = 'required|integer';
             $rules['adms_daman_category_id'] = 'required|integer';
             $rules['adms_daman_project_id'] = 'required|integer';
             $rules['service'] = 'required';
-            $rules['expected_receipt_date'] = 'required|date';
+            $rules['expected_receipt_date'] = 'required';
             $rules['observation'] = 'required';
         } else {
             $rules['adms_daman_order_types_id'] = 'required|integer';
             $rules['adms_daman_category_id'] = 'required|integer';
             $rules['adms_daman_project_id'] = 'required|integer';
             $rules['service'] = 'required';
-            $rules['expected_receipt_date'] = 'required|date';
+            $rules['expected_receipt_date'] = 'required';
             $rules['observation'] = 'required';
             $rules['rental_period'] = 'required|integer';
         }
-
+        
         // Definir mensagens personalizadas
         $messages = [
             'adms_daman_order_types_id:required' => 'Tipo de pedido não pode ser vazio.',
@@ -62,7 +62,6 @@ class ValidationOrderService
             'adms_daman_project_id:integer'      => 'Dados inválidos.',
             'service:required'                   => 'Serviço não pode ser vazio.',
             'expected_receipt_date:required'     => 'Previsão de recebimento não pode ser vazio.',
-            'expected_receipt_date:date'         => 'Selecione uma data válida',
             'observation:required'               => 'Por favor, indique alguma observação para este pedido.',
             'rental_period:required'             => 'Por favor, indique o periodo de locação dos equipamentos.',
             'rental_period:integer'              => 'Dados inválidos.',

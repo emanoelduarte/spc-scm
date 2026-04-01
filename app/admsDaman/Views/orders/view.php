@@ -23,6 +23,8 @@
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
                 <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+
+                <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
                 </td>
             </span>
         </div>
@@ -32,10 +34,6 @@
             <?php
             // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
-
-            // var_dump($this->data['order']);
-            // var_dump($this->data['items']);
-            // exit;
 
             if (isset($this->data['order'])):
                 extract($this->data['order']);
@@ -106,16 +104,17 @@
                             <?php endif ?>
                             <th>Preço Unit.</th>
                             <th>Total</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php 
+                        <?php
                         // Iniciar a variável contadora
                         $qtd_items = 0;
-                        foreach ($this->data['items'] as $item): 
+                        foreach ($this->data['items'] as $item):
                         ?>
                             <tr>
-                                <td><?= $qtd_items += 1?></td>
+                                <td><?= $qtd_items += 1 ?></td>
                                 <td><?= $item['description'] ?></td>
                                 <td><?= $item['unit'] ?></td>
 
@@ -128,7 +127,7 @@
                                         <?php
 
                                         $purchased_quantity = $item['purchased_quantity'] ?? '0';
-                                        echo number_format($unit_price, 2, '.', ','); 
+                                        echo number_format($unit_price, 2, '.', ',');
 
                                         ?>
                                     </td>
@@ -148,6 +147,10 @@
                                         R$ <?= number_format($item['purchased_quantity'] * $item['unit_price'], 2, ',', '.') ?>
                                     </td>
                                 <?php endif; ?>
+                                <td>
+                                    <?= $item['item_status_name'] ?? ''; ?>
+
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

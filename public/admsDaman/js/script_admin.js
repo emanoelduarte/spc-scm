@@ -42,25 +42,30 @@ document.getElementById("adms_daman_order_types_id").addEventListener("change", 
 /**
  * Função para adicionar e remover itens de um novo pedido
  */
+// pega quantidade inicial de itens já renderizados (edição ou retorno com erro)
+let itemIndex = document.querySelectorAll('.item-group').length;
 
 document.getElementById('add-item').addEventListener('click', function () {
+
     const container = document.getElementById('items-container');
+
+    const index = itemIndex++; // garante índice único
 
     const newItem = document.createElement('div');
     newItem.classList.add('row', 'g-1', 'item-group', 'mb-2');
 
     newItem.innerHTML = `
         <div class="col-lg-6 col-md-6 col-sm-12">
-            <input type="text" name="description[]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
+            <input type="text" name="items[${index}][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
         </div>
 
         <div class="col-lg-3 col-md-3 col-sm-12">
-            <input type="text" name="quantity[]" class="form-control" placeholder="Qtd">
+            <input type="text" name="items[${index}][quantity]" class="form-control" placeholder="Qtd">
         </div>
 
         <div class="col-lg-3 col-md-3 col-sm-12">
             <div class="d-flex">
-                <input type="text" name="unit[]" class="form-control me-2" placeholder="Un">
+                <input type="text" name="items[${index}][unit]" class="form-control me-2" placeholder="Un">
                 <button type="button" class="btn btn-danger btn-remove">-</button>
             </div>
         </div>

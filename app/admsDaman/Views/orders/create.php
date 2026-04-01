@@ -103,7 +103,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <label for="adms_daman_order_types_id" class="form-label">Tipo do pedido</label>
 
                     <select class="form-select" id="adms_daman_order_types_id" name="adms_daman_order_types_id">
-                        <option selected>Selecione a tipo</option>
+                        <option value="" selected>Selecione a tipo</option>
                         <option value="1" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 1 ? 'selected' : ''; ?>>COMPRA</option>
                         <option value="2" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 2 ? 'selected' : ''; ?>>LOCAÇÃO</option>
                     </select>
@@ -133,28 +133,71 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                 <hr>
 
-                <div id="items-container" class="row g-3 ">
-                    <div class="row g-1 item-group mb-2 mt-n1">
+                <div id="items-container" class="row g-3">
+
+                    <?php
+                    $items = $this->data['form']['items'] ?? [];
+
+                    if (!empty($items)):
+                        foreach ($items as $index => $item):
+                    ?>
+
+                            <div class="row g-1 item-group mb-2 mt-n1">
+
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <input type="text" class="form-control"
+                                        name="items[<?= $index ?>][description]"
+                                        value="<?= $item['description'] ?? ''; ?>"
+                                        placeholder="Descrição completa...">
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-12">
+                                    <input type="text" class="form-control"
+                                        name="items[<?= $index ?>][quantity]"
+                                        value="<?= $item['quantity'] ?? ''; ?>"
+                                        placeholder="Qtd">
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-12">
+                                    <div class="d-flex">
+                                        <input type="text" class="form-control me-2"
+                                            name="items[<?= $index ?>][unit]"
+                                            value="<?= $item['unit'] ?? ''; ?>"
+                                            placeholder="Un">
+
+                                        <button type="button" class="btn btn-danger btn-remove">-</button>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         <?php
-                        // Percorre o array form até encontrar o elemento 'description', existindo ele continua a executar para mostrar ao menos um campo inicial, para o usuário.
-                        foreach ($this->data['form']['description'] as $key => $desc):
+                        endforeach;
+                    else:
                         ?>
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <input type="text" class="form-control desabled" id="description" name="description[]" value="<?= $this->data['form']['description'][$key] ?? '';  ?>" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
+
+                        <!-- MOSTRA UM CAMPO VAZIO INICIAL -->
+                        <div class="row g-1 item-group mb-2 mt-n1">
+
+                            <div class="col-lg-6">
+                                <input type="text" name="items[0][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-12">
-                                <input type="text" class="form-control desabled" id="quantity" name="quantity[]" value="<?= $this->data['form']['quantity'][$key] ?? '';  ?>" placeholder="Qtd">
+                            <div class="col-lg-3">
+                                <input type="text" name="items[0][quantity]" class="form-control" placeholder="Qtd">
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-12">
+                            <div class="col-lg-3">
                                 <div class="d-flex">
-                                    <input type="text" class="form-control desabled" id="unit" name="unit[]" value="<?= $this->data['form']['unit'][$key] ?? '';  ?>" placeholder="Un">
-                                    <button type="button" class="btn btn-danger ms-2 btn-remove">-</button>
+                                    <input type="text" name="items[0][unit]" class="form-control me-2" placeholder="Un">
+                                    <button type="button" class="btn btn-danger btn-remove">-</button>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+
+                        </div>
+
+                    <?php endif; ?>
+
                 </div>
 
                 <div class="col-lg-12 col-md-12 col-sm-12 text-end">

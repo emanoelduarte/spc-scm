@@ -32,37 +32,50 @@ class ValidationOrderItemnsService
 
         // Definir as regras de validação
         $validation = $validator->make($data, [
-            'description.*'              => 'required',
-            'quantity.*'              => 'required',
-            'unit.*'              => 'required',
+            'items.*.description' => 'required',
+            'items.*.quantity'    => 'required',
+            'items.*.unit'        => 'required',
         ]);
 
         // Setar mensagens
         $validation->setMessages([
-            'description.*:required' => 'O Campo descrição é obrigatório',
-            'quantity.*:required' => 'O Campo quantidade é obrigatório',
-            'unit.*:required' => 'O campo unidade é obrigatório',
+            'items.*.description:required' => 'O Campo descrição é obrigatório',
+            'items.*.quantity:required'    => 'O Campo quantidade é obrigatório',
+            'items.*.unit:required'        => 'O campo unidade é obrigatório',
         ]);
 
         // Validar dados
         $validation->validate();
 
         // Retornar os erros se houver
+        $errors = [];
+
         if ($validation->fails()) {
 
-            // Recuperar os erros
-            $arrayErrors = $validation->errors();
+            $arrayErrors = $validation->errors()->toArray();
 
-            // Percorre o array de erros
-            // firstofAll - obter a primeira mensagem de erro para cada campo validado.
-            foreach ($arrayErrors->firstOfAll() as $key => $message) {
+            foreach ($arrayErrors as $field => $items) {
 
-                if (is_array($message)) {
-                    $errors[] = $message[0]; // pega a primeira mensagem
+                // Se for array (ex: items)
+                if (is_array($items)) {
+
+                    foreach ($items as $item) {
+
+                        if (is_array($item)) {
+
+                            foreach ($item as $message) {
+                                $errors[] = $message;
+                            }
+                        } else {
+                            $errors[] = $item;
+                        }
+                    }
                 } else {
-                    $errors[] = $message;
+                    $errors[] = $items;
                 }
             }
+             // remove duplicados
+        $errors = array_values(array_unique($errors));
         }
 
         return $errors;
