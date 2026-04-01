@@ -32,10 +32,6 @@ use App\admsDaman\Helpers\CSRFHelper;
 
             $expected_receipt_date = ($this->data['form']['expected_receipt_date'] ? date('d/m/Y H:i:s', strtotime($this->data['form']['expected_receipt_date'])) : "");
 
-
-            // var_dump($this->data['form']);
-            // // exit;
-            // var_dump($this->data['items']);
             ?>
 
             <form action="" method="POST" class="row g-3">
