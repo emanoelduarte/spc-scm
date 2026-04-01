@@ -24,7 +24,8 @@ final class AdmsDamanOrderItems extends AbstractMigration
                 ->addColumn('description', 'string', ['null' => false])
 
                 // Unidade (ex: UN, M, KG)
-                ->addColumn('unit', 'string', ['limit' => 20, 'null' => true])
+                ->addColumn('adms_daman_measurement_units_id', 'integer', ['null' => false, 'signed' => false])
+                ->addForeignKey('adms_daman_measurement_units_id', 'adms_daman_measurement_units', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
 
                 /*
                  |========================

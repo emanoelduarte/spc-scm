@@ -19,7 +19,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
             [
                 'adms_daman_order_id' => 1,
                 'description' => 'Cabo elétrico 2.5mm',
-                'unit' => 'M',
+                'adms_daman_measurement_units_id' => 1,
                 'quantity' => 100,
                 'purchased_quantity' => 100,
                 'unit_price' => 3.50,
@@ -37,7 +37,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
             [
                 'adms_daman_order_id' => 1,
                 'description' => 'Tomada dupla 10A',
-                'unit' => 'UN',
+                'adms_daman_measurement_units_id' => 3,
                 'quantity' => 20,
                 'purchased_quantity' => 20,
                 'unit_price' => 12.90,
@@ -61,7 +61,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
             [
                 'adms_daman_order_id' => 2,
                 'description' => 'Andaime metálico',
-                'unit' => 'UN',
+                'adms_daman_measurement_units_id' => 13,
                 'quantity' => null,
 
                 // compra (NULL)
@@ -81,7 +81,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
             [
                 'adms_daman_order_id' => 2,
                 'description' => 'Betoneira 400L',
-                'unit' => 'UN',
+                'adms_daman_measurement_units_id' => 13,
                 'quantity' => null,
 
                 // compra (NULL)

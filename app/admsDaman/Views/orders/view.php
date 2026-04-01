@@ -116,7 +116,7 @@
                             <tr>
                                 <td><?= $qtd_items += 1 ?></td>
                                 <td><?= $item['description'] ?></td>
-                                <td><?= $item['unit'] ?></td>
+                                <td><?= $item['measurement_units'] ?></td>
 
                                 <?php if ($order_name_type == 'LOCAÇÃO'): ?>
                                     <td><?= $item['rented_quantity'] ?></td>

@@ -89,6 +89,9 @@ class UpdateOrder
         $getProjectSelect = new CategoriesRepository();
         $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
+        // Instanciar o repositório para preencher os selects.
+        $getMeasurementUnits = new OrdersRepository();
+        $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
 
         // Definir o título da pedido
         $this->data['title_head'] = "Editar Pedido";

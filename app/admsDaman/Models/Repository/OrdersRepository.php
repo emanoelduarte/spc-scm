@@ -110,6 +110,31 @@ class OrdersRepository extends DbConnection
         return false;
     }
 
+    /**
+     * Método para buscar os itens do pedido
+     */
+    public function getItems(int $idPedido): array|bool
+    {
+
+        // Consultar Itens de Compra
+        $items = 'SELECT adoi.id AS item_id, adoi.description, adoi.adms_daman_measurement_units_id, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_order_status_id, ados.name AS item_status_name, admu.name AS measurement_units
+                
+            FROM adms_daman_order_items AS adoi
+            INNER JOIN adms_daman_order_status AS ados ON ados.id=adoi.adms_daman_order_status_id
+            INNER JOIN adms_daman_measurement_units AS admu ON admu.id=adoi.adms_daman_measurement_units_id
+            WHERE adoi.adms_daman_order_id = :id';
+
+        $stmt_items = $this->getConnection()->prepare($items);
+
+        $stmt_items->bindValue(':id', $idPedido, PDO::PARAM_INT);
+
+        $stmt_items->execute();
+
+        $itemsData = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
+
+        return $itemsData;
+    }
+
     /** Método para criar pedido 
      * 
      */
@@ -134,7 +159,7 @@ class OrdersRepository extends DbConnection
 
                 // Incluir campo de periodo de locação caso seja do tipo locação
                 if ($data['adms_daman_order_types_id'] == 2) {
-                    $sql .= ', :rental_period)';
+                    $sql .= ', :rental_period';
                 }
                 $sql .= ')';
 
@@ -160,8 +185,6 @@ class OrdersRepository extends DbConnection
 
             // Executar a QUERY
             $result = $stmt->execute();
-
-            // Retornar o ID do pedido recém cadastrado
 
             if ($result) {
                 // 2. PEGA O ID AQUI (imediatamente após o insert do pedido)
@@ -196,14 +219,14 @@ class OrdersRepository extends DbConnection
                 if (!$item['item_id']) { // Se não vier Id ele cadastra um novo item
                     $description = $item['description'] ?? null;
                     $quantity    = $item['quantity'] ?? null;
-                    $unit        = $item['unit'] ?? null;
+                    $adms_daman_measurement_units_id        = $item['adms_daman_measurement_units_id'] ?? null;
 
                     // salvar no banco
 
                     // QUERY cadastrar pedido
                     $sql = 'INSERT INTO adms_daman_order_items 
-                    (adms_daman_order_id, description, unit, quantity, adms_daman_order_status_id, created_at) 
-                    VALUES (:adms_daman_order_id, :description, :unit, :quantity, :adms_daman_order_status_id, :created_at)';
+                    (adms_daman_order_id, description, adms_daman_measurement_units_id, quantity, adms_daman_order_status_id, created_at) 
+                    VALUES (:adms_daman_order_id, :description, :adms_daman_measurement_units_id, :quantity, :adms_daman_order_status_id, :created_at)';
 
                     // Preparar a QUERY
                     $stmt = $this->getConnection()->prepare($sql);
@@ -211,7 +234,7 @@ class OrdersRepository extends DbConnection
                     // Substituir os links da QUERY pelo valor
                     $stmt->bindValue(':adms_daman_order_id', $orderId, PDO::PARAM_INT);
                     $stmt->bindValue(':description', $description, PDO::PARAM_STR);
-                    $stmt->bindValue(':unit', $unit, PDO::PARAM_STR);
+                    $stmt->bindValue(':adms_daman_measurement_units_id', $adms_daman_measurement_units_id, PDO::PARAM_INT);
                     $stmt->bindValue(':quantity', $quantity);
                     $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
                     $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
@@ -299,7 +322,7 @@ class OrdersRepository extends DbConnection
                 if (!empty($item['item_id'])) {
 
                     // QUERY para atualizar pacote
-                    $sql = 'UPDATE adms_daman_order_items SET description = :description, unit = :unit, quantity = :quantity, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
+                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, quantity = :quantity, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
 
                     // Incluir campo de periodo de locação caso seja do tipo locação
                     if ($data['adms_daman_order_types_id'] == 2) {
@@ -313,7 +336,7 @@ class OrdersRepository extends DbConnection
 
                     // Substituir os links da QUERY pelo valor
                     $stmt->bindValue(':description', $item['description'], PDO::PARAM_STR);
-                    $stmt->bindValue(':unit', $item['unit'], PDO::PARAM_STR);
+                    $stmt->bindValue(':adms_daman_measurement_units_id', $item['adms_daman_measurement_units_id'], PDO::PARAM_INT);
                     $stmt->bindValue(':quantity', (float) $item['quantity']);
                     $stmt->bindValue(':purchased_quantity', (float) $item['purchased_quantity']);
                     $stmt->bindValue(':unit_price', (float)$item['unit_price']);
@@ -360,31 +383,33 @@ class OrdersRepository extends DbConnection
 
 
 
-    public function getItems(int $idPedido): array|bool
+    /**
+     * Recuperar uma Unidade de medida específica
+     * 
+     * @return array|bool Unidade de medida recuperada do banco de dados
+     */
+    public function getAllMeasurementUnitsSelect(): array|bool
     {
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name 
+                FROM adms_daman_measurement_units
+                ORDER BY id ASC';
 
-        // Consultar Itens de Compra
-        $items = 'SELECT adoi.id AS item_id, adoi.description, adoi.unit, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_order_status_id, ados.name AS item_status_name 
-                
-            FROM adms_daman_order_items AS adoi
-            INNER JOIN adms_daman_order_status AS ados ON ados.id=adoi.adms_daman_order_status_id
-            WHERE adoi.adms_daman_order_id = :id';
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
 
-        $stmt_items = $this->getConnection()->prepare($items);
+        // Executar a QUERY
+        $stmt->execute();
 
-        $stmt_items->bindValue(':id', $idPedido, PDO::PARAM_INT);
-
-        $stmt_items->execute();
-
-        $itemsData = $stmt_items->fetchAll(PDO::FETCH_ASSOC);
-
-        return $itemsData;
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     /**
-     * Recuperar uma Categoria específica
+     * Recuperar uma Status específico
      * 
-     * @return array|bool Categoria recuperada do banco de dados
+     * @return array|bool Status recuperado do banco de dados
      */
     public function getAllStatusSelect(): array|bool
     {

@@ -34,14 +34,14 @@ class ValidationOrderItemnsService
         $validation = $validator->make($data, [
             'items.*.description' => 'required',
             'items.*.quantity'    => 'required',
-            'items.*.unit'        => 'required',
+            'items.*.adms_daman_measurement_units_id'        => 'required',
         ]);
 
         // Setar mensagens
         $validation->setMessages([
             'items.*.description:required' => 'O Campo descrição é obrigatório',
             'items.*.quantity:required'    => 'O Campo quantidade é obrigatório',
-            'items.*.unit:required'        => 'O campo unidade é obrigatório',
+            'items.*.adms_daman_measurement_units_id:required'        => 'O campo unidade é obrigatório',
         ]);
 
         // Validar dados

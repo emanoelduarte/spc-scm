@@ -27,56 +27,184 @@ function showLoading() {
 
 }
 
-/** Mostrar ou esconder periodo de locação conforme escolha do usuário */
-document.getElementById("adms_daman_order_types_id").addEventListener("change", function () {
-    var valor = this.value;
-    var campo = document.getElementById("locationPeriod");
+const div = document.querySelector('.adms_daman_order_types_id');
+const selectField = document.getElementById('locationPeriod');
 
-    if (valor == "2") { // 2 = locação
-        campo.classList.remove("d-none");
+div.addEventListener('change', function () {
+    if (this.value == 2) { // 2 = locação
+        selectField.style.display = 'block';
     } else {
-        campo.classList.add("d-none");
+        selectField.style.display = 'none';
     }
 });
 
 /**
- * Função para adicionar e remover itens de um novo pedido
+ * Incluir a opção do select de unidades dinamicamente
  */
-// pega quantidade inicial de itens já renderizados (edição ou retorno com erro)
-let itemIndex = document.querySelectorAll('.item-group').length;
 
-document.getElementById('add-item').addEventListener('click', function () {
+// Espera o DOM carregar (IMPORTANTE)
+document.addEventListener('DOMContentLoaded', () => {
 
-    const container = document.getElementById('items-container');
+    // Pega o elemento
+    const el = document.getElementById('units-data');
 
-    const index = itemIndex++; // garante índice único
+    const oldItems = el.dataset.oldItems ? JSON.parse(el.dataset.oldItems) : [];
 
-    const newItem = document.createElement('div');
-    newItem.classList.add('row', 'g-1', 'item-group', 'mb-2');
+    console.log(el); // agora NÃO pode ser null
 
-    newItem.innerHTML = `
-        <div class="col-lg-6 col-md-6 col-sm-12">
-            <input type="text" name="items[${index}][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
-        </div>
+    // Inicializa array
+    let units = [];
 
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <input type="text" name="items[${index}][quantity]" class="form-control" placeholder="Qtd">
-        </div>
-
-        <div class="col-lg-3 col-md-3 col-sm-12">
-            <div class="d-flex">
-                <input type="text" name="items[${index}][unit]" class="form-control me-2" placeholder="Un">
-                <button type="button" class="btn btn-danger btn-remove">-</button>
-            </div>
-        </div>
-    `;
-
-    container.appendChild(newItem);
-});
-
-// Remover item
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('btn-remove')) {
-        e.target.closest('.item-group').remove();
+    // Converte JSON → objeto JS
+    if (el) {
+        units = JSON.parse(el.dataset.units);
     }
+
+    function createUnitOptions(selectedValue = null) {
+        let options = `<option value="">Selecione</option>`;
+
+        units.forEach(unit => {
+            let selected = (unit.id == selectedValue) ? 'selected' : '';
+            options += `<option value="${unit.id}" ${selected}>${unit.name}</option>`;
+        });
+
+        return options;
+    }
+
+    /**
+     * Função para adicionar e remover itens
+     */
+
+    let itemIndex = document.querySelectorAll('.item-group').length;
+
+    const addBtn = document.getElementById('add-item');
+
+    if (addBtn) {
+        addBtn.addEventListener('click', function () {
+
+            const container = document.getElementById('items-container');
+
+            const index = itemIndex++;
+
+            const newItem = document.createElement('div');
+            newItem.classList.add('row', 'g-1', 'item-group', 'mb-2');
+
+            const selectedUnit = oldItems[index]?.adms_daman_measurement_units_id ?? '';
+
+            newItem.innerHTML = `
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <input type="text" name="items[${index}][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                    <input type="text" name="items[${index}][quantity]" class="form-control" placeholder="Qtd.">
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                    <div class="d-flex">
+                        <select name="items[${index}][adms_daman_measurement_units_id]" class="form-select me-2">
+                            ${createUnitOptions(selectedUnit)}
+                        </select>
+                        <button type="button" class="btn btn-danger btn-remove">-</button>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(newItem);
+        });
+    }
+
+    /**
+     * Remover item (delegação de evento)
+     */
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btn-remove')) {
+            e.target.closest('.item-group').remove();
+        }
+    });
+
 });
+
+/**
+ * Incluir a opção do select de unidades dinamicamente
+ */
+
+// Espera o DOM carregar (IMPORTANTE)
+// document.addEventListener('DOMContentLoaded', () => {
+
+//     // Pega o elemento
+//     const el = document.getElementById('units-data');
+
+//     console.log(el); // agora NÃO pode ser null
+
+//     // Inicializa array
+//     let units = [];
+
+//     // Converte JSON → objeto JS
+//     if (el) {
+//         units = JSON.parse(el.dataset.units);
+//     }
+
+//     function createUnitOptions(selectedValue = null) {
+//         let options = `<option value="">Selecione</option>`;
+
+//         units.forEach(unit => {
+//             let selected = (unit.id == selectedValue) ? 'selected' : '';
+//             options += `<option value="${unit.id}" ${selected}>${unit.name}</option>`;
+//         });
+
+//         return options;
+//     }
+
+//     /**
+//      * Função para adicionar e remover itens
+//      */
+
+//     let itemIndex = document.querySelectorAll('.item-group').length;
+
+//     const addBtn = document.getElementById('add-item');
+
+//     if (addBtn) {
+//         addBtn.addEventListener('click', function () {
+
+//             const container = document.getElementById('items-container');
+
+//             const index = itemIndex++;
+
+//             const newItem = document.createElement('div');
+//             newItem.classList.add('row', 'g-1', 'item-group', 'mb-2');
+
+//             newItem.innerHTML = `
+//                 <div class="col-lg-6 col-md-6 col-sm-12">
+//                     <input type="text" name="items[${index}][description]" class="form-control"
+//                         placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
+//                 </div>
+
+//                 <div class="col-lg-3 col-md-3 col-sm-12">
+//                     <input type="text" name="items[${index}][quantity]" class="form-control" placeholder="Qtd">
+//                 </div>
+
+//                 <div class="col-lg-3 col-md-3 col-sm-12">
+//                     <div class="d-flex">
+//                         <select name="items[${index}][unit]" class="form-select me-2">
+//                             ${createUnitOptions()}
+//                         </select>
+//                         <button type="button" class="btn btn-danger btn-remove">-</button>
+//                     </div>
+//                 </div>
+//             `;
+
+//             container.appendChild(newItem);
+//         });
+//     }
+
+//     /**
+//      * Remover item (delegação de evento)
+//      */
+//     document.addEventListener('click', function (e) {
+//         if (e.target.classList.contains('btn-remove')) {
+//             e.target.closest('.item-group').remove();
+//         }
+//     });
+
+// });

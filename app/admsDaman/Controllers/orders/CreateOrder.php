@@ -70,6 +70,10 @@ class CreateOrder
         $getProjectSelect = new CategoriesRepository();
         $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
+        // Instanciar o repositório para preencher os selects.
+        $getMeasurementUnits = new OrdersRepository();
+        $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
+
         // Criar o título da página
         $this->data['title_head'] = "Cadastrar Pedido";
 
@@ -80,7 +84,7 @@ class CreateOrder
         if (empty($this->data['form']['description'])) {
             $this->data['form']['description'] = [''];
             $this->data['form']['quantity']    = [''];
-            $this->data['form']['unit']        = [''];
+            $this->data['form']['adms_daman_measurement_units_id']        = [''];
         }
 
         // Carregar a VIEW

@@ -27,6 +27,7 @@ use App\admsDaman\Helpers\CSRFHelper;
         </div>
         <div class="card-body">
             <?php
+            // var_dump($this->data);
             // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
 
@@ -103,22 +104,22 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <label for="adms_daman_order_types_id" class="form-label">Tipo do pedido</label>
 
-                    <select class="form-select" id="adms_daman_order_types_id" name="adms_daman_order_types_id">
+                    <select class="form-select adms_daman_order_types_id" id="adms_daman_order_types_id" name="adms_daman_order_types_id">
                         <option selected>Selecione a tipo</option>
                         <option value="1" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 1 ? 'selected' : ''; ?>>COMPRA</option>
                         <option value="2" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 2 ? 'selected' : ''; ?>>LOCAÇÃO</option>
                     </select>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-12 d-none" id="locationPeriod">
+                <div class="col-lg-3 col-md-6 col-sm-12" id="locationPeriod" style="display: <?= ($this->data['form']['order_name_type'] == 'LOCAÇÃO') ? 'block' : 'none' ?>;">
                     <label for="rental_period" class="form-label">Período de Locação</label>
 
                     <select class="form-select" id="rental_period" name="rental_period">
                         <option selected value="">Selecione o período</option>
                         <option value="1" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>DIÁRIA</option>
-                        <option value="7" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>7 DIAS</option>
-                        <option value="15" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>15 DIAS</option>
-                        <option value="30" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>30 DIAS</option>
+                        <option value="7" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 7 ? 'selected' : ''; ?>>7 DIAS</option>
+                        <option value="15" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 15 ? 'selected' : ''; ?>>15 DIAS</option>
+                        <option value="30" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 30 ? 'selected' : ''; ?>>30 DIAS</option>
                     </select>
                 </div>
 
@@ -165,7 +166,29 @@ use App\admsDaman\Helpers\CSRFHelper;
                                     <?php if ($index === 0): ?>
                                         <label class="fw-bold">Un</label>
                                     <?php endif; ?>
-                                    <input type="text" class="form-control desabled" id="unit" name="items[<?= $index ?>][unit]" value="<?= $item['unit'] ?? '';  ?>" placeholder="Un">
+                                    <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select" id="adms_daman_measurement_units_id">
+                                        <option value="" selected>Selecione</option>
+
+                                        <?php
+                                        // Verificar se existe Status
+                                        if ($this->data['getAllMeasurementUnitsSelect'] ?? false) {
+
+                                            // Percorrer array de status
+                                            foreach ($this->data['getAllMeasurementUnitsSelect'] as $status) {
+
+                                                // Verificar se deve manter selecionada a opção
+                                                $statusSelecionado =
+                                                    $this->data['form']['items'][$index]['adms_daman_measurement_units_id']
+                                                    ?? $item['adms_daman_measurement_units_id']
+                                                    ?? null;
+
+                                                $selected = ($statusSelecionado == $status['id']) ? 'selected' : '';
+
+                                                echo "<option value='" . htmlspecialchars($status['id']) . "' $selected>" . htmlspecialchars($status['name']) . "</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
 
                                 <div class="col-lg-1 col-md-12 col-sm-12">
@@ -202,7 +225,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                                                     ?? $item['adms_daman_order_status_id']
                                                     ?? null;
 
-                                                 $selected = ($statusSelecionado == $status['id']) ? 'selected' : '';
+                                                $selected = ($statusSelecionado == $status['id']) ? 'selected' : '';
 
                                                 echo "<option value='" . htmlspecialchars($status['id']) . "' $selected>" . htmlspecialchars($status['name']) . "</option>";
                                             }
@@ -228,6 +251,16 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                     <?php endif; // finalização do if do array de itens  
                     ?>
+                    </div>
+
+                    <?php // Inlcuir resultados das unidade de medida do banco de dados para o js 
+                    ?>
+                    <div id="units-data"
+                        data-units='<?= json_encode($this->data['getAllMeasurementUnitsSelect']) ?>'>
+                    </div>
+                    <div id="items-data"
+                        data-items='<?= json_encode($this->data['items'] ?? []) ?>'
+                        data-old-items='<?= json_encode($this->data['form']['items'] ?? []) ?>'>
                     </div>
 
                     <div class="col-lg-12 col-md-12 col-sm-12 text-end">
