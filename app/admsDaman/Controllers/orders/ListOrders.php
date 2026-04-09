@@ -19,12 +19,24 @@ class ListOrders
     
     public function index(string|int $page = 1) : void 
     {
+        $orderNumber = filter_input(INPUT_POST, 'order_number', FILTER_SANITIZE_NUMBER_INT);
+
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listOrders = new OrdersRepository();
 
-       $this->data['orders'] = $listOrders->getAllOrders((int) $page, (int) $this->limitResult);
+       $this->data['orders'] = $listOrders->getAllOrders(
+        (int) $page, 
+        (int) $this->limitResult, 
+        $orderNumber
+        );
 
-       $this->data['pagination'] = PaginationService::generatePagination((int) $listOrders->getAmountOrders(), (int) $this->limitResult, (int) $page, 'list-orders');
+       $this->data['pagination'] = PaginationService::generatePagination(
+        (int) $listOrders->getAmountOrders(), 
+        (int) $this->limitResult, 
+        (int) $page, 
+        'list-orders');
+
+        $this->data['order_number'] = $orderNumber;
 
        // Criar o título da página
         $this->data['title_head'] = "Pedidos";

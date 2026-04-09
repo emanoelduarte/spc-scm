@@ -18,24 +18,39 @@ class OrdersRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de pedidos recuperados do banco de dados.
      */
-    public function getAllOrders(int $page = 1, int $limitResult = 10)
+    public function getAllOrders(int $page = 1, int $limitResult = 10, ?string $orderNumber = null)
     {
 
         // Calcular o registro inicial de cada página exemplo:
         // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
         $offset = max(0, ($page - 1) * $limitResult);
 
+        $conditions = [];
+        $params = [];
+
+        if (!empty($orderNumber)) {
+            $conditions[] = "ado.id = :order_number"; // 👈 filtro por ID
+            $params['order_number'] = $orderNumber;
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
         // QUERY para recuperar os registros do banco de dados
-        $sql = 'SELECT  ado.id AS pedido_id, ado.adms_daman_order_types_id, ado.adms_daman_project_id, ado.adms_daman_order_status_id, ado.created_at,
-                adp.name AS project_name, ados.name AS status_name
-                FROM adms_daman_orders AS ado
-                INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
-                INNER JOIN adms_daman_order_status AS ados ON ados.id=adms_daman_order_status_id
-                ORDER BY pedido_id DESC
-                LIMIT :limit OFFSET :offset';
+        $sql = "SELECT ado.id AS pedido_id, ado.adms_daman_order_types_id, ado.adms_daman_project_id, ado.adms_daman_order_status_id, ado.created_at,
+            adp.name AS project_name, ados.name AS status_name
+            FROM adms_daman_orders AS ado
+            INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
+            INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
+            {$where}
+            ORDER BY pedido_id DESC
+            LIMIT :limit OFFSET :offset";
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+        }
 
         // Substituir o link da QUERY pelo valor
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
@@ -55,16 +70,28 @@ class OrdersRepository extends DbConnection
      *
      * @return int Quantidade total de pedidos encontrados no banco de dados.
      */
-    public function getAmountOrders(): int|bool
+    public function getAmountOrders(?string $orderNumber = null): int
     {
-        // Criar Query para recuperar todos os registros no banco de dados
-        $sql = 'SELECT COUNT(id) AS amount_records
-        FROM adms_daman_orders';
+        $conditions = [];
+        $params = [];
 
-        // Preparar a Query
+        if (!empty($orderNumber)) {
+            $conditions[] = "id = :order_number";
+            $params['order_number'] = $orderNumber;
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+        $sql = "SELECT COUNT(id) AS amount_records
+            FROM adms_daman_orders
+            {$where}";
+
         $stmt = $this->getConnection()->prepare($sql);
 
-        // Executar a query
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+        }
+
         $stmt->execute();
 
         return ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);
@@ -147,14 +174,14 @@ class OrdersRepository extends DbConnection
             if ($data['adms_daman_order_types_id']) {
                 // QUERY cadastrar pedido Compra
                 $sql = 'INSERT INTO adms_daman_orders 
-                    (adms_daman_order_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_order_status_id, created_at'; 
+                    (adms_daman_order_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_order_status_id, created_at';
 
-                    // Incluir campo de periodo de locação caso seja do tipo locação
-                    if ($data['adms_daman_order_types_id'] == 2) {
-                        $sql .= ', rental_period';
-                    }
+                // Incluir campo de periodo de locação caso seja do tipo locação
+                if ($data['adms_daman_order_types_id'] == 2) {
+                    $sql .= ', rental_period';
+                }
 
-                    $sql .= ') VALUES (:adms_daman_order_types_id, :adms_daman_category_id, :adms_daman_user_id, :adms_daman_project_id, :service, :expected_receipt_date, 
+                $sql .= ') VALUES (:adms_daman_order_types_id, :adms_daman_category_id, :adms_daman_user_id, :adms_daman_project_id, :service, :expected_receipt_date, 
                     :observation, :adms_daman_order_status_id, :created_at';
 
                 // Incluir campo de periodo de locação caso seja do tipo locação
@@ -259,7 +286,7 @@ class OrdersRepository extends DbConnection
     {
         try {
 
-            // QUERY para atualizar pacote
+            // QUERY para atualizar PEDIDO
             $sql = 'UPDATE adms_daman_orders SET adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
 
             // Incluir campo de periodo de locação caso seja do tipo locação
@@ -327,7 +354,7 @@ class OrdersRepository extends DbConnection
                 // Se tem ID significa que precisa fazer o update UPDATE
                 if (!empty($item['item_id'])) {
 
-                    // QUERY para atualizar pacote
+                    // QUERY para atualizar pedido
                     $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
 
                     // Incluir campo de periodo de locação caso seja do tipo locação

@@ -21,6 +21,27 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 
     <div class="card mb-4 border-light shadow">
         <div class="card-header hstack gap-2">
+            <span>Filtrar</span>
+        </div>
+
+        <div class="card-body">
+            <?php // Campo para pesquisar pedido por numero 
+            ?>
+            <form action="" method="POST" class="row g-3">
+                <div class="col-lg-2 col-md-12 col-sm-12">
+                    <input type="text" class="form-control desabled" id="order_number" name="order_number" value="<?= $order_number ?? '' ?>" placeholder="Número do pedido">
+                </div>
+
+                <div class="col-lg-2 col-md-12 col-sm-12">
+                    <button type="submit" class="btn btn-success">Filtrar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="card mb-4 border-light shadow">
+        <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
                 <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
