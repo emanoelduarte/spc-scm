@@ -24,7 +24,15 @@
             <span class="ms-sm-auto d-sm-flex flex-row">
                 <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                <?php if (($order) and ($order['adms_daman_order_types_id'] == 1)): ?>
+
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+
+                <?php else: ?>
+
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+
+                <?php endif; ?>
                 </td>
             </span>
         </div>
@@ -127,7 +135,7 @@
                                         <?php
 
                                         $purchased_quantity = $item['purchased_quantity'] ?? '0';
-                                        echo number_format($unit_price, 2, '.', ',');
+                                        echo number_format($purchased_quantity, 2, '.', ',');
 
                                         ?>
                                     </td>

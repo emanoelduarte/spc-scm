@@ -21,7 +21,6 @@ class ListOrders
     {
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listOrders = new OrdersRepository();
-        $listOrders->getAllOrders();
 
        $this->data['orders'] = $listOrders->getAllOrders((int) $page, (int) $this->limitResult);
 

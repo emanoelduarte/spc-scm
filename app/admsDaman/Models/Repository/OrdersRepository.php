@@ -312,6 +312,12 @@ class OrdersRepository extends DbConnection
         }
     }
 
+    /**
+     * Função específica para edição de Itens
+     * 
+     * Esta função recebe um array de dados que usa para identificar qual o tipo de ordem, para editar os campos específicos de cada ordem, ou seja se for do tipo locação vai editar na tabela itens o que é usado para locação.
+     * @return bool
+     */
     public function updateItems(array $data): bool
     {
         try {
@@ -322,7 +328,7 @@ class OrdersRepository extends DbConnection
                 if (!empty($item['item_id'])) {
 
                     // QUERY para atualizar pacote
-                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, quantity = :quantity, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
+                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
 
                     // Incluir campo de periodo de locação caso seja do tipo locação
                     if ($data['adms_daman_order_types_id'] == 2) {
@@ -337,7 +343,6 @@ class OrdersRepository extends DbConnection
                     // Substituir os links da QUERY pelo valor
                     $stmt->bindValue(':description', $item['description'], PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $item['adms_daman_measurement_units_id'], PDO::PARAM_INT);
-                    $stmt->bindValue(':quantity', (float) $item['quantity']);
                     $stmt->bindValue(':purchased_quantity', (float) $item['purchased_quantity']);
                     $stmt->bindValue(':unit_price', (float)$item['unit_price']);
                     $stmt->bindValue(':adms_daman_order_status_id', $item['adms_daman_order_status_id'], PDO::PARAM_INT);
@@ -356,7 +361,7 @@ class OrdersRepository extends DbConnection
                 }
             }
 
-            $this->createItems($data, $data['id']); // chama a função para cadastrar noso itens
+            $this->createItems($data, $data['id']); // chama a função para cadastrar novos itens
 
             // Verificar o número de linhas afetadas
             if ($stmt->rowCount() > 0) {
@@ -376,12 +381,49 @@ class OrdersRepository extends DbConnection
         }
     }
 
+    /**
+     * Deletar um pedido pelo ID.
+     *
+     * Este método remove um pedido específico da tabela `adms_daman_orders' caso de erro, um log é gerado.
+     *
+     * @param int $id ID do pedido a ser deletado.
+     * @return bool `true` se o pedido foi deletado com sucesso ou `false` em caso de erro.
+     */
+    public function deleteOrder(int $id): bool
+    {
+        // Usar o try e catch para gerenciar exceção/erro
+        try {
 
+            // Query para deletar o pedido
+            $sql = 'DELETE FROM adms_daman_orders  WHERE id = :id LIMIT 1';
 
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
 
+            // Substiruir os links pelo valor
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
+            // Executar a Query
+            $stmt->execute();
 
+            // Verificar o número de linhas afetadas
+            $affectedRows = $stmt->rowCount();
 
+            if ($affectedRows > 0) {
+                return true;
+            } else {
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Pedido não apagado.", ['id' => $id]);
+                return false;
+            }
+        } catch (Exception $e) {
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Pedido não apagado.", ['id' => $id, 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
 
     /**
      * Recuperar uma Unidade de medida específica
@@ -393,7 +435,7 @@ class OrdersRepository extends DbConnection
         // QUERY para recuperar os registros do banco de dados
         $sql = 'SELECT id, name 
                 FROM adms_daman_measurement_units
-                ORDER BY id ASC';
+                ORDER BY name ASC';
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);

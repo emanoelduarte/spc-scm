@@ -31,21 +31,32 @@ class ValidationOrderItemnsService
         $validator = new Validator();
 
         // Definir as regras de validação
-        $validation = $validator->make($data, [
-            'items.*.description' => 'required',
-            'items.*.quantity'    => 'required',
-            'items.*.adms_daman_measurement_units_id'        => 'required',
-        ]);
+        $rules = [];
 
-        // Setar mensagens
-        $validation->setMessages([
+        if(isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 1 || $data['adms_daman_order_types_id'] == '')){
+            $rules['items.*.description'] = 'required';
+            $rules['items.*.purchased_quantity'] = 'required';
+            $rules['items.*.adms_daman_measurement_units_id'] = 'required';
+        } else {
+            $rules['items.*.description'] = 'required';
+            $rules['items.*.purchased_quantity'] = 'required';
+            $rules['items.*.adms_daman_measurement_units_id'] = 'required';
+            $rules['items.*.rented_quantity'] = 'required';
+            $rules['items.*.returned_quantity'] = 'required';
+        }
+
+         // Definir mensagens personalizadas
+        $messages = [
             'items.*.description:required' => 'O Campo descrição é obrigatório',
             'items.*.quantity:required'    => 'O Campo quantidade é obrigatório',
             'items.*.adms_daman_measurement_units_id:required'        => 'O campo unidade é obrigatório',
-        ]);
+        ];
 
-        // Validar dados
-        $validation->validate();
+        // Criar o validador com os dados e regras fornecidas
+        $validation = $validator->make($data, $rules);
+
+        //Definir as mensagens de erro personalizadas
+        $validation->setMessages($messages);
 
         // Retornar os erros se houver
         $errors = [];

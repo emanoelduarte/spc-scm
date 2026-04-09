@@ -106,7 +106,7 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                     <input type="hidden" name="adms_daman_order_types_id" value="<?=  $this->data['form']['adms_daman_order_types_id'] ?? '' ?>">
 
-                    <select class="form-select adms_daman_order_types_id" id="adms_daman_order_types_id" name="adms_daman_order_types_id" disabled>
+                    <select class="form-select adms_daman_order_types_id" id="adms_daman_order_types_id_visibled" name="adms_daman_order_types_id_visibled" disabled>
                         <option selected>Selecione a tipo</option>
                         <option value="1" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 1 ? 'selected' : ''; ?>>COMPRA</option>
                         <option value="2" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 2 ? 'selected' : ''; ?>>LOCAÇÃO</option>
@@ -148,7 +148,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                         foreach ($this->data['items'] as $index => $item):
                         ?>
                             <div class="row g-1 item-group mb-2 mt-n1">
-                                <div class="col-lg-6 col-md-12 col-sm-12">
+                                <div class="col-lg-5 col-md-12 col-sm-12">
                                     <?php if ($index === 0): ?>
                                         <label class="fw-bold">Descrição</label>
                                     <?php endif; ?>
@@ -195,9 +195,16 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                                 <div class="col-lg-1 col-md-12 col-sm-12">
                                     <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Qtd Comprada</label>
+                                        <label class="fw-bold">Locado</label>
                                     <?php endif; ?>
-                                    <input type="text" class="form-control desabled" id="purchased_quantity" name="items[<?= $index ?>][purchased_quantity]" value="<?= $item['purchased_quantity'] ?? '';  ?>" placeholder="Qtd Comprada">
+                                    <input type="text" class="form-control desabled" id="rented_quantity" name="items[<?= $index ?>][rented_quantity]" value="<?= $item['rented_quantity'] ?? '';  ?>" placeholder="Qtd Locada">
+                                </div>
+
+                                <div class="col-lg-1 col-md-12 col-sm-12">
+                                    <?php if ($index === 0): ?>
+                                        <label class="fw-bold">Devolvido</label>
+                                    <?php endif; ?>
+                                    <input type="text" class="form-control desabled" id="returned_quantity" name="items[<?= $index ?>][returned_quantity]" value="<?= $item['returned_quantity'] ?? '';  ?>" placeholder="Qtd Locada">
                                 </div>
 
                                 <div class="col-lg-1 col-md-12 col-sm-12">
