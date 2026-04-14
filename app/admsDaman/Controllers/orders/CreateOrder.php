@@ -63,8 +63,8 @@ class CreateOrder
     private function viewOrder(): void
     {
         // Instanciar o repositório para preencher os selects.
-        $getProjectSelect = new ProjectsRepository();
-        $this->data['getAllProjectsSelect'] = $getProjectSelect->getAllProjectsSelect();
+        $getAllProjectsSelectActive = new ProjectsRepository();
+        $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
 
         // Instanciar o repositório para preencher os selects.
         $getProjectSelect = new CategoriesRepository();
@@ -115,6 +115,9 @@ class CreateOrder
 
             return;
         }
+
+        // var_dump($this->data['form']['items']);
+        // exit;
 
         // Instaciar a classe que valida os dados do formulário de itens do pedido com Rakit
         $validationItemns = new ValidationOrderItemnsService();

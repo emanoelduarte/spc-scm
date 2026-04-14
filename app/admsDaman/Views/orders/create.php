@@ -41,12 +41,12 @@ use App\admsDaman\Helpers\CSRFHelper;
             <form action="" method="POST" class="row g-3">
                 <input type="hidden" name="csrf_token" value="<?php echo CSRFHelper::generateCSRFToken('form_create_order'); ?>" id="">
 
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-2 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Prev. Recebimento </label>
                     <input type="date" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $this->data['form']['expected_receipt_date'] ?? ''; ?>" placeholder="Id do usuário">
                 </div>
 
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-10 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Solicitante:</label>
                     <input type="text" disabled class="form-control desabled" id="solicitante" name="solicitante" value="<?= $_SESSION['user_name'] ?? '';  ?>" placeholder="Nome do Usuário">
                     <input type="hidden" class="form-control" id="adms_daman_user_id" name="adms_daman_user_id" value="<?= $_SESSION['user_id'] ?? ''; ?>" placeholder="Id do usuário">
@@ -60,11 +60,11 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                         <?php
                         // Verificar se existe pacotes
-                        if ($this->data['getAllProjectsSelect'] ?? false) {
+                        if ($this->data['getAllProjectsSelectActive'] ?? false) {
 
                             // Percorrer array de pacotes
-                            foreach ($this->data['getAllProjectsSelect'] as $getAllProjectsSelect) {
-                                extract($getAllProjectsSelect);
+                            foreach ($this->data['getAllProjectsSelectActive'] as $getAllProjectsSelectActive) {
+                                extract($getAllProjectsSelectActive);
 
                                 // Verificar se deve manter selecionada a opção
                                 $selected = isset($this->data['form']['adms_daman_project_id']) && $this->data['form']['adms_daman_project_id'] == $id ? 'selected' : '';
@@ -110,7 +110,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                    <div class="col-lg-3 col-md-6 col-sm-12" id="locationPeriod" style="display: <?= ($this->data['form']['order_name_type'] == 'LOCAÇÃO') ? 'block' : 'none' ?>;">
+                    <div class="col-lg-3 col-md-6 col-sm-12" id="locationPeriod" style="display: <?= (isset($this->data['form']['order_name_type']) == 'LOCAÇÃO') ? 'block' : 'none' ?>;">
                         <label for="rental_period" class="form-label">Período de Locação</label>
 
                         <select class="form-select" id="rental_period" name="rental_period">
@@ -185,8 +185,12 @@ use App\admsDaman\Helpers\CSRFHelper;
                                             }
                                             ?>
                                         </select>
-
-                                        <button type="button" class="btn btn-danger btn-remove">-</button>
+                                        <?php  // Verifica pelo indíce se existe mais de uma linha de item para aplicar o botão de remover
+                                        if($index == 0) :?>
+                                            <button type="button" class="btn btn-danger btn-remove d-none">-</button>
+                                        <?php else :?>
+                                            <button type="button" class="btn btn-danger btn-remove">-</button>
+                                        <?php endif;?>
                                     </div>
                                 </div>
 

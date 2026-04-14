@@ -23,7 +23,6 @@ class ValidationOrderItemnsService
      */
     public function validate(array $data): array
     {
-
         // Criar o array que deve receber as mensagens de erro
         $errors = [];
 
@@ -33,62 +32,55 @@ class ValidationOrderItemnsService
         // Definir as regras de validação
         $rules = [];
 
-        if(isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 1 || $data['adms_daman_order_types_id'] == '')){
-            $rules['items.*.description'] = 'required';
-            $rules['items.*.purchased_quantity'] = 'required';
-            $rules['items.*.adms_daman_measurement_units_id'] = 'required';
-        } else {
-            $rules['items.*.description'] = 'required';
-            $rules['items.*.purchased_quantity'] = 'required';
-            $rules['items.*.adms_daman_measurement_units_id'] = 'required';
-            $rules['items.*.rented_quantity'] = 'required';
-            $rules['items.*.returned_quantity'] = 'required';
+        $rules['description'] = 'required';
+        $rules['adms_daman_measurement_units_id'] = 'required';
+
+        if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 1)) {
+
+            $rules['purchased_quantity'] = 'required';
+
+        } else if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 2)) {
+
+            $rules['rented_quantity'] = 'required';
+
+        } else { // Para cadastro de um novo
+
+            $rules['quantity'] = 'required';
         }
 
-         // Definir mensagens personalizadas
+        // Definir mensagens personalizadas
         $messages = [
-            'items.*.description:required' => 'O Campo descrição é obrigatório',
-            'items.*.quantity:required'    => 'O Campo quantidade é obrigatório',
-            'items.*.adms_daman_measurement_units_id:required'        => 'O campo unidade é obrigatório',
+            'description:required' => 'O Campo descrição é obrigatório',
+
+            'quantity:required' => 'O Campo quantidade é obrigatório',
+            'purchased_quantity:required' => 'O Campo quantidade comprada é obrigatório',
+            'rented_quantity:required' => 'O Campo quantidade locada é obrigatório',
+
+            'adms_daman_measurement_units_id:required' => 'O campo unidade é obrigatório',
         ];
 
-        // Criar o validador com os dados e regras fornecidas
-        $validation = $validator->make($data, $rules);
-
-        //Definir as mensagens de erro personalizadas
-        $validation->setMessages($messages);
-
-        // Retornar os erros se houver
         $errors = [];
 
-        if ($validation->fails()) {
+        if (!empty($data['items'])) {
 
-            $arrayErrors = $validation->errors()->toArray();
+            foreach ($data['items'] as $index => $item) {
 
-            foreach ($arrayErrors as $field => $items) {
+                $validation = $validator->make($item, $rules);
+                $validation->setMessages($messages);
+                $validation->validate();
 
-                // Se for array (ex: items)
-                if (is_array($items)) {
+                if ($validation->fails()) {
+                    $arrayErrors = $validation->errors();
 
-                    foreach ($items as $item) {
-
-                        if (is_array($item)) {
-
-                            foreach ($item as $message) {
-                                $errors[] = $message;
-                            }
-                        } else {
-                            $errors[] = $item;
-                        }
+                    foreach ($arrayErrors->firstOfAll() as $key => $message) {
+                        // Ex: items.0.quantity
+                        $errors["items.$index.$key"] = $message;
                     }
-                } else {
-                    $errors[] = $items;
                 }
             }
-             // remove duplicados
-        $errors = array_values(array_unique($errors));
         }
 
+        $errors = array_values(array_unique($errors));
         return $errors;
     }
 }

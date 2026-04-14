@@ -27,7 +27,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         <div class="card-body">
             <?php // Campo para pesquisar pedido por numero 
             ?>
-            <form action="" method="POST" class="row g-3">
+            <!-- <form action="" method="POST" class="row g-3">
                 <div class="col-lg-2 col-md-12 col-sm-12">
                     <input type="text" class="form-control desabled" id="order_number" name="order_number" value="<?= $order_number ?? '' ?>" placeholder="Número do pedido">
                 </div>
@@ -35,7 +35,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                 <div class="col-lg-2 col-md-12 col-sm-12">
                     <button type="submit" class="btn btn-success">Filtrar</button>
                 </div>
-            </form>
+            </form> -->
+
+            <div class="d-flex justify-content-end">
+                <button id="openFilter" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-filter"></i> Filtros
+                </button>
+            </div>
 
         </div>
     </div>
@@ -122,4 +128,61 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             ?>
         </div>
     </div>
+</div>
+
+<!-- Overlay -->
+<div id="overlay"></div>
+
+<!-- Sidebar de Filtro -->
+<div id="filterSidebar">
+    <h5>Filtrar Pedidos</h5>
+
+    <form id="filterForm">
+
+        <div class="mb-2">
+            <label class="mt-4">Nº Pedido</label>
+            <input type="text" name="pedido" class="form-control">
+        </div>
+
+        <div class="mb-2">
+            <label>Obra</label>
+            <input type="text" name="obra" class="form-control">
+        </div>
+
+        <div class="mb-2">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="">Todos</option>
+                <option value="ANALISE">Análise</option>
+                <option value="COMPRADO">Comprado</option>
+                <option value="ENTREGUE">Entregue</option>
+                <option value="CANCELADO">Cancelado</option>
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Solicitante</label>
+            <input type="text" name="solicitante" class="form-control">
+        </div>
+
+        <div class="mb-2">
+            <label>Categoria</label>
+            <input type="text" name="categoria" class="form-control">
+        </div>
+
+        <div class="mb-2">
+            <label>Data Inicial</label>
+            <input type="date" name="data_inicio" class="form-control">
+        </div>
+
+        <div class="mb-2">
+            <label>Data Final</label>
+            <input type="date" name="data_fim" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 mt-3">
+            Filtrar
+        </button>
+
+    </form>
 </div>

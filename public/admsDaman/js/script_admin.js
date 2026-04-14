@@ -30,13 +30,15 @@ function showLoading() {
 const div = document.querySelector('.adms_daman_order_types_id');
 const selectField = document.getElementById('locationPeriod');
 
-div.addEventListener('change', function () {
-    if (this.value == 2) { // 2 = locação
-        selectField.style.display = 'block';
-    } else {
-        selectField.style.display = 'none';
-    }
-});
+if (div) {
+    div.addEventListener('change', function () {
+        if (this.value == 2) {
+            selectField.style.display = 'block';
+        } else {
+            selectField.style.display = 'none';
+        }
+    });
+}
 
 /**
  * Incluir a opção do select de unidades dinamicamente
@@ -46,19 +48,21 @@ div.addEventListener('change', function () {
 document.addEventListener('DOMContentLoaded', () => {
 
     // Pega o elemento
-    const el = document.getElementById('units-data');
+    const unitsEl = document.getElementById('units-data');
+    const itemsEl = document.getElementById('items-data');
 
-    const oldItems = el.dataset.oldItems ? JSON.parse(el.dataset.oldItems) : [];
-
-    console.log(el); // agora NÃO pode ser null
-
+    if (!unitsEl) {
+        console.warn('Elemento #units-data não encontrado');
+        return;
+    }
     // Inicializa array
-    let units = [];
+    let units = JSON.parse(unitsEl.dataset.units || '[]');
 
     // Converte JSON → objeto JS
-    if (el) {
-        units = JSON.parse(el.dataset.units);
-    }
+    const oldItems = itemsEl?.dataset.oldItems
+        ? JSON.parse(itemsEl.dataset.oldItems)
+        : [];
+
 
     function createUnitOptions(selectedValue = null) {
         let options = `<option value="">Selecione</option>`;
@@ -92,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedUnit = oldItems[index]?.adms_daman_measurement_units_id ?? '';
 
             newItem.innerHTML = `
+
+                <input type="hidden" name="items[${index}][item_id]" value="">
+                
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <input type="text" name="items[${index}][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
                 </div>
@@ -118,22 +125,42 @@ document.addEventListener('DOMContentLoaded', () => {
      * Remover item (delegação de evento)
      */
     document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('btn-remove')) {
+        if (e.target.closest('.btn-remove')) {
             e.target.closest('.item-group').remove();
         }
     });
 
 });
 
-/**
- * Incluir a opção do select de unidades dinamicamente
- */
+// Abrir e fechar o Overlay de filtros
+const openBtn = document.getElementById('openFilter');
+const sidebar = document.getElementById('filterSidebar');
+const overlay = document.getElementById('overlay');
 
-// Espera o DOM carregar (IMPORTANTE)
+openBtn.addEventListener('click', () => {
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+});
+
+overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+});
+
+// // Espera o DOM carregar (IMPORTANTE)
 // document.addEventListener('DOMContentLoaded', () => {
 
 //     // Pega o elemento
 //     const el = document.getElementById('units-data');
+
+//     if (!el) {
+//         console.warn('Elemento #units-data não encontrado');
+//         return;
+//     }
+
+//     const oldItems = el.dataset.oldItems
+//         ? JSON.parse(el.dataset.oldItems)
+//         : [];
 
 //     console.log(el); // agora NÃO pode ser null
 
@@ -155,56 +182,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //         return options;
 //     }
-
-//     /**
-//      * Função para adicionar e remover itens
-//      */
-
-//     let itemIndex = document.querySelectorAll('.item-group').length;
-
-//     const addBtn = document.getElementById('add-item');
-
-//     if (addBtn) {
-//         addBtn.addEventListener('click', function () {
-
-//             const container = document.getElementById('items-container');
-
-//             const index = itemIndex++;
-
-//             const newItem = document.createElement('div');
-//             newItem.classList.add('row', 'g-1', 'item-group', 'mb-2');
-
-//             newItem.innerHTML = `
-//                 <div class="col-lg-6 col-md-6 col-sm-12">
-//                     <input type="text" name="items[${index}][description]" class="form-control"
-//                         placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
-//                 </div>
-
-//                 <div class="col-lg-3 col-md-3 col-sm-12">
-//                     <input type="text" name="items[${index}][quantity]" class="form-control" placeholder="Qtd">
-//                 </div>
-
-//                 <div class="col-lg-3 col-md-3 col-sm-12">
-//                     <div class="d-flex">
-//                         <select name="items[${index}][unit]" class="form-select me-2">
-//                             ${createUnitOptions()}
-//                         </select>
-//                         <button type="button" class="btn btn-danger btn-remove">-</button>
-//                     </div>
-//                 </div>
-//             `;
-
-//             container.appendChild(newItem);
-//         });
-//     }
-
-//     /**
-//      * Remover item (delegação de evento)
-//      */
-//     document.addEventListener('click', function (e) {
-//         if (e.target.classList.contains('btn-remove')) {
-//             e.target.closest('.item-group').remove();
-//         }
-//     });
-
-// });

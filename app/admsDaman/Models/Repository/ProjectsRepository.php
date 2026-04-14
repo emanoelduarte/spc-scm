@@ -237,4 +237,30 @@ class ProjectsRepository extends DbConnection
         // Ler os registros e retornar 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Recuperar uma obra específica Ativa
+     * 
+     * @return array|bool Obra recuperada do banco de dados
+     */
+    public function getAllProjectsSelectActive(): array|bool
+    {
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name, status 
+                FROM adms_daman_projects
+                WHERE status = :status
+                ORDER BY id ASC';
+
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Substituir Links por valor
+        $stmt->bindValue(':status', 1, PDO::PARAM_INT);
+
+        // Executar a QUERY
+        $stmt->execute();
+
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

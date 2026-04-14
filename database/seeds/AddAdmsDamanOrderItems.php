@@ -62,7 +62,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'adms_daman_order_id' => 2,
                 'description' => 'Andaime metálico',
                 'adms_daman_measurement_units_id' => 13,
-                'quantity' => null,
+                'quantity' => 13,
 
                 // compra (NULL)
                 'purchased_quantity' => null,
@@ -82,7 +82,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'adms_daman_order_id' => 2,
                 'description' => 'Betoneira 400L',
                 'adms_daman_measurement_units_id' => 13,
-                'quantity' => null,
+                'quantity' => 2,
 
                 // compra (NULL)
                 'purchased_quantity' => null,

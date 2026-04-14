@@ -1,3 +1,12 @@
+<?php
+
+use App\admsDaman\Helpers\CSRFHelper;
+
+// Gerar o token CSRF para validar o usuário
+$csrf_token_item = CSRFHelper::generateCSRFToken('form_delete_item');
+$csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
+
+?>
 <div class="container-fluid px-4">
 
     <div class="mb-1 d-flex flex-column flex-sm-row gap-2">
@@ -16,7 +25,7 @@
             <li class="breadcrumb-item active" aria-current="page">Visualizar</li>
             </li>
         </ol>
-    </div>
+</div>
 
     <div class="card mb-4 border-light shadow">
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
@@ -24,7 +33,7 @@
             <span class="ms-sm-auto d-sm-flex flex-row">
                 <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
 
-                <?php if (($order) and ($order['adms_daman_order_types_id'] == 1)): ?>
+                <?php if (isset($this->data['order']) and ($this->data['order']['adms_daman_order_types_id'] == 1)): ?>
 
                     <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
 
@@ -33,6 +42,17 @@
                     <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
 
                 <?php endif; ?>
+
+                <?php  // Formulário para envio dos dados para deletar Pedido ?>
+                <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
+
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+
+                    <input type="hidden" name="id" id="id" value="<?= ($this->data['order']['id'] ?? ''); ?>">
+
+                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= ($this->data['order']['id'] ?? '') ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+
+                </form>
                 </td>
             </span>
         </div>
@@ -113,6 +133,7 @@
                             <th>Preço Unit.</th>
                             <th>Total</th>
                             <th>Status</th>
+                            <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,8 +148,22 @@
                                 <td><?= $item['measurement_units'] ?></td>
 
                                 <?php if ($order_name_type == 'LOCAÇÃO'): ?>
-                                    <td><?= $item['rented_quantity'] ?></td>
-                                    <td><?= $item['returned_quantity'] ?></td>
+                                    <td>
+                                        <?php
+
+                                        $rented_quantity = $item['rented_quantity'] ?? '0';
+                                        echo number_format($rented_quantity, 2, '.', ',');
+
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+
+                                        $returned_quantity = $item['returned_quantity'] ?? '0';
+                                        echo number_format($returned_quantity, 2, '.', ',');
+
+                                        ?>
+                                    </td>
                                 <?php else: ?>
                                     <td><?= $item['quantity'] ?></td>
                                     <td>
@@ -148,7 +183,7 @@
 
                                 <?php if ($order_name_type == 'LOCAÇÃO'): ?>
                                     <td>
-                                        R$ <?= number_format($item['rented_quantity'] * $item['unit_price'], 2, ',', '.') ?>
+                                        R$ <?= number_format($rented_quantity * $item['unit_price'], 2, ',', '.') ?>
                                     </td>
                                 <?php else: ?>
                                     <td>
@@ -157,6 +192,21 @@
                                 <?php endif; ?>
                                 <td>
                                     <?= $item['item_status_name'] ?? ''; ?>
+                                </td>
+                                <td>
+
+                                    <?php  // Formulário para envio dos dados para deletar Item do pedido ?>
+                                    <form id="formDelete<?= $item['item_id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-item" method="POST">
+
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token_item; ?>">
+
+                                        <input type="hidden" name="order_id" id="order_id" value="<?= $id ?? ''; ?>">
+
+                                        <input type="hidden" name="item_id" id="item_id" value="<?= $item['item_id'] ?? ''; ?>">
+
+                                        <button type="submit" class="btn btn-danger d-block btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $item['item_id']; ?>)"> <i class="fa-solid fa-trash"></i> Excluir</button>
+
+                                    </form>
 
                                 </td>
                             </tr>

@@ -2,6 +2,9 @@
 
 use App\admsDaman\Helpers\CSRFHelper;
 
+// Gerar o token CSRF para validar o usuário
+$csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
+
 ?>
 <div class="container-fluid px-4">
     <div class="mb-1 d-flex flex-column flex-sm-row gap-2">
@@ -41,13 +44,13 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <input type="hidden" class="form-control" id="id" name="id" value="<?= ($this->data['form']['id'] ?? ''); ?>">
 
 
-                <div class="col-lg-6 col-md-6 col-sm-12">
-                    <label for="solicitante" class="form-label">Prev. Recebimento </label>
+                <div class="col-lg-2 col-md-6 col-sm-12">
+                    <label for="expected_user_view" class="form-label">Prev. Recebimento </label>
                     <input type="text" disabled class="form-control" id="expected_user_view" name="expected_user_view" value="<?= $expected_receipt_date; ?>" placeholder="">
                     <input type="hidden" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $expected_receipt_date; ?>" placeholder="">
                 </div>
 
-                <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="col-lg-10 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Solicitante:</label>
                     <input type="text" disabled class="form-control desabled" id="solicitante" name="solicitante" value="<?= $_SESSION['user_name'] ?? '';  ?>" placeholder="Nome do Usuário">
                     <input type="hidden" class="form-control" id="adms_daman_user_id" name="adms_daman_user_id" value="<?= $_SESSION['user_id'] ?? ''; ?>" placeholder="Id do usuário">
@@ -104,24 +107,12 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <label for="adms_daman_order_types_id" class="form-label">Tipo do pedido</label>
 
-                    <input type="hidden" name="adms_daman_order_types_id" value="<?=  $this->data['form']['adms_daman_order_types_id'] ?? '' ?>">
+                    <input type="hidden" name="adms_daman_order_types_id" value="<?= $this->data['form']['adms_daman_order_types_id'] ?? '' ?>">
 
                     <select class="form-select adms_daman_order_types_id" id="adms_daman_order_types_id" name="adms_daman_order_types_id" disabled>
                         <option selected>Selecione a tipo</option>
                         <option value="1" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 1 ? 'selected' : ''; ?>>COMPRA</option>
                         <option value="2" <?= isset($this->data['form']['adms_daman_order_types_id']) && $this->data['form']['adms_daman_order_types_id'] == 2 ? 'selected' : ''; ?>>LOCAÇÃO</option>
-                    </select>
-                </div>
-
-                <div class="col-lg-3 col-md-6 col-sm-12" id="locationPeriod" style="display: <?= ($this->data['form']['order_name_type'] == 'LOCAÇÃO') ? 'block' : 'none' ?>;">
-                    <label for="rental_period" class="form-label">Período de Locação</label>
-
-                    <select class="form-select" id="rental_period" name="rental_period">
-                        <option selected value="">Selecione o período</option>
-                        <option value="1" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>DIÁRIA</option>
-                        <option value="7" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 7 ? 'selected' : ''; ?>>7 DIAS</option>
-                        <option value="15" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 15 ? 'selected' : ''; ?>>15 DIAS</option>
-                        <option value="30" <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 30 ? 'selected' : ''; ?>>30 DIAS</option>
                     </select>
                 </div>
 
@@ -139,115 +130,128 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                 <?php
 
+                // var_dump($this->data);
+                // exit;
+
                 // Se encontrar o array de itens exibir para edição:
-                if ($this->data['items'] ?? false): ?>
+                $items = $this->data['form']['items'] ?? $this->data['items'] ?? [];
+
+                if ($items): ?>
 
                     <div id="items-container" class="row g-3 ">
                         <?php
                         // Percorre o array form até encontrar o elemento 'description', existindo ele continua a executar para mostrar ao menos um campo inicial, para o usuário.
-                        foreach ($this->data['items'] as $index => $item):
+                        foreach ($items as $index => $item):
+
+                            $formItems = $this->data['form']['items'] ?? [];
+                            $dbItems   = $this->data['items'] ?? [];
+
+                            $item = $formItems[$index] ?? $dbItems[$index] ?? [];
+
+                            $isNew = $item['is_new'] ?? (!empty($item['item_id']) ? '0' : '1');
                         ?>
-                            <div class="row g-1 item-group mb-2 mt-n1">
-                                <div class="col-lg-6 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Descrição</label>
-                                    <?php endif; ?>
-                                    <input type="hidden" class="form-control desabled" id="item_id" name="items[<?= $index ?>][item_id]" value="<?= $item['item_id'] ?? '';  ?>">
 
-                                    <input type="text" class="form-control desabled" id="description" name="items[<?= $index ?>][description]" value="<?= $item['description'] ?? '';  ?>" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
-                                </div>
+                            <?php if ($isNew == '0'): ?>
+                                <!-- 🔴 ITEM DO BANCO (layout completo) -->
+                                <div class="row g-1 item-group mb-2 mt-n1">
 
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Qtd Pedida</label>
-                                    <?php endif; ?>
-                                    <input type="text" class="form-control desabled" id="quantity" name="items[<?= $index ?>][quantity]" value="<?= $item['quantity'] ?? '';  ?>" placeholder="Qtd" disabled>
-                                </div>
+                                    <input type="hidden" name="items[<?= $index ?>][is_new]" value="0">
+                                    <input type="hidden" name="items[<?= $index ?>][item_id]" value="<?= $item['item_id'] ?? '' ?>">
 
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Un</label>
-                                    <?php endif; ?>
-                                    <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select" id="adms_daman_measurement_units_id">
-                                        <option value="" selected>Selecione</option>
+                                    <div class="col-lg-6 col-md-12 col-sm-12">
+                                        <?php if ($index === 0): ?>
+                                            <label class="fw-bold">Descrição</label>
+                                        <?php endif; ?>
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][description]"
+                                            value="<?= $item['description'] ?? '' ?>">
+                                    </div>
 
-                                        <?php
-                                        // Verificar se existe Status
-                                        if ($this->data['getAllMeasurementUnitsSelect'] ?? false) {
+                                    <div class="col-lg-1">
+                                        <?php if ($index === 0): ?><label class="fw-bold">Qtd</label><?php endif; ?>
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][quantity]"
+                                            value="<?= $item['quantity'] ?? '' ?>" readonly >
+                                    </div>
 
-                                            // Percorrer array de status
-                                            foreach ($this->data['getAllMeasurementUnitsSelect'] as $status) {
+                                    <div class="col-lg-1">
+                                        <?php if ($index === 0): ?><label class="fw-bold">Un</label><?php endif; ?>
+                                        <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select">
+                                            <option value="">Selecione</option>
+                                            <?php foreach ($this->data['getAllMeasurementUnitsSelect'] as $unit):
+                                                $selected = ($item['adms_daman_measurement_units_id'] ?? '') == $unit['id'] ? 'selected' : '';
+                                            ?>
+                                                <option value="<?= $unit['id'] ?>" <?= $selected ?>><?= $unit['name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
 
-                                                // Verificar se deve manter selecionada a opção
-                                                $statusSelecionado =
-                                                    $this->data['form']['items'][$index]['adms_daman_measurement_units_id']
-                                                    ?? $item['adms_daman_measurement_units_id']
-                                                    ?? null;
+                                    <div class="col-lg-1">
+                                        <?php if ($index === 0): ?><label class="fw-bold">Comprado</label><?php endif; ?>
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][purchased_quantity]"
+                                            value="<?= $item['purchased_quantity'] ?? '' ?>">
+                                    </div>
 
-                                                $selected = ($statusSelecionado == $status['id']) ? 'selected' : '';
+                                    <div class="col-lg-1">
+                                        <?php if ($index === 0): ?><label class="fw-bold">Preço</label><?php endif; ?>
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][unit_price]"
+                                            value="<?= $item['unit_price'] ?? '' ?>">
+                                    </div>
 
-                                                echo "<option value='" . htmlspecialchars($status['id']) . "' $selected>" . htmlspecialchars($status['name']) . "</option>";
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Qtd Comprada</label>
-                                    <?php endif; ?>
-                                    <input type="text" class="form-control desabled" id="purchased_quantity" name="items[<?= $index ?>][purchased_quantity]" value="<?= $item['purchased_quantity'] ?? '';  ?>" placeholder="Qtd Comprada">
-                                </div>
-
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Preço Unit</label>
-                                    <?php endif; ?>
-                                    <input type="text" class="form-control desabled" id="unit_price" name="items[<?= $index ?>][unit_price]" value="<?= $item['unit_price'] ?? '';  ?>" placeholder="Preço Unitário">
-                                </div>
-
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold">Status</label>
-                                    <?php endif; ?>
-                                    <select name="items[<?= $index ?>][adms_daman_order_status_id]" class="form-select" id="adms_daman_order_status_id">
-                                        <option value="" selected>Selecione</option>
-
-                                        <?php
-                                        // Verificar se existe Status
-                                        if ($this->data['getAllStatusSelect'] ?? false) {
-
-                                            // Percorrer array de status
-                                            foreach ($this->data['getAllStatusSelect'] as $status) {
-
-                                                // Verificar se deve manter selecionada a opção
-                                                $statusSelecionado =
-                                                    $this->data['form']['items'][$index]['adms_daman_order_status_id']
-                                                    ?? $item['adms_daman_order_status_id']
-                                                    ?? null;
-
-                                                $selected = ($statusSelecionado == $status['id']) ? 'selected' : '';
-
-                                                echo "<option value='" . htmlspecialchars($status['id']) . "' $selected>" . htmlspecialchars($status['name']) . "</option>";
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="col-lg-1 col-md-12 col-sm-12">
-                                    <?php if ($index === 0): ?>
-                                        <label class="fw-bold d-block text-end">Ação</label>
-                                    <?php endif; ?>
-
-                                    <div class="d-flex justify-content-end">
-                                        <button class="btn btn-danger btn-sm">
-                                            <i class="fa-regular fa-trash-can"></i> Apagar
-                                        </button>
+                                    <div class="col-lg-2">
+                                        <?php if ($index === 0): ?><label class="fw-bold">Status</label><?php endif; ?>
+                                        <select name="items[<?= $index ?>][adms_daman_order_status_id]" class="form-select">
+                                            <option value="">Selecione</option>
+                                            <?php foreach ($this->data['getAllStatusSelect'] as $status):
+                                                $selected = ($item['adms_daman_order_status_id'] ?? '') == $status['id'] ? 'selected' : '';
+                                            ?>
+                                                <option value="<?= $status['id'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
                                 </div>
 
-                            </div>
+                            <?php else: ?>
+                                <!-- 🟢 ITEM NOVO (layout simples) -->
+                                <div class="row g-1 item-group mb-2">
+
+                                    <input type="hidden" name="items[<?= $index ?>][is_new]" value="1">
+                                    <input type="hidden" name="items[<?= $index ?>][item_id]" value="">
+
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][description]"
+                                            value="<?= $item['description'] ?? '' ?>"
+                                            placeholder="Descrição completa...">
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <input type="text" class="form-control"
+                                            name="items[<?= $index ?>][quantity]"
+                                            value="<?= $item['quantity'] ?? '' ?>"
+                                            placeholder="Qtd">
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <div class="d-flex">
+                                            <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select me-2">
+                                                <option value="">Selecione</option>
+                                                <?php foreach ($this->data['getAllMeasurementUnitsSelect'] as $unit):
+                                                    $selected = ($item['adms_daman_measurement_units_id'] ?? '') == $unit['id'] ? 'selected' : '';
+                                                ?>
+                                                    <option value="<?= $unit['id'] ?>" <?= $selected ?>><?= $unit['name'] ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+
+                                            <button type="button" class="btn btn-danger btn-remove">-</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            <?php endif; ?>
+
                         <?php endforeach; // finalização do foreach dos itens  
                         ?>
 

@@ -243,7 +243,7 @@ class OrdersRepository extends DbConnection
             $items = $data['items'] ?? [];
 
             foreach ($items as $item) {
-                if (!$item['item_id']) { // Se não vier Id ele cadastra um novo item
+                if (empty($item['item_id'])) { // Se não vier Id ele cadastra um novo item
                     $description = $item['description'] ?? null;
                     $quantity    = $item['quantity'] ?? null;
                     $adms_daman_measurement_units_id        = $item['adms_daman_measurement_units_id'] ?? null;
@@ -258,9 +258,11 @@ class OrdersRepository extends DbConnection
                     // Preparar a QUERY
                     $stmt = $this->getConnection()->prepare($sql);
 
+                    $descriptionUpper = mb_convert_case($description, MB_CASE_TITLE, 'UTF-8');
+
                     // Substituir os links da QUERY pelo valor
                     $stmt->bindValue(':adms_daman_order_id', $orderId, PDO::PARAM_INT);
-                    $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+                    $stmt->bindValue(':description', $descriptionUpper, PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $adms_daman_measurement_units_id, PDO::PARAM_INT);
                     $stmt->bindValue(':quantity', $quantity);
                     $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
@@ -349,16 +351,20 @@ class OrdersRepository extends DbConnection
     {
         try {
 
-            foreach ($data['items'] as $item) {
+        $items = $data['items'] ?? [];
+
+            foreach ($items as $item) {
 
                 // Se tem ID significa que precisa fazer o update UPDATE
                 if (!empty($item['item_id'])) {
 
                     // QUERY para atualizar pedido
-                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, purchased_quantity = :purchased_quantity, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
+                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
 
-                    // Incluir campo de periodo de locação caso seja do tipo locação
-                    if ($data['adms_daman_order_types_id'] == 2) {
+                    // Incluir campo de periodo de locação caso seja do tipo Compra ou locação
+                    if ($data['adms_daman_order_types_id'] == 1) {
+                        $sql .= ', purchased_quantity = :purchased_quantity';
+                    } elseif ($data['adms_daman_order_types_id'] == 2) {
                         $sql .= ', rented_quantity = :rented_quantity, returned_quantity = :returned_quantity, rental_start_date = :rental_start_date';
                     }
 
@@ -367,20 +373,24 @@ class OrdersRepository extends DbConnection
                     // Preparar a QUERY
                     $stmt = $this->getConnection()->prepare($sql);
 
+                    $descriptionUpper = mb_convert_case($item['description'], MB_CASE_TITLE, 'UTF-8');
+
                     // Substituir os links da QUERY pelo valor
-                    $stmt->bindValue(':description', $item['description'], PDO::PARAM_STR);
+                    $stmt->bindValue(':description', $descriptionUpper, PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $item['adms_daman_measurement_units_id'], PDO::PARAM_INT);
-                    $stmt->bindValue(':purchased_quantity', (float) $item['purchased_quantity']);
                     $stmt->bindValue(':unit_price', (float)$item['unit_price']);
                     $stmt->bindValue(':adms_daman_order_status_id', $item['adms_daman_order_status_id'], PDO::PARAM_INT);
                     $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
                     $stmt->bindValue(':item_id', $item['item_id'], PDO::PARAM_INT);
 
-                    // Substituir link campo de periodo de locação caso seja do tipo locação
-                    if ($data['adms_daman_order_types_id'] == 2) {
+                    // Substituir link campo de periodo de locação caso seja do tipo Compra ou Locação
+                    if ($data['adms_daman_order_types_id'] == 1) {
+                        $purchased_quantity = ($item['purchased_quantity'] ?? NULL);
+                        $stmt->bindValue(':purchased_quantity', (float) $purchased_quantity);
+                    } elseif ($data['adms_daman_order_types_id'] == 2) {
                         $stmt->bindValue(':rented_quantity', (float) $item['rented_quantity']);
                         $stmt->bindValue(':returned_quantity', (float) $item['returned_quantity']);
-                        $stmt->bindValue(':rental_start_date', (float) $item['rental_start_date']);
+                        $stmt->bindValue(':rental_start_date', $item['rental_start_date'] ?? NULL );
                     }
 
                     // Executar a QUERY
@@ -447,6 +457,50 @@ class OrdersRepository extends DbConnection
 
             // Chamar o método para salvar o log
             GenerateLog::generateLog("error", "Pedido não apagado.", ['id' => $id, 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Deletar um item do pedido pelo ID.
+     *
+     * Este método remove um item do pedido específico da tabela `adms_daman_orders' caso de erro, um log é gerado.
+     *
+     * @param int $id ID do item do pedido a ser deletado.
+     * @return bool `true` se o pedido foi deletado com sucesso ou `false` em caso de erro.
+     */
+    public function deleteItem(int $id): bool
+    {
+        // Usar o try e catch para gerenciar exceção/erro
+        try {
+
+            // Query para deletar o Item
+            $sql = 'DELETE FROM adms_daman_order_items  WHERE id = :id LIMIT 1';
+
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substiruir os links pelo valor
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+            // Executar a Query
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            $affectedRows = $stmt->rowCount();
+
+            if ($affectedRows > 0) {
+                return true;
+            } else {
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Item não apagado.", ['id' => $id]);
+                return false;
+            }
+        } catch (Exception $e) {
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Item não apagado.", ['id' => $id, 'error' => $e->getMessage()]);
 
             return false;
         }
