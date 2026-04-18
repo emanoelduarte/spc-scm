@@ -13,7 +13,7 @@
     --pd-budget: #8ef1d9;
     --pd-partial-purchase: #FF9800;
     --pd-purchased: #2196F3;
-    --pd-entregue: #4CAF50;
+    --pd-delivered: #4CAF50;
     --pd-canceled: #F44336;
 }
 
@@ -115,29 +115,29 @@
 /*Orders Highligts*/
 
 .highlight-analysis{
-    border-left: 10px solid var(--pd-analysis);
+    border-left: 10px solid var(--pd-analysis) !important;
 }
 .highlight-budget{
-    border-left: 10px solid var(--pd-budget);
+    border-left: 10px solid var(--pd-budget) !important;
 }
 .highlight-purchased{
-    border-left: 10px solid var(--pd-purchased);
+    border-left: 10px solid var(--pd-purchased) !important;
 }
 .highlight-partial-purchase{
-    border-left: 10px solid var(--pd-partial-purchase);
+    border-left: 10px solid var(--pd-partial-purchase) !important;
 }
 .highlight-delivered{
-    border-left: 10px solid var(--pd-delivered);
+    border-left: 10px solid var(--pd-delivered) !important;
 }
 .highlight-rented{
-    border-left: 10px solid var(--pd-purchased);
+    border-left: 10px solid var(--pd-purchased) !important;
 }
 .highlight-returned{
-    border-left: 10px solid var(--pd-delivered);
+    border-left: 10px solid var(--pd-delivered) !important;
 }
 .highlight-partial-return{
-    border-left: 10px solid var(--pd-partial-purchase);
+    border-left: 10px solid var(--pd-partial-purchase) !important;
 }
 .highlight-canceled{
-    border-left: 10px solid var(--pd-canceled);
+    border-left: 10px solid var(--pd-canceled) !important;
 }

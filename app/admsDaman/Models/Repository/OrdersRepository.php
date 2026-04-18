@@ -149,6 +149,7 @@ class OrdersRepository extends DbConnection
                 adc.name AS category_name,
                 adu.name AS usr_name,
                 adp.name AS project_name, adp.address AS project_adrress,
+                ados.id AS order_status_id,
                 ados.name AS order_status
 
                 FROM adms_daman_orders AS ado

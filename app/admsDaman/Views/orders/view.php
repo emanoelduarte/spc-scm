@@ -25,9 +25,47 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <li class="breadcrumb-item active" aria-current="page">Visualizar</li>
             </li>
         </ol>
-</div>
+    </div>
 
-    <div class="card mb-4 border-light shadow">
+    <?php
+    $order_status_id = $this->data['order']['order_status_id'];
+    // Verificar o Status e aplicar a cor na borda do pedido
+    switch ($order_status_id) {
+        case 1:
+            $highlightClass = "highlight-analysis";
+            break;
+        case 2:
+            $highlightClass = "highlight-budget";
+            break;
+        case 3:
+            $highlightClass = "highlight-purchased";
+            break;
+        case 4:
+            $highlightClass = "highlight-partial-purchase";
+            break;
+        case 5:
+            $highlightClass = "highlight-delivered";
+            break;
+        case 6:
+            $highlightClass = "highlight-partial-delivery";
+            break;
+        case 7:
+            $highlightClass = "highlight-rented";
+            break;
+        case 8:
+            $highlightClass = "highlight-returned";
+            break;
+        case 9:
+            $highlightClass = "highlight-partial-return";
+            break;
+        case 10:
+            $highlightClass = "highlight-canceled";
+            break;
+        default:
+            $highlightClass = "highlight-analysis";
+    }
+    ?>
+    <div class="<?= $highlightClass ?> card mb-4 shadow">
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
@@ -43,7 +81,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 
                 <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Pedido ?>
+                <?php  // Formulário para envio dos dados para deletar Pedido 
+                ?>
                 <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
@@ -69,12 +108,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                 // O operador ternário verifica se $created_at não é null antes de chamar a strtotime(). Se $created_at for null, ele retorna uma string vazia.
                 $created = ($created_at ? date('d/m/Y H:i:s', strtotime($created_at)) : "");
                 $edited = ($updated_at ? date('d/m/Y H:i:s', strtotime($updated_at)) : "");
+                $expected_receipt_date = ($expected_receipt_date ? date('d/m/Y H:i:s', strtotime($expected_receipt_date)) : "");
             ?>
                 <div class="row">
                     <div class="col-md-6">
                         <p><strong>Pedido:</strong> <?= $id ?></p>
                         <p><strong>Data:</strong> <?= $created ?></p>
-                        <p><strong>Data da Modificação:</strong> <?= $updated_at ?></p>
+                        <p><strong>Data da Modificação:</strong> <?= $edited ?></p>
                         <p><strong>Status:</strong> <?= $order_status ?></p>
                         <p><strong>Categoria:</strong> <?= $category_name ?></p>
                         <p><strong>Obra:</strong> <?= $adms_daman_project_id . " | " . $project_name ?></p>
@@ -196,7 +236,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                                 </td>
                                 <td>
 
-                                    <?php  // Formulário para envio dos dados para deletar Item do pedido ?>
+                                    <?php  // Formulário para envio dos dados para deletar Item do pedido 
+                                    ?>
                                     <form id="formDelete<?= $item['item_id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-item" method="POST">
 
                                         <input type="hidden" name="csrf_token" value="<?= $csrf_token_item; ?>">

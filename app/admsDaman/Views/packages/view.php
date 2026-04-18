@@ -67,9 +67,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_package');
                     <dt class="col-sm-3">Observação: </dt>
                     <dd class="col-sm-9"><?= $obs ?></dd>
                     <dt class="col-sm-3">Cadastrado: </dt>
-                    <dd class="col-sm-9"><?= $created_at ?></dd>
+                    <dd class="col-sm-9"><?= $created ?></dd>
                     <dt class="col-sm-3">Editado: </dt>
-                    <dd class="col-sm-9"><?= $updated_at ?></dd>
+                    <dd class="col-sm-9"><?= $edited ?></dd>
                 </dl>
             <?php else: ?>
                 <?php // Caso usuário não seja encontrado
