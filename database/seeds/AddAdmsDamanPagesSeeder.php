@@ -63,7 +63,36 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
 
             ['name' => 'Erro 403', 'controller' => 'Error403', 'controller_url' => 'logout', 'directory' => 'errors', 'obs' => 'Erro que deve apresentado quando não encontrar a página.', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 8],
 
+            // Páginas Pedidos
+            ['name' => 'Criar Pedidos', 'controller' => 'CreateOrder', 'controller_url' => 'create-order', 'directory' => 'orders', 'obs' => 'Página para criar pedido', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
             ['name' => 'Listar Pedidos', 'controller' => 'ListOrders', 'controller_url' => 'list-orders', 'directory' => 'orders', 'obs' => 'Página para listar pedidos', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+            ['name' => 'Visualizar Pedido', 'controller' => 'ViewOrder', 'controller_url' => 'view-order', 'directory' => 'orders', 'obs' => 'Página para visualizar pedido', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+            ['name' => 'Editar Pedido Compra', 'controller' => 'UpdateOrder', 'controller_url' => 'update-order', 'directory' => 'orders', 'obs' => 'Página para editar pedido do tipo compra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+            ['name' => 'Editar Pedido Locação', 'controller' => 'UpdateRentalOrder', 'controller_url' => 'update-rental-order', 'directory' => 'orders', 'obs' => 'Página para editar pedido do tipo locação', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+            ['name' => 'Apagar Pedido', 'controller' => 'DeleteOrder', 'controller_url' => 'delete-order', 'directory' => 'orders', 'obs' => 'Página para deletar pedido', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+            ['name' => 'Apagar Item do Pedido', 'controller' => 'DeleteItem', 'controller_url' => 'delete-item', 'directory' => 'orders', 'obs' => 'Página para deletar pedido', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
+
+            // Páginas Categorias
+            ['name' => 'Criar Categoria', 'controller' => 'CreateCategory', 'controller_url' => 'create-category', 'directory' => 'orders', 'obs' => 'Página para criar categoria', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 10],
+            ['name' => 'Listar Categorias', 'controller' => 'ListCategories', 'controller_url' => 'list-categories', 'directory' => 'orders', 'obs' => 'Página para listar categorias', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 10],
+            ['name' => 'Visualizar Categoria', 'controller' => 'ViewCategory', 'controller_url' => 'view-category', 'directory' => 'orders', 'obs' => 'Página para visualizar Categoria', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 10],
+            ['name' => 'Editar Categoria', 'controller' => 'UpdateCategory', 'controller_url' => 'update-category', 'directory' => 'orders', 'obs' => 'Página para editar categoria', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 10],
+            ['name' => 'Apagar Categoria', 'controller' => 'DeleteCategory', 'controller_url' => 'delete-category', 'directory' => 'orders', 'obs' => 'Página para deletar categoria', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 10],
+
+            // Páginas Projetos
+            ['name' => 'Criar Obra', 'controller' => 'CreateProject', 'controller_url' => 'create-project', 'directory' => 'orders', 'obs' => 'Página para criar obra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
+            ['name' => 'Listar Obras', 'controller' => 'ListProjects', 'controller_url' => 'list-projects', 'directory' => 'orders', 'obs' => 'Página para listar obras', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
+            ['name' => 'Visualizar Obra', 'controller' => 'ViewProject', 'controller_url' => 'view-project', 'directory' => 'orders', 'obs' => 'Página para visualizar Obra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
+            ['name' => 'Editar Obra', 'controller' => 'UpdateProject', 'controller_url' => 'update-project', 'directory' => 'orders', 'obs' => 'Página para editar Obra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
+            ['name' => 'Apagar Obra', 'controller' => 'DeleteProject', 'controller_url' => 'delete-project', 'directory' => 'orders', 'obs' => 'Página para deletar Obra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
+
+            // Páginas Compras
+            ['name' => 'Criar Compra', 'controller' => 'CreatePurchasing', 'controller_url' => 'create-purchasing', 'directory' => 'orders', 'obs' => 'Página para criar compra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Listar Compras', 'controller' => 'ListPurchasings', 'controller_url' => 'list-purchasings', 'directory' => 'orders', 'obs' => 'Página para listar compras', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Visualizar Compra', 'controller' => 'ViewPurchasing', 'controller_url' => 'view-purchasing', 'directory' => 'orders', 'obs' => 'Página para visualizar compra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Editar Compra', 'controller' => 'UpdatePurchasing', 'controller_url' => 'update-purchasing', 'directory' => 'orders', 'obs' => 'Página para editar compra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Apagar Compra', 'controller' => 'DeletePurchasing', 'controller_url' => 'delete-purchasing', 'directory' => 'orders', 'obs' => 'Página para deletar compra', 'public_page' => 0, 'page_status' => 0, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar
