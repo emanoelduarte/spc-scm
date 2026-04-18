@@ -43,7 +43,15 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                 <div class="col-lg-2 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Prev. Recebimento </label>
-                    <input type="date" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $this->data['form']['expected_receipt_date'] ?? ''; ?>" placeholder="Id do usuário">
+                    <input type="date" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $this->data['form']['expected_receipt_date'] ?? ''; ?>" placeholder="dd/mm/yyyy">
+
+                    <script>
+                        flatpickr("#expected_receipt_date", {
+                            dateFormat: "d/m/Y",
+                            locale: "pt", // Para português
+                            minDate: new Date().fp_incr(3) // hoje + 3 dias
+                        });
+                        </script>
                 </div>
 
                 <div class="col-lg-10 col-md-6 col-sm-12">

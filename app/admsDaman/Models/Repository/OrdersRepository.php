@@ -4,6 +4,7 @@ namespace App\admsDaman\Models\Repository;
 
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Services\DbConnection;
+use DateTime;
 use Exception;
 use PDO;
 
@@ -19,53 +20,53 @@ class OrdersRepository extends DbConnection
      * @return array Lista de pedidos recuperados do banco de dados.
      */
     public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [])
-{
-    $offset = max(0, ($page - 1) * $limitResult);
+    {
+        $offset = max(0, ($page - 1) * $limitResult);
 
-    $conditions = [];
-    $params = [];
+        $conditions = [];
+        $params = [];
 
-    // 🔹 Mapeamento campo form → coluna banco
-    $map = [
-        'order_number' => 'ado.id',
-        'adms_daman_project_id' => 'ado.adms_daman_project_id',
-        'adms_daman_order_status_id' => 'ado.adms_daman_order_status_id',
-        'adms_daman_category_id' => 'ado.adms_daman_category_id',
-    ];
+        // 🔹 Mapeamento campo form → coluna banco
+        $map = [
+            'order_number' => 'ado.id',
+            'adms_daman_project_id' => 'ado.adms_daman_project_id',
+            'adms_daman_order_status_id' => 'ado.adms_daman_order_status_id',
+            'adms_daman_category_id' => 'ado.adms_daman_category_id',
+        ];
 
-    foreach ($map as $field => $column) {
-        if (!empty($filters[$field])) {
-            $conditions[] = "{$column} = :{$field}";
-            $params[$field] = $filters[$field];
+        foreach ($map as $field => $column) {
+            if (!empty($filters[$field])) {
+                $conditions[] = "{$column} = :{$field}";
+                $params[$field] = $filters[$field];
+            }
         }
-    }
 
-    // 🔹 Filtro por intervalo de datas
-    if (!empty($filters['data_inicio'])) {
-        $conditions[] = "ado.created_at >= :data_inicio";
-        $params['data_inicio'] = $filters['data_inicio'];
-    }
+        // 🔹 Filtro por intervalo de datas
+        if (!empty($filters['data_inicio'])) {
+            $conditions[] = "ado.created_at >= :data_inicio";
+            $params['data_inicio'] = $filters['data_inicio'];
+        }
 
-    if (!empty($filters['data_fim'])) {
-        $conditions[] = "ado.created_at <= :data_fim";
-        $params['data_fim'] = $filters['data_fim'];
-    }
+        if (!empty($filters['data_fim'])) {
+            $conditions[] = "ado.created_at <= :data_fim";
+            $params['data_fim'] = $filters['data_fim'];
+        }
 
-    // Pesquisar por item
-    if (!empty($filters['description'])) {
-    $conditions[] = "EXISTS (
+        // Pesquisar por item
+        if (!empty($filters['description'])) {
+            $conditions[] = "EXISTS (
         SELECT 1 
         FROM adms_daman_order_items aoi
         WHERE aoi.adms_daman_order_id = ado.id
         AND aoi.description LIKE :description
     )";
 
-    $params['description'] = '%' . $filters['description'] . '%';
-}
+            $params['description'] = '%' . $filters['description'] . '%';
+        }
 
-    $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
-    $sql = "SELECT 
+        $sql = "SELECT 
                 ado.id AS pedido_id, 
                 ado.adms_daman_order_types_id, 
                 ado.adms_daman_project_id, 
@@ -83,19 +84,19 @@ class OrdersRepository extends DbConnection
             ORDER BY pedido_id DESC
             LIMIT :limit OFFSET :offset";
 
-    $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
-    foreach ($params as $key => $value) {
-        $stmt->bindValue(":{$key}", $value);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
-    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
 
     /**
      * Recuperar a quantidade total de pedidos para paginação.
@@ -227,13 +228,16 @@ class OrdersRepository extends DbConnection
                 // Preparar a QUERY
                 $stmt = $this->getConnection()->prepare($sql);
 
+                // Transforma a data d/m/Y para Y/m/d, formato aceito no MySql
+                $FormatedDate = DateTime::createFromFormat('d/m/Y', $data['expected_receipt_date'])->format('Y-m-d');
+
                 // Substituir os links da QUERY pelo valor
                 $stmt->bindValue(':adms_daman_order_types_id', $data['adms_daman_order_types_id'], PDO::PARAM_INT);
                 $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
                 $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
                 $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
                 $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
-                $stmt->bindValue(':expected_receipt_date', $data['expected_receipt_date']);
+                $stmt->bindValue(':expected_receipt_date', $FormatedDate);
                 $stmt->bindValue(':observation', $data['observation'], PDO::PARAM_STR);
                 $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
                 $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
@@ -386,7 +390,7 @@ class OrdersRepository extends DbConnection
     {
         try {
 
-        $items = $data['items'] ?? [];
+            $items = $data['items'] ?? [];
 
             foreach ($items as $item) {
 
@@ -425,7 +429,7 @@ class OrdersRepository extends DbConnection
                     } elseif ($data['adms_daman_order_types_id'] == 2) {
                         $stmt->bindValue(':rented_quantity', (float) $item['rented_quantity']);
                         $stmt->bindValue(':returned_quantity', (float) $item['returned_quantity']);
-                        $stmt->bindValue(':rental_start_date', $item['rental_start_date'] ?? NULL );
+                        $stmt->bindValue(':rental_start_date', $item['rental_start_date'] ?? NULL);
                     }
 
                     // Executar a QUERY
