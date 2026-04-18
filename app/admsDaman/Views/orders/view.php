@@ -74,9 +74,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                     <div class="col-md-6">
                         <p><strong>Pedido:</strong> <?= $id ?></p>
                         <p><strong>Data:</strong> <?= $created ?></p>
-                        <p><strong>Status:</strong> <?= $order_status . " | " . $status_date ?></p>
+                        <p><strong>Data da Modificação:</strong> <?= $updated_at ?></p>
+                        <p><strong>Status:</strong> <?= $order_status ?></p>
                         <p><strong>Categoria:</strong> <?= $category_name ?></p>
-                        <p><strong>Obra:</strong> <?= $project_name ?></p>
+                        <p><strong>Obra:</strong> <?= $adms_daman_project_id . " | " . $project_name ?></p>
                         <p><strong>Endereço da Obra:</strong> <?= $project_adrress ?></p>
                     </div>
 

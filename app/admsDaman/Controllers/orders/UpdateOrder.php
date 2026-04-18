@@ -9,6 +9,7 @@ use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\StatusRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 /**
@@ -82,7 +83,7 @@ class UpdateOrder
         $this->data['getAllProjectsSelect'] = $getProjectSelect->getAllProjectsSelect();
 
         // Instanciar o repositório para preencher os selects.
-        $getAllStatusSelect = new OrdersRepository();
+        $getAllStatusSelect = new StatusRepository();
         $this->data['getAllStatusSelect'] = $getAllStatusSelect->getAllStatusSelect();
 
         // Instanciar o repositório para preencher os selects.

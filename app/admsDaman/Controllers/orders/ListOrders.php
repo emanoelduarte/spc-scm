@@ -3,7 +3,10 @@
 namespace App\admsDaman\Controllers\orders;
 
 use App\admsDaman\Controllers\Services\PaginationService;
+use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
+use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\StatusRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 /**
@@ -19,24 +22,38 @@ class ListOrders
     
     public function index(string|int $page = 1) : void 
     {
-        $orderNumber = filter_input(INPUT_POST, 'order_number', FILTER_SANITIZE_NUMBER_INT);
+        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
 
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listOrders = new OrdersRepository();
 
-       $this->data['orders'] = $listOrders->getAllOrders(
+        $this->data['orders'] = $listOrders->getAllOrders(
         (int) $page, 
         (int) $this->limitResult, 
-        $orderNumber
+        $this->data['search']
         );
 
-       $this->data['pagination'] = PaginationService::generatePagination(
+        $this->data['pagination'] = PaginationService::generatePagination(
         (int) $listOrders->getAmountOrders(), 
         (int) $this->limitResult, 
         (int) $page, 
         'list-orders');
 
-        $this->data['order_number'] = $orderNumber;
+        $this->data['order_number'] = $this->data['search'];
+
+        // Instanciar o repositório para preencher os selects.
+        $getAllProjectsSelect = new ProjectsRepository();
+        $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
+
+        // Instanciar o repositório para preencher os selects.
+        $getAllStatusSelect = new StatusRepository();
+        $this->data['getAllStatusSelect'] = $getAllStatusSelect->getAllStatusSelect();
+
+        // Instanciar o repositório para preencher os selects.
+        $getProjectSelect = new CategoriesRepository();
+        $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
+
+        
 
        // Criar o título da página
         $this->data['title_head'] = "Pedidos";

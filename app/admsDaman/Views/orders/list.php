@@ -25,20 +25,22 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         </div>
 
         <div class="card-body">
-            <?php // Campo para pesquisar pedido por numero 
-            ?>
-            <!-- <form action="" method="POST" class="row g-3">
-                <div class="col-lg-2 col-md-12 col-sm-12">
-                    <input type="text" class="form-control desabled" id="order_number" name="order_number" value="<?= $order_number ?? '' ?>" placeholder="Número do pedido">
-                </div>
 
-                <div class="col-lg-2 col-md-12 col-sm-12">
-                    <button type="submit" class="btn btn-success">Filtrar</button>
+            <?php  // Formulário para buscar pedido por item 
+            ?>
+            <form action="" method="POST">
+                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+
+                    <input type="text" name="description" class="w-50 p-2" value="<?= ($this->data['search']['description'] ?? '') ?>">
+                    <button type="submit" class="btn btn-success h-100 ms-1">
+                        Buscar
+                    </button>
+
                 </div>
-            </form> -->
+            </form>
 
             <div class="d-flex justify-content-end">
-                <button id="openFilter" class="btn btn-outline-secondary">
+                <button id="openFilter" class="btn btn-outline-secondary mt-2">
                     <i class="fa-solid fa-filter"></i> Filtros
                 </button>
             </div>
@@ -80,7 +82,45 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             $created = ($created_at ? date('d/m/Y', strtotime($created_at)) : "");
                         ?>
 
-                            <tr>
+                            <?php
+                            // Verificar o Status e aplicar a cor na borda do pedido
+                            switch ($status_id) {
+                                case 1:
+                                    $highlightClass = "highlight-analysis";
+                                    break;
+                                case 2:
+                                    $highlightClass = "highlight-budget";
+                                    break;
+                                case 3:
+                                    $highlightClass = "highlight-purchased";
+                                    break;
+                                case 4:
+                                    $highlightClass = "highlight-partial-purchase";
+                                    break;
+                                case 5:
+                                    $highlightClass = "highlight-delivered";
+                                    break;
+                                case 6:
+                                    $highlightClass = "highlight-partial-delivery";
+                                    break;
+                                case 7:
+                                    $highlightClass = "highlight-rented";
+                                    break;
+                                case 8:
+                                    $highlightClass = "highlight-returned";
+                                    break;
+                                case 9:
+                                    $highlightClass = "highlight-partial-return";
+                                    break;
+                                case 10:
+                                    $highlightClass = "highlight-canceled";
+                                    break;
+                                default:
+                                    $highlightClass = "highlight-analysis";
+                            }
+                            ?>
+
+                            <tr class="<?= $highlightClass ?>">
                                 <td><?= $pedido_id; ?></td>
                                 <td><?= $project_name; ?></td>
                                 <td><?= $status_name; ?></td>
@@ -137,46 +177,92 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 <div id="filterSidebar">
     <h5>Filtrar Pedidos</h5>
 
-    <form id="filterForm">
+    <form action="" method="POST" id="filterForm">
 
+        <?php // Campo para pesquisar pedido por numero 
+        ?>
         <div class="mb-2">
-            <label class="mt-4">Nº Pedido</label>
-            <input type="text" name="pedido" class="form-control">
+            <label class="mt-4 fw-bold">Nº Pedido</label>
+            <input type="text" class="form-control desabled" id="order_number" value="<?= ($this->data['search']['order_number'] ?? '') ?>" name="order_number" placeholder="Número do pedido">
         </div>
 
         <div class="mb-2">
-            <label>Obra</label>
-            <input type="text" name="obra" class="form-control">
-        </div>
+            <label class="fw-bold">Obra</label>
 
-        <div class="mb-2">
-            <label>Status</label>
-            <select name="status" class="form-control">
-                <option value="">Todos</option>
-                <option value="ANALISE">Análise</option>
-                <option value="COMPRADO">Comprado</option>
-                <option value="ENTREGUE">Entregue</option>
-                <option value="CANCELADO">Cancelado</option>
+            <select name="adms_daman_project_id" class="form-select" id="adms_daman_project_id">
+                <option value="" selected>Selecione</option>
+
+                <?php
+                // Verificar se existe pacotes
+                if ($this->data['getAllProjectsSelect'] ?? false) {
+
+                    // Percorrer array de pacotes
+                    foreach ($this->data['getAllProjectsSelect'] as $getAllProjectsSelect) {
+                        extract($getAllProjectsSelect);
+
+                        // Verificar se deve manter selecionada a opção
+                        $selected = isset($this->data['search']['adms_daman_project_id']) && $this->data['search']['adms_daman_project_id'] == $id ? 'selected' : '';
+
+                        echo "<option value='$id' $selected>$name</option>";
+                    }
+                }
+                ?>
             </select>
         </div>
 
         <div class="mb-2">
-            <label>Solicitante</label>
-            <input type="text" name="solicitante" class="form-control">
+            <label class="fw-bold">Status</label>
+            <select name="adms_daman_order_status_id" class="form-select" id="adms_daman_order_status_id">
+                <option value="" selected>Selecione</option>
+
+                <?php
+                // Verificar se existe pacotes
+                if ($this->data['getAllStatusSelect'] ?? false) {
+
+                    // Percorrer array de pacotes
+                    foreach ($this->data['getAllStatusSelect'] as $getAllStatusSelect) {
+                        extract($getAllStatusSelect);
+
+                        // Verificar se deve manter selecionada a opção
+                        $selected = isset($this->data['search']['adms_daman_order_status_id']) && $this->data['search']['adms_daman_order_status_id'] == $id ? 'selected' : '';
+
+                        echo "<option value='$id' $selected>$name</option>";
+                    }
+                }
+                ?>
+            </select>
         </div>
 
         <div class="mb-2">
-            <label>Categoria</label>
-            <input type="text" name="categoria" class="form-control">
+            <label class="fw-bold">Categoria</label>
+            <select name="adms_daman_category_id" class="form-select" id="adms_daman_category_id">
+                <option value="" selected>Selecione</option>
+
+                <?php
+                // Verificar se existe pacotes
+                if ($this->data['getAllCategoriesSelect'] ?? false) {
+
+                    // Percorrer array de pacotes
+                    foreach ($this->data['getAllCategoriesSelect'] as $getAllCategoriesSelect) {
+                        extract($getAllCategoriesSelect);
+
+                        // Verificar se deve manter selecionada a opção
+                        $selected = isset($this->data['search']['adms_daman_category_id']) && $this->data['search']['adms_daman_category_id'] == $id ? 'selected' : '';
+
+                        echo "<option value='$id' $selected>$name</option>";
+                    }
+                }
+                ?>
+            </select>
         </div>
 
         <div class="mb-2">
-            <label>Data Inicial</label>
+            <label class="fw-bold">Data Inicial</label>
             <input type="date" name="data_inicio" class="form-control">
         </div>
 
         <div class="mb-2">
-            <label>Data Final</label>
+            <label class="fw-bold">Data Final</label>
             <input type="date" name="data_fim" class="form-control">
         </div>
 

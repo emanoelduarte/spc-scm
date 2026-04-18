@@ -47,10 +47,33 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <input type="hidden" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $expected_receipt_date; ?>" placeholder="">
                 </div>
 
-                <div class="col-lg-10 col-md-6 col-sm-12">
+                <div class="col-lg-8 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Solicitante:</label>
                     <input type="text" disabled class="form-control desabled" id="solicitante" name="solicitante" value="<?= $_SESSION['user_name'] ?? '';  ?>" placeholder="Nome do Usuário">
                     <input type="hidden" class="form-control" id="adms_daman_user_id" name="adms_daman_user_id" value="<?= $_SESSION['user_id'] ?? ''; ?>" placeholder="Id do usuário">
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-sm-12">
+                    <label for="adms_daman_order_status_id" class="form-label">Status</label>
+                    <select name="adms_daman_order_status_id" class="form-select" id="adms_daman_order_status_id">
+                        <option value="" selected>Selecione</option>
+
+                        <?php
+                        // Verificar se existe pacotes
+                        if ($this->data['getAllStatusSelect'] ?? false) {
+
+                            // Percorrer array de pacotes
+                            foreach ($this->data['getAllStatusSelect'] as $getAllStatusSelect) {
+                                extract($getAllStatusSelect);
+
+                                // Verificar se deve manter selecionada a opção
+                                $selected = isset($this->data['form']['adms_daman_order_status_id']) && $this->data['form']['adms_daman_order_status_id'] == $id ? 'selected' : '';
+
+                                echo "<option value='$id' $selected>$name</option>";
+                            }
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-sm-12">

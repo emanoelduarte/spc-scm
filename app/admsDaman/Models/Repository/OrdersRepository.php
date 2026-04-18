@@ -18,50 +18,84 @@ class OrdersRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de pedidos recuperados do banco de dados.
      */
-    public function getAllOrders(int $page = 1, int $limitResult = 10, ?string $orderNumber = null)
-    {
+    public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [])
+{
+    $offset = max(0, ($page - 1) * $limitResult);
 
-        // Calcular o registro inicial de cada página exemplo:
-        // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
-        $offset = max(0, ($page - 1) * $limitResult);
+    $conditions = [];
+    $params = [];
 
-        $conditions = [];
-        $params = [];
+    // 🔹 Mapeamento campo form → coluna banco
+    $map = [
+        'order_number' => 'ado.id',
+        'adms_daman_project_id' => 'ado.adms_daman_project_id',
+        'adms_daman_order_status_id' => 'ado.adms_daman_order_status_id',
+        'adms_daman_category_id' => 'ado.adms_daman_category_id',
+    ];
 
-        if (!empty($orderNumber)) {
-            $conditions[] = "ado.id = :order_number"; // 👈 filtro por ID
-            $params['order_number'] = $orderNumber;
+    foreach ($map as $field => $column) {
+        if (!empty($filters[$field])) {
+            $conditions[] = "{$column} = :{$field}";
+            $params[$field] = $filters[$field];
         }
+    }
 
-        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+    // 🔹 Filtro por intervalo de datas
+    if (!empty($filters['data_inicio'])) {
+        $conditions[] = "ado.created_at >= :data_inicio";
+        $params['data_inicio'] = $filters['data_inicio'];
+    }
 
-        // QUERY para recuperar os registros do banco de dados
-        $sql = "SELECT ado.id AS pedido_id, ado.adms_daman_order_types_id, ado.adms_daman_project_id, ado.adms_daman_order_status_id, ado.created_at,
-            adp.name AS project_name, ados.name AS status_name
+    if (!empty($filters['data_fim'])) {
+        $conditions[] = "ado.created_at <= :data_fim";
+        $params['data_fim'] = $filters['data_fim'];
+    }
+
+    // Pesquisar por item
+    if (!empty($filters['description'])) {
+    $conditions[] = "EXISTS (
+        SELECT 1 
+        FROM adms_daman_order_items aoi
+        WHERE aoi.adms_daman_order_id = ado.id
+        AND aoi.description LIKE :description
+    )";
+
+    $params['description'] = '%' . $filters['description'] . '%';
+}
+
+    $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+    $sql = "SELECT 
+                ado.id AS pedido_id, 
+                ado.adms_daman_order_types_id, 
+                ado.adms_daman_project_id, 
+                ado.adms_daman_order_status_id, 
+                ado.created_at,
+                adp.name AS project_name, 
+                ados.id AS status_id,
+                ados.name AS status_name,
+                adc.name AS category_name, adc.id AS categoria_id
             FROM adms_daman_orders AS ado
-            INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
-            INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
+            INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
+            INNER JOIN adms_daman_order_status AS ados ON ados.id = ado.adms_daman_order_status_id
+            INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
             {$where}
             ORDER BY pedido_id DESC
             LIMIT :limit OFFSET :offset";
 
-        // Preparar a QUERY
-        $stmt = $this->getConnection()->prepare($sql);
+    $stmt = $this->getConnection()->prepare($sql);
 
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
-        }
-
-        // Substituir o link da QUERY pelo valor
-        $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        // Executar a QUERY
-        $stmt->execute();
-
-        // Ler os registros e retornar 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue(":{$key}", $value);
     }
+
+    $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     /**
      * Recuperar a quantidade total de pedidos para paginação.
@@ -289,7 +323,7 @@ class OrdersRepository extends DbConnection
         try {
 
             // QUERY para atualizar PEDIDO
-            $sql = 'UPDATE adms_daman_orders SET adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
+            $sql = 'UPDATE adms_daman_orders SET adms_daman_order_status_id = :adms_daman_order_status_id, adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
 
             // Incluir campo de periodo de locação caso seja do tipo locação
             if ($data['adms_daman_order_types_id'] == 2) {
@@ -304,6 +338,7 @@ class OrdersRepository extends DbConnection
             $stmt = $this->getConnection()->prepare($sql);
 
             // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':adms_daman_order_status_id', $data['adms_daman_order_status_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
@@ -517,29 +552,6 @@ class OrdersRepository extends DbConnection
         $sql = 'SELECT id, name 
                 FROM adms_daman_measurement_units
                 ORDER BY name ASC';
-
-        // Preparar a QUERY
-        $stmt = $this->getConnection()->prepare($sql);
-
-        // Executar a QUERY
-        $stmt->execute();
-
-        // Ler os registros e retornar 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
-    /**
-     * Recuperar uma Status específico
-     * 
-     * @return array|bool Status recuperado do banco de dados
-     */
-    public function getAllStatusSelect(): array|bool
-    {
-        // QUERY para recuperar os registros do banco de dados
-        $sql = 'SELECT id, name 
-                FROM adms_daman_order_status
-                ORDER BY id ASC';
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);

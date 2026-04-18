@@ -126,6 +126,18 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
             ];
         }
 
+        ## 9 CANCELADO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_order_status WHERE name=:name', ['name' => 'CANCELADO'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CANCELADO',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
 
         // Obter a tabela 'adms_daman_order_status' para inserir os registros
         $adms_daman_order_status = $this->table('adms_daman_order_status');
