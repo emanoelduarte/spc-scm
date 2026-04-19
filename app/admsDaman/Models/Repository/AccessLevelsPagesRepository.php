@@ -9,12 +9,17 @@ use PDO;
 
 class AccessLevelsPagesRepository extends DbConnection
 {
-    public function getPagesAccessLevelsArray(int $accessLevel): array|bool
+    public function getPagesAccessLevelsArray(int $accessLevel, bool $permission = false): array|bool
     {
         // Query para recuperar os registros do banco de dados
         $sql = 'SELECT adms_daman_page_id 
         FROM adms_daman_access_levels_pages
         WHERE adms_daman_access_level_id = :adms_daman_access_level_id';
+
+        // Acessa o IF quando deve retornar apenas páginas que tiverem permissão 1
+        if($permission) {
+            $sql .= " AND permission = 1";
+        }
 
         // Preparar a Query
         $stmt = $this->getConnection()->prepare($sql);

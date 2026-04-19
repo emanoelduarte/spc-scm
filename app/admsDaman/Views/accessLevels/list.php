@@ -59,6 +59,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
                                 <td><?= $order_levels ?></td>
 
                                 <td class="d-md-flex flex-row justify-content-center">
+
+                                    <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels-permissions/' . $id; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-lock-open"></i> Permissões</a>
+
                                     <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
 
                                     <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
@@ -85,7 +88,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
                     </thead>
                 </table>
             <?php
-            // Adiconar o arquivo de paginação
+                // Adiconar o arquivo de paginação
                 require_once './app/admsDaman/Views/partials/pagination.php';
             } else {
                 echo "<div class='alert alert-danger' role='alert'>Nenhum Usuário encontrado</div>";

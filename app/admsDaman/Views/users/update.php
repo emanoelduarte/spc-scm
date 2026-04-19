@@ -51,7 +51,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <input type="text" class="form-control" id="username" name="username" value="<?= $this->data['form']['username'] ?? ''; ?>" placeholder="Nome de usuário">
                 </div>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                    <button type="submit" class="btn btn-warning btn-sm" onclick="showLoading()">Editar</button>
                 </div>
                 </form>
         </div>
