@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\permission;
 
+use App\admsDaman\Controllers\Services\Validation\ValidationAccessLevelPermissionService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\AccessLevelsPagesRepository;
@@ -34,8 +35,7 @@ class ListAccessLevelsPermissions
         // Acessa o if se existir o CSRF e for válido
         if (isset($this->data['form']['csrf_token']) and CSRFHelper::validateCSRFToken('form_update_access_level_permissions', $this->data['form']['csrf_token'])) {
             // Chamar método para editar permissões do nível de acesso
-            // $this->editAccessLevelPermissions();
-            var_dump($this->data['form']);
+            $this->editAccessLevelPermissions();
         } else {
             // Chamar o método para carregar a view de criação de nível de acesso
             $this->viewAccessLevelPermissions();
@@ -85,5 +85,34 @@ class ListAccessLevelsPermissions
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/permission/list", $this->data);
         $loadView->loadView();
+    }
+
+    private function editAccessLevelPermissions(): void
+    {
+        // Validar os dados do formulário
+        $validationAccessLevelPermissions = new ValidationAccessLevelPermissionService();
+        $this->data['errors'] = $validationAccessLevelPermissions->validate($this->data['form']);
+
+        // Acessa o if quando existir algum campo com dados incorretos
+        if (!empty($this->data['errors'])) {
+
+            // Chamar o método carregar a view
+            $this->viewAccessLevelPermissions();
+            return;
+        }
+
+        // Atualizar permissões do nível de acesso
+        // Atualizar as permissões do nível de acesso
+        $accessLevelPagesUpdate = new AccessLevelsPagesRepository();
+        $result = $accessLevelPagesUpdate->updateAccessLevelPages($this->data['form']);
+
+        // Verificar o resultado da atualização
+        if ($result) {
+            $_SESSION['success'] = "Permissões do nível de acesso editadas com sucesso!";
+            header("Location: {$_ENV['URL_ADM']}list-access-levels-permissions/{$this->data['form']['adms_daman_access_level_id']}");
+        } else {
+            $this->data['errors'][] = "Permissões do nível de acesso não editado!";
+            $this->viewAccessLevelPermissions();
+        }
     }
 }
