@@ -64,7 +64,13 @@ class PageController
     public function loadPage(): void
     {
         // Instanciar a classe para validar e carregar a página/controller
-        $loadPageAdm = new LoadPageAdm();
+        // Carregar sem nível de acesso
+        // $loadPageAdm = new LoadPageAdm();
+
+        //Carregar com nível de acesso e verificar no banco de dados
+
+        $loadPageAdm = new LoadPageAdmAccessLevel();
+
         // Chamar o método e enviar como parametro a controller e o parametro da URL
         $loadPageAdm->loadPageAdm($this->urlController, $this->urlParameter);
     }
