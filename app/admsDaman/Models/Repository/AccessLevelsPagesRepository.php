@@ -132,6 +132,8 @@ class AccessLevelsPagesRepository extends DbConnection
             // Recuperar todas as páginas cadastradas para o nível de acesso
             $resultAccessLevelsPages = $this->getPagesAccessLevelsArray((int) $data['adms_daman_access_level_id']);
 
+            $resultAccessLevelsPages = $resultAccessLevelsPages ? $resultAccessLevelsPages : [];
+
             // Recuperar as páginas que nível de acesso tem permissão de acessar
             $resultAccessLevelsPagesPermissions = $this->getPagesAccessLevelsArray((int) $data['adms_daman_access_level_id'], true);
             $resultAccessLevelsPagesPermissions = $resultAccessLevelsPagesPermissions ? $resultAccessLevelsPagesPermissions : [];
