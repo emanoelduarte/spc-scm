@@ -37,10 +37,46 @@ class AddAdmsDamanOrderItems extends AbstractSeed
             [
                 'adms_daman_order_id' => 1,
                 'description' => 'Tomada dupla 10A',
-                'adms_daman_measurement_units_id' => 3,
+                'adms_daman_measurement_units_id' => 1,
                 'quantity' => 20,
                 'purchased_quantity' => 20,
                 'unit_price' => 12.90,
+
+                // locação (NULL)
+                'rented_quantity' => null,
+                'returned_quantity' => null,
+                'rental_start_date' => null,
+                'rental_end_date' => null,
+
+                'adms_daman_order_status_id' => 2,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => null
+            ],
+            [
+                'adms_daman_order_id' => 1,
+                'description' => 'Luminária Preta 45W',
+                'adms_daman_measurement_units_id' => 1,
+                'quantity' => 20,
+                'purchased_quantity' => 20,
+                'unit_price' => 70.50,
+
+                // locação (NULL)
+                'rented_quantity' => null,
+                'returned_quantity' => null,
+                'rental_start_date' => null,
+                'rental_end_date' => null,
+
+                'adms_daman_order_status_id' => 2,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => null
+            ],
+            [
+                'adms_daman_order_id' => 1,
+                'description' => 'Tomada 2P+T 110/220V Tramontina Ária',
+                'adms_daman_measurement_units_id' => 1,
+                'quantity' => 5,
+                'purchased_quantity' => 2,
+                'unit_price' => 18.90,
 
                 // locação (NULL)
                 'rented_quantity' => null,
@@ -98,7 +134,53 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'adms_daman_order_status_id' => 4,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
-            ]
+            ],
+            /*
+            |=======================================
+            | PEDIDO 3 → COMPTRA
+            |=======================================
+            */
+            [
+                'adms_daman_order_id' => 3,
+                'description' => 'Tomada 2P+T 110/220V Tramontina Ária',
+                'adms_daman_measurement_units_id' => 1,
+                'quantity' => 5,
+                'purchased_quantity' => 2,
+                'unit_price' => 18.90,
+
+                // locação (NULL)
+                'rented_quantity' => null,
+                'returned_quantity' => null,
+                'rental_start_date' => null,
+                'rental_end_date' => null,
+
+                'adms_daman_order_status_id' => 2,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => null
+            ],
+            /*
+            |=======================================
+            | PEDIDO 4 → COMPTRA
+            |=======================================
+            */
+            [
+                'adms_daman_order_id' => 4,
+                'description' => 'Argamassa Auto Colante',
+                'adms_daman_measurement_units_id' => 1,
+                'quantity' => 5,
+                'purchased_quantity' => 2,
+                'unit_price' => 18.90,
+
+                // locação (NULL)
+                'rented_quantity' => null,
+                'returned_quantity' => null,
+                'rental_start_date' => null,
+                'rental_end_date' => null,
+
+                'adms_daman_order_status_id' => 2,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => null
+            ],
         ];
 
         foreach ($items as $item) {

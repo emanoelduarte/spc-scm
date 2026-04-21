@@ -46,7 +46,33 @@ class AddAdmsDamanOrders extends AbstractSeed
             'status_date' => date('Y-m-d H:i:s'),
             'rental_contract' => NULL, 
             'rental_period' => '7', 
-            'created_at' => date('Y-m-d H:i:s'),]
+            'created_at' => date('Y-m-d H:i:s'),],
+
+            ['adms_daman_order_types_id' => 1, //Compra
+            'adms_daman_category_id' => 4, // Eletrica/Logica
+            'adms_daman_user_id' => 4, 
+            'adms_daman_project_id' => 2, // João Paulo
+            'service' => "Finalização Quadro Elétrico", 
+            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+            'observation' => 'Solicitado por Cleyton', 
+            'adms_daman_order_status_id' => 1, // Analise
+            'status_date' => date('Y-m-d H:i:s'),
+            'rental_contract' => NULL, 
+            'rental_period' => NULL, 
+            'created_at' => date('Y-m-d H:i:s'),],
+
+            ['adms_daman_order_types_id' => 1, //Compra
+            'adms_daman_category_id' => 2, // Civil
+            'adms_daman_user_id' => 4, 
+            'adms_daman_project_id' => 2, // João Paulo
+            'service' => "Revestimento", 
+            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+            'observation' => 'Solicitado por Cleyton', 
+            'adms_daman_order_status_id' => 1, // Analise
+            'status_date' => date('Y-m-d H:i:s'),
+            'rental_contract' => NULL, 
+            'rental_period' => NULL, 
+            'created_at' => date('Y-m-d H:i:s'),],
         ];
 
 

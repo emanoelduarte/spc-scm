@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\purchasing;
 
+use App\admsDaman\Models\Repository\PurchasingRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ListPurchasings
@@ -12,8 +13,10 @@ class ListPurchasings
     public function index() 
     {
         // Instanciar o Repository para recuperar os registros do banco de dados
-        //$listOrders = new PurchasingRepository();
-        echo "Listar Compras";
+        $listPurchasings = new PurchasingRepository();
+        $listPurchasings->getAllPurchasings();
+
+        $this->data['purchasings'] = $listPurchasings->getAllPurchasings();
 
         // Criar o título da página
         $this->data['title_head'] = "Compras";
