@@ -14,8 +14,12 @@
                 </a>
                 
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-orders')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-orders">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-file-lines"></i></div>
                     Pedidos
+                </a>
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-purchasings')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-purchasings">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    Compras
                 </a>
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-projects')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-projects">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-diagram-project"></i></div>

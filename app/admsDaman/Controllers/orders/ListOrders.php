@@ -55,7 +55,7 @@ class ListOrders
 
         
 
-       // Criar o título da página
+        // Criar o título da página
         $this->data['title_head'] = "Pedidos";
 
         $this->data['menu'] = "list-orders";

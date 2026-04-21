@@ -2,7 +2,7 @@
 
 namespace App\admsDaman\Controllers\purchasing;
 
-class GeneratePurchasing
+class GeneratePurchasings
 {
     public function index() 
     {
