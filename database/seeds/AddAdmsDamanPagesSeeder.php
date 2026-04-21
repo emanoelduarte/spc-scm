@@ -37,6 +37,8 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Visualizar Nível de Acesso', 'controller' => 'ViewAccessLevel', 'controller_url' => 'view-access-level', 'directory' => 'accessLevels', 'obs' => 'Página apresentar os detalhes do nível de acesso.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 3],
             ['name' => 'Editar Nível de Acesso', 'controller' => 'UpdateAccessLevel', 'controller_url' => 'update-access-level', 'directory' => 'accessLevels', 'obs' => 'Página com o formulário editar nível de acesso.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 3],
             ['name' => 'Apagar Nível de Acesso', 'controller' => 'DeleteAccessLevel', 'controller_url' => 'delete-access-level', 'directory' => 'accessLevels', 'obs' => 'Página para apagar o nível de acessodo banco de dados.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 3],
+            ['name' => 'Editar Nível de Acesso do Usuário', 'controller' => 'UpdateUserAccessLevels', 'controller_url' => 'update-user-access-levels', 'directory' => 'accessLevels', 'obs' => 'Página com o checkbox editar nível de acesso.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 3],
+
 
             ['name' => 'Cadastrar Pacote', 'controller' => 'CreatePackage', 'controller_url' => 'create-package', 'directory' => 'packages', 'obs' => 'Página com o formulário cadastrar pacote.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 4],
             ['name' => 'Listar Pacotes', 'controller' => 'ListPackages', 'controller_url' => 'list-packages', 'directory' => 'packages', 'obs' => 'Página para listar o pacotes.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 4],
@@ -92,6 +94,9 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Visualizar Compra', 'controller' => 'ViewPurchasing', 'controller_url' => 'view-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para visualizar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Editar Compra', 'controller' => 'UpdatePurchasing', 'controller_url' => 'update-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para editar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Apagar Compra', 'controller' => 'DeletePurchasing', 'controller_url' => 'delete-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para deletar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+
+            // Permissions
+            ['name' => 'Editar Permissão', 'controller' => 'ListAccessLevelsPermissions', 'controller_url' => 'list-access-levels-permissions', 'directory' => 'permission', 'obs' => 'Página para editar permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
 
         ];
 

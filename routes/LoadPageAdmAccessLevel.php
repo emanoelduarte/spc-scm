@@ -36,11 +36,24 @@ class LoadPageAdmAccessLevel
         $accessLevelPage = new PagesRoutesRepository();
         $this->page = $accessLevelPage->getPage($this->urlController);
 
-        if ($this->page && $this->page['public_page'] == 1) {
+        if (($this->page && $this->page['public_page'] == 1) or ($this->page && $this->verifyLogin())) {
             $this->checkControllersExists();
-        } elseif($this->page && $this->page['public_page'] == 0) {
-            var_dump($this->page);
+        } else {
+            GenerateLog::generateLog("error", "Controller não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+            die("Erro 003: Por favor tente novamente. Caso o problema persista, entre em contato com o administrador {$_ENV['EMAIL_ADM']}");
         }
+    }
+
+    private function verifyLogin(): bool
+    {
+        if ($_SESSION['user_id'] ?? false) {
+
+            $accessLevelPage = new PagesRoutesRepository();
+            if ($accessLevelPage->checkUserPagePermission($this->page['id_ap'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -81,7 +94,11 @@ class LoadPageAdmAccessLevel
 
         // Verificar se o método "index" existe na classe
         if (method_exists($classLoad, "index")) {
-            GenerateLog::generateLog("info", "Página acessada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
+            GenerateLog::generateLog("info", "Página acessada.", [
+                'pagina' => $this->urlController,
+                'parametro' => $this->urlParameter,
+                'action_user_id' => $_SESSION['user_id'] ?? ''
+            ]);
             $classLoad->{"index"}($this->urlParameter);
         } else {
             GenerateLog::generateLog("error", "Método não encontrado.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
