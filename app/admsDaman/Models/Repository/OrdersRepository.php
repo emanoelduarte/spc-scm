@@ -26,7 +26,7 @@ class OrdersRepository extends DbConnection
         $conditions = [];
         $params = [];
 
-        // 🔹 Mapeamento campo form → coluna banco
+        // Mapeamento campo form → coluna banco
         $map = [
             'order_number' => 'ado.id',
             'adms_daman_project_id' => 'ado.adms_daman_project_id',
@@ -41,7 +41,7 @@ class OrdersRepository extends DbConnection
             }
         }
 
-        // 🔹 Filtro por intervalo de datas
+        // Filtro por intervalo de datas
         if (!empty($filters['data_inicio'])) {
             $conditions[] = "ado.created_at >= :data_inicio";
             $params['data_inicio'] = $filters['data_inicio'];

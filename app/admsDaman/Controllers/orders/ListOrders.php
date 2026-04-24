@@ -12,15 +12,15 @@ use App\admsDaman\Views\Services\LoadViewService;
 /**
  * Controller responsável por exibir os pedidos de compra
  */
-class ListOrders 
+class ListOrders
 {
     /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
 
     /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
     private int $limitResult = 10;
-    
-    public function index(string|int $page = 1) : void 
+
+    public function index(string|int $page = 1): void
     {
         $this->data['search'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
 
@@ -28,16 +28,17 @@ class ListOrders
         $listOrders = new OrdersRepository();
 
         $this->data['orders'] = $listOrders->getAllOrders(
-        (int) $page, 
-        (int) $this->limitResult, 
-        $this->data['search']
+            (int) $page,
+            (int) $this->limitResult,
+            $this->data['search']
         );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-        (int) $listOrders->getAmountOrders(), 
-        (int) $this->limitResult, 
-        (int) $page, 
-        'list-orders');
+            (int) $listOrders->getAmountOrders(),
+            (int) $this->limitResult,
+            (int) $page,
+            'list-orders'
+        );
 
         $this->data['order_number'] = $this->data['search'];
 
@@ -53,7 +54,7 @@ class ListOrders
         $getProjectSelect = new CategoriesRepository();
         $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
-        
+
 
         // Criar o título da página
         $this->data['title_head'] = "Pedidos";
@@ -65,4 +66,3 @@ class ListOrders
         $loadView->loadView();
     }
 }
-?>

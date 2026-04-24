@@ -11,13 +11,15 @@ class NormalizeDecimal
      * @return string Token CSRF gerado.
      */
 
-    public static function normalizeDecimal(string $value)
+    public static function normalizeDecimal(string $value): float
     {
-        // remove separador de milhar (.)
-        $value = str_replace('.', '', $value);
+        $value = trim($value);
 
-        // troca vírgula por ponto
-        $value = str_replace(',', '.', $value);
+        if (str_contains($value, ',')) {
+            // formato brasileiro: 1.234,56
+            $value = str_replace('.', '', $value); // remove milhar
+            $value = str_replace(',', '.', $value); // troca decimal
+        }
 
         return (float) $value;
     }

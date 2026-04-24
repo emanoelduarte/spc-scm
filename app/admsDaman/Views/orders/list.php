@@ -31,7 +31,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <form action="" method="POST">
                 <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
 
-                    <input type="text" name="description" class="w-50 p-2" value="<?= ($this->data['search']['description'] ?? '') ?>">
+                    <input type="text" class="form-control w-50 p-2" name="description"
+                        value="<?= ($this->data['search']['description'] ?? '') ?>" placeholder="Pesquise por item">
                     <button type="submit" class="btn btn-success h-100 ms-1">
                         Buscar
                     </button>
@@ -52,7 +53,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
+                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
             </span>
         </div>
 
@@ -63,18 +65,18 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             if ($this->data['orders'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Pedido</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col" class="d-none d-md-table-cell">Status</th>
-                            <th scope="col" class="d-none d-md-table-cell">Data do Pedido</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Pedido</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col" class="d-none d-md-table-cell">Status</th>
+                        <th scope="col" class="d-none d-md-table-cell">Data do Pedido</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
                         // Percorrer o array de Pedidos
                         foreach ($this->data['orders'] as $order) {
                             extract($order);
@@ -82,7 +84,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             $created = ($created_at ? date('d/m/Y', strtotime($created_at)) : "");
                         ?>
 
-                            <?php
+                    <?php
                             // Verificar o Status e aplicar a cor na borda do pedido
                             switch ($status_id) {
                                 case 1:
@@ -120,44 +122,52 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             }
                             ?>
 
-                            <tr class="<?= $highlightClass ?>">
-                                <td><?= $pedido_id; ?></td>
-                                <td><?= $project_name; ?></td>
-                                <td><?= $status_name; ?></td>
+                    <tr class="<?= $highlightClass ?>">
+                        <td><?= $pedido_id; ?></td>
+                        <td><?= $project_name; ?></td>
+                        <td><?= $status_name; ?></td>
 
-                                <td class="d-none d-md-table-cell"><?= $created; ?></td>
-                                <td class="d-md-flex flex-row justify-content-center">
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . $pedido_id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                        <td class="d-none d-md-table-cell"><?= $created; ?></td>
+                        <td class="d-md-flex flex-row justify-content-center">
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . $pedido_id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
 
-                                    <?php if (($order) and ($order['adms_daman_order_types_id'] == 1)): ?>
+                            <?php if (($order) and ($order['adms_daman_order_types_id'] == 1)): ?>
 
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
 
-                                    <?php else: ?>
+                            <?php else: ?>
 
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
 
-                                    <?php endif; ?>
+                            <?php endif; ?>
 
 
-                                    <?php  // Formulário para envio dos dados para deletar Pedido 
+                            <?php  // Formulário para envio dos dados para deletar Pedido 
                                     // 
                                     ?>
-                                    <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
+                            <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order"
+                                method="POST">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
+                                <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i
+                                        class="fa-solid fa-trash"></i> Apagar</button>
 
-                                    </form>
+                            </form>
 
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação
@@ -183,7 +193,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         ?>
         <div class="mb-2">
             <label class="mt-4 fw-bold">Nº Pedido</label>
-            <input type="text" class="form-control desabled" id="order_number" value="<?= ($this->data['search']['order_number'] ?? '') ?>" name="order_number" placeholder="Número do pedido">
+            <input type="text" class="form-control" id="order_number"
+                value="<?= ($this->data['search']['order_number'] ?? '') ?>" name="order_number"
+                placeholder="Número do pedido">
         </div>
 
         <div class="mb-2">

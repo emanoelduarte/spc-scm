@@ -5,12 +5,13 @@ namespace App\admsDaman\Controllers\purchasing;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Helpers\NormalizeDecimal;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
-use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\PurchasingRepository;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
+use Normalizer;
 
 class GeneratePurchasing
 {
@@ -117,6 +118,8 @@ class GeneratePurchasing
         // Calacular desconto para enviar para a models
         if (!empty($this->data['form']['discount_value'])) {
 
+            $formatedDiscountValue = NormalizeDecimal::normalizeDecimal($this->data['form']['discount_value']);
+
             $selectedItems = [];
 
             foreach ($this->data['form']['items'] as $item) {
@@ -127,7 +130,6 @@ class GeneratePurchasing
 
             $sub_tot = 0;
 
-
             foreach ($selectedItems as $item) {
                 $tot_item = (float)$item['purchased_quantity'] * (float)$item['unit_price'];
                 $sub_tot += $tot_item;
@@ -135,11 +137,11 @@ class GeneratePurchasing
 
             if ($this->data['form']['discount_type'] == 'fixed') {
 
-                $discount_value = (float)$this->data['form']['discount_value'];
+                $discount_value = $formatedDiscountValue;
 
                 $this->data['form']['discount_value'] = $discount_value;
             } else {
-                $discount_value = $sub_tot * ((float)$this->data['form']['discount_value'] / 100);
+                $discount_value = $sub_tot * ($formatedDiscountValue / 100);
                 $this->data['form']['discount_value'] = $discount_value;
             }
         }

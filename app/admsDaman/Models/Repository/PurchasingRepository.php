@@ -20,10 +20,44 @@ class PurchasingRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de compras recuperados do banco de dados.
      */
-    public function getAllPurchasings(): array|false
+    public function getAllPurchasings(int $page = 1, int $limitResult = 10, ?array $filters = []): array|false
     {
 
-        $sql = 'SELECT adpu.id,
+        // Calcular o registro inicial de cada página exemplo:
+        // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
+        $offset = max(0, ($page - 1) * $limitResult);
+
+        $conditions = [];
+        $params = [];
+
+        // Mapeamento campo form → coluna banco
+        $map = [
+            'purchasing_number' => 'adpu.id',
+            'order_number' => 'adpu.adms_daman_order_id',
+            'adms_daman_project_id' => 'adpu.adms_daman_project_id',
+        ];
+
+        foreach ($map as $field => $column) {
+            if (!empty($filters[$field])) {
+                $conditions[] = "{$column} = :{$field}";
+                $params[$field] = $filters[$field];
+            }
+        }
+
+        // Filtro por intervalo de datas
+        if (!empty($filters['data_inicio'])) {
+            $conditions[] = "adpu.created_at >= :data_inicio";
+            $params['data_inicio'] = $filters['data_inicio'];
+        }
+
+        if (!empty($filters['data_fim'])) {
+            $conditions[] = "adpu.created_at <= :data_fim";
+            $params['data_fim'] = $filters['data_fim'];
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+        $sql = "SELECT adpu.id, adpu.adms_daman_order_id,
                 adp.name AS project_name,
                 ads.trade_name,
                 adu.name AS buyer_name
@@ -31,15 +65,65 @@ class PurchasingRepository extends DbConnection
                 INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
                 INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
                 INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id
-                ORDER BY id DESC';
+                {$where}
+                ORDER BY adpu.id DESC
+                LIMIT :limit OFFSET :offset";
 
         // Preparar a query
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        // Substituir o link da QUERY pelo valor
+        $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
         // Executar a Query
         $stmt->execute();
 
         return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Recuperar a quantidade de compras para paginação
+     * @return int|bool Quantidade de compras encontrados no banco de dados
+     */
+
+    public function getAmountPurchasings(?string $purchasing_number = null): int
+    {
+        $conditions = [];
+        $params = [];
+
+        if (!empty($purchasing_number)) {
+            $conditions[] = "id = :purchasing_number";
+            $params['purchasing_number'] = $purchasing_number;
+        }
+
+        if (!empty($orderNumber)) {
+            $conditions[] = "id = :order_number";
+            $params['order_number'] = $orderNumber;
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+        // Criar Query para recuperar todos os registros no banco de dados
+        $sql = "SELECT COUNT(id) AS amount_records
+         FROM adms_daman_purchasings
+         {$where}";
+
+        // Preparar a Query
+        $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+        }
+
+        // Executar a query
+        $stmt->execute();
+
+        return ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);
     }
 
     /**
