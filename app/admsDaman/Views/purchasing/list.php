@@ -43,10 +43,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
         </div>
 
         <div class="card-body">
-            <?php // Incluir arquivo rsponsável por alerta
+            <?php // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
-
-            // var_dump($this->data['purchasings']);
 
             // Acessa o IF quando encontrar o elemento no array compras
             if ($this->data['purchasings'] ?? false) {
@@ -66,7 +64,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                 <tbody>
 
                     <?php
-                        // Percorrer o array de usuários
+                        // Percorrer o array de compras
                         foreach ($this->data['purchasings'] as $purchasing) {
                             extract($purchasing);
                         ?>
@@ -79,18 +77,19 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                         <td class="d-md-flex flex-row justify-content-center">
                             <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
                                 class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                            <!-- <a href="<?= $_ENV['URL_ADM'] . 'update-user/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
 
-                                    <?php  // Formulário para envio dos dados para deletar Usuário 
+                            <?php  // Formulário para envio dos dados para deletar compra 
                                     ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
+                            <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
+                                method="POST">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button> -->
-
+                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                    Apagar</button>
                             </form>
 
                         </td>

@@ -90,10 +90,9 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Apagar Obra', 'controller' => 'DeleteProject', 'controller_url' => 'delete-project', 'directory' => 'projects', 'obs' => 'Página para deletar Obra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
 
             // Páginas Compras
-            ['name' => 'Criar Compra', 'controller' => 'GeneratePurchasing', 'controller_url' => 'generate-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para gerar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Gerar Compra', 'controller' => 'GeneratePurchasing', 'controller_url' => 'generate-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para gerar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Listar Compras', 'controller' => 'ListPurchasings', 'controller_url' => 'list-purchasings', 'directory' => 'purchasing', 'obs' => 'Página para listar compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Visualizar Compra', 'controller' => 'ViewPurchasing', 'controller_url' => 'view-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para visualizar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-            ['name' => 'Editar Compra', 'controller' => 'UpdatePurchasing', 'controller_url' => 'update-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para editar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Apagar Compra', 'controller' => 'DeletePurchasing', 'controller_url' => 'delete-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para deletar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
 
             // Permissions

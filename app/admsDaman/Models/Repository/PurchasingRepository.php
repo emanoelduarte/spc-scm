@@ -321,4 +321,43 @@ class PurchasingRepository extends DbConnection
 
         return true;
     }
+
+    /**
+     * Método para deletar compras
+     */
+    public function deletePurchasing(int $idPurchasing): bool
+    {
+        // Usar o try e catch para gerenciar exceção/erro
+        try {
+
+            // Query para deletar o compra
+            $sql = 'DELETE FROM adms_daman_purchasings  WHERE id = :id LIMIT 1';
+
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substiruir os links pelo valor
+            $stmt->bindParam(':id', $idPurchasing, PDO::PARAM_INT);
+
+            // Executar a Query
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            $affectedRows = $stmt->rowCount();
+
+            if ($affectedRows > 0) {
+                return true;
+            } else {
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Pedido não apagado.", ['id' => $idPurchasing]);
+                return false;
+            }
+        } catch (Exception $e) {
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Compra não apagada.", ['id' => $idPurchasing, 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
 }
