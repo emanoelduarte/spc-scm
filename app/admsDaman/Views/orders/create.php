@@ -42,7 +42,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <input type="hidden" name="csrf_token" value="<?php echo CSRFHelper::generateCSRFToken('form_create_order'); ?>" id="">
 
                 <div class="col-lg-2 col-md-6 col-sm-12">
-                    <label for="solicitante" class="form-label">Prev. Recebimento </label>
+                    <label for="expected_receipt_date" class="form-label">Prev. Recebimento </label>
                     <input type="date" class="form-control" id="expected_receipt_date" name="expected_receipt_date" value="<?= $this->data['form']['expected_receipt_date'] ?? ''; ?>" placeholder="dd/mm/yyyy">
 
                     <script>

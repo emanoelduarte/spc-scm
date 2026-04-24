@@ -137,7 +137,7 @@ class OrdersRepository extends DbConnection
      * 
      * @return array|bool Pedido recuperado do banco de dados
      */
-    public function getOrder(int $idPedido): array|bool
+    public function getOrder(int $orderId): array|bool
     {
         try {
             // Consultar pedido e itens de compra
@@ -161,13 +161,13 @@ class OrdersRepository extends DbConnection
                 WHERE ado.id = :id';
 
             $stmt_order = $this->getConnection()->prepare($order);
-            $stmt_order->bindValue(':id', $idPedido, PDO::PARAM_INT);
+            $stmt_order->bindValue(':id', $orderId, PDO::PARAM_INT);
 
             $stmt_order->execute();
 
             return $stmt_order->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $err) {
-            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $idPedido]);
+            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $orderId]);
             die("Pedido não encontrado " . $err->getMessage());
         }
         return false;
@@ -176,7 +176,7 @@ class OrdersRepository extends DbConnection
     /**
      * Método para buscar os itens do pedido
      */
-    public function getItems(int $idPedido): array|bool
+    public function getItems(int $orderId): array|bool
     {
 
         // Consultar Itens de Compra
@@ -189,7 +189,7 @@ class OrdersRepository extends DbConnection
 
         $stmt_items = $this->getConnection()->prepare($items);
 
-        $stmt_items->bindValue(':id', $idPedido, PDO::PARAM_INT);
+        $stmt_items->bindValue(':id', $orderId, PDO::PARAM_INT);
 
         $stmt_items->execute();
 

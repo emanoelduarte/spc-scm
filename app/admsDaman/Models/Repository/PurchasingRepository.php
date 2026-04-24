@@ -3,7 +3,9 @@
 namespace App\admsDaman\Models\Repository;
 
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Helpers\NormalizeDecimal;
 use App\admsDaman\Models\Services\DbConnection;
+use DateTime;
 use Exception;
 use PDO;
 
@@ -49,8 +51,8 @@ class PurchasingRepository extends DbConnection
     public function getPurchasing(int $idPurchasing): array|bool
     {
 
-    try {
-        $sql = 'SELECT adpu.id, adpu.expected_receipt_date, adpu.service, adpu.delivery_address, adpu.delivery_value, adpu.discount, adpu.created_at, adpu.updated_at,
+        try {
+            $sql = 'SELECT adpu.id, adpu.expected_receipt_date, adpu.service, adpu.delivery_address, adpu.delivery_value, adpu.discount, adpu.created_at, adpu.updated_at,
                 adp.name AS project_name,
                 ads.legal_name,
                 ado.id AS order_number,
@@ -64,18 +66,17 @@ class PurchasingRepository extends DbConnection
         INNER JOIN adms_daman_payment_methods AS adpm ON adpm.id = adpu.adms_daman_user_id 
         WHERE adpu.id = :id';
 
-        // Preparar a query
-        $stmt = $this->getConnection()->prepare($sql);
+            // Preparar a query
+            $stmt = $this->getConnection()->prepare($sql);
 
-        //Substituir Links
-        $stmt->bindValue(':id', $idPurchasing, PDO::PARAM_INT);
+            //Substituir Links
+            $stmt->bindValue(':id', $idPurchasing, PDO::PARAM_INT);
 
-        // Executar a Query
-        $stmt->execute();
+            // Executar a Query
+            $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-        
-    }catch (Exception $err) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
             GenerateLog::generateLog("error", "Compra não encontrada", ['id' => (int) $idPurchasing]);
             die("Compra não encontrada!" . $err->getMessage());
         }
@@ -90,21 +91,20 @@ class PurchasingRepository extends DbConnection
 
         try {
 
-        $sql = "SELECT adpi.adms_daman_purchasing_id, adpi.description, adpi.purchased_quantity, adpi.unit_price, adpi.created_at, adpi.updated_at,
+            $sql = "SELECT adpi.adms_daman_purchasing_id, adpi.description, adpi.purchased_quantity, adpi.unit_price, adpi.created_at, adpi.updated_at,
                 admu.name AS measurement_unit
                 FROM adms_daman_purchasing_items AS adpi
                 INNER JOIN adms_daman_measurement_units AS admu ON admu.id=adpi.adms_daman_measurement_units_id
                 WHERE adms_daman_purchasing_id = :idPurchasing";
 
-        $stmt = $this->getConnection()->prepare($sql);
+            $stmt = $this->getConnection()->prepare($sql);
 
-        $stmt->bindValue(':idPurchasing', $idPurchasing, PDO::PARAM_INT);
+            $stmt->bindValue(':idPurchasing', $idPurchasing, PDO::PARAM_INT);
 
-        $stmt->execute();
+            $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        }catch (Exception $e) { // Acessa o catch quando houver erro no try
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
 
             // Chamar o método para salvar o log
             GenerateLog::generateLog("error", "O pedido não possui itens.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
@@ -112,6 +112,129 @@ class PurchasingRepository extends DbConnection
             return false;
         }
 
-    return false;
+        return false;
+    }
+
+    public function generatePurchasing(array $data): int|bool
+    {
+        try {
+            $FormatedDate = DateTime::createFromFormat('d/m/Y', $data['expected_receipt_date'])->format('Y-m-d');
+
+
+            $sql = 'INSERT INTO adms_daman_purchasings 
+                    (adms_daman_supplier_id, adms_daman_user_id, expected_receipt_date, adms_daman_order_id, adms_daman_project_id, service, delivery_address, adms_daman_payment_methods_id, created_at';
+
+            if (!$data['delivery_value'] == '') {
+                $sql .= ', delivery_value';
+            }
+
+            if (!$data['discount_value'] == '') {
+                $sql .= ', discount';
+            }
+            $sql .= ') VALUES (:adms_daman_supplier_id, :adms_daman_user_id, :expected_receipt_date, :adms_daman_order_id, :adms_daman_project_id, :service, :delivery_address, :adms_daman_payment_methods_id, :created_at';
+
+            if (!$data['delivery_value'] == '') {
+                $sql .= ', :delivery_value';
+            }
+
+            if (!$data['discount_value'] == '') {
+                $sql .= ', :discount';
+            }
+
+            $sql .= ')';
+
+            $stmt = $this->getConnection()->prepare($sql);
+
+            $stmt->bindValue(':adms_daman_supplier_id', $data['adms_daman_supplier_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':expected_receipt_date', $FormatedDate);
+            $stmt->bindValue(':adms_daman_order_id', $data['adms_daman_order_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
+            $stmt->bindValue(':delivery_address', $data['delivery_address'], PDO::PARAM_STR);
+            $stmt->bindValue(':adms_daman_payment_methods_id', $data['adms_daman_payment_methods_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+
+            if (!$data['delivery_value'] == '') {
+                $stmt->bindValue(':delivery_value', NormalizeDecimal::normalizeDecimal($data['delivery_value']));
+            }
+            if (!$data['discount_value'] == '') {
+                $stmt->bindValue(':discount', NormalizeDecimal::normalizeDecimal($data['discount_value']));
+            }
+
+            // Executar a QUERY
+            $result = $stmt->execute();
+
+
+            if ($result) {
+                // 2. PEGA O ID AQUI (imediatamente após o insert do pedido)
+                $purchasingId = $this->getConnection()->lastInsertId();
+
+                // Chama o método para cadastar os itens
+                $this->generateItemsPurchasing($data, $purchasingId);
+            }
+
+            // retorna o ultimo id inserido de pedido
+            return $purchasingId;
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Compra não cadastrada.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    public function generateItemsPurchasing(array $dataForm, $purchasingId): bool
+    {
+
+        try {
+            $selectedItems = [];
+
+            foreach ($dataForm['items'] as $item) {
+                if (!empty($item['selected_item'])) {
+                    $selectedItems[] = $item;
+                }
+            }
+
+            foreach ($selectedItems as $item) {
+                $data = [
+                    'description' => $item['description'],
+                    'adms_daman_measurement_units_id' => $item['adms_daman_measurement_units_id'],
+                    'purchased_quantity' => $item['purchased_quantity'],
+                    'unit_price' => $item['unit_price'],
+                ];
+
+                // salvar no banco
+
+                // QUERY cadastrar pedido
+                $sql = 'INSERT INTO adms_daman_purchasing_items 
+                    (adms_daman_purchasing_id, description, adms_daman_measurement_units_id, purchased_quantity, unit_price, created_at) 
+                    VALUES (:adms_daman_purchasing_id, :description, :adms_daman_measurement_units_id, :purchased_quantity, :unit_price, :created_at)';
+
+                // Preparar a QUERY
+                $stmt = $this->getConnection()->prepare($sql);
+
+                // Substituir os links da QUERY pelo valor
+                $stmt->bindValue(':adms_daman_purchasing_id', $purchasingId, PDO::PARAM_INT);
+                $stmt->bindValue(':description', $data['description'], PDO::PARAM_STR);
+                $stmt->bindValue(':adms_daman_measurement_units_id', $data['adms_daman_measurement_units_id'], PDO::PARAM_INT);
+                $stmt->bindValue(':purchased_quantity', (float)$data['purchased_quantity']);
+                $stmt->bindValue(':unit_price', (float)$data['unit_price']);
+                $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+                $stmt->execute();
+            }
+            return true;
+        } catch (Exception $e) { // Acessa o catch quando houver erro no try
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Itens não cadastrados.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+
+        return true;
     }
 }

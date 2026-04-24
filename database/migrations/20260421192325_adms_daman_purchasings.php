@@ -45,8 +45,8 @@ final class AdmsDamanPurchasings extends AbstractMigration
 
                 ->addColumn('delivery_address', 'string', ['null' => false, 'comment' => 'Endereço de entrega'])
 
-                ->addColumn('payment_methods_id', 'integer', ['null' => false, 'signed' => false])
-                ->addForeignKey('payment_methods_id', 'adms_daman_payment_methods', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE']) // criar essa tabela
+                ->addColumn('adms_daman_payment_methods_id', 'integer', ['null' => false, 'signed' => false])
+                ->addForeignKey('adms_daman_payment_methods_id', 'adms_daman_payment_methods', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE']) // criar essa tabela
 
                 ->addColumn('delivery_value', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => true, 'comment' => 'Valor do frete'])
 

@@ -29,7 +29,34 @@ class AddAdmsDamanSuppliers extends AbstractSeed
             'phone' => '91985044131', 
             'adms_daman_suppliers_types_id' => 1, 
             'supplier_status' => 1, 
-            'created_at' => date('Y-m-d H:i:s'),]
+            'created_at' => date('Y-m-d H:i:s'),],
+
+            ['legal_name' => 'IMPORTADOR OPLIMA LTDA', 
+            'trade_name' => 'OPLIMA', 
+            'cnpj' => '04945481000169', 
+            'contact_name' => 'MESSIAS/EDILSON', 
+            'phone' => '91980963374', 
+            'adms_daman_suppliers_types_id' => 1, 
+            'supplier_status' => 1, 
+            'created_at' => date('Y-m-d H:i:s'),],
+
+            ['legal_name' => 'ACO BELEM COMERCIAL LTDA', 
+            'trade_name' => 'ACO BELÉM', 
+            'cnpj' => '04082321000133', 
+            'contact_name' => 'GLEYCE', 
+            'phone' => '91988506863', 
+            'adms_daman_suppliers_types_id' => 1, 
+            'supplier_status' => 1, 
+            'created_at' => date('Y-m-d H:i:s'),],
+
+            ['legal_name' => 'TECHFIX COM. DE PRODUTOS DE FIXAÇÃO LTDA', 
+            'trade_name' => 'TECHFIX', 
+            'cnpj' => '07084548000106', 
+            'contact_name' => 'IZAIAS', 
+            'phone' => '91981775236', 
+            'adms_daman_suppliers_types_id' => 1, 
+            'supplier_status' => 1, 
+            'created_at' => date('Y-m-d H:i:s'),],
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar

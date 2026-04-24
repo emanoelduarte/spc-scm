@@ -44,6 +44,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                             <th scope="col">Comprador</th>
                             <th scope="col">Obra</th>
                             <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
+                            <th scope="col" class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -23,7 +23,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
         // Variável para receber os dados que devem ser validados antes de cadastrar
         $purchasings = [
             ['adms_daman_supplier_id' => 1, //Id do fornecedor
-            'adms_daman_user_id' => 4, // Id do usuário comprador
+            'adms_daman_user_id' => 3, // Id do usuário comprador
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'adms_daman_order_id' => 1,  // Id do pedido de compra
             'adms_daman_project_id' => 4, // Id da Obra Autozelio
@@ -31,11 +31,11 @@ class AddAdmsDamanPurchasings extends AbstractSeed
             'delivery_address' => "Passagem Lindolfo Collor, 68 - Marco, Belém - PA, 66095-310 - Entre: Av. Almirante Barroso e Passagem Getúlio Vargas", 
             'delivery_value' => null,
             'discount' => null,
-            'payment_methods_id' => 1, // À vista
+            'adms_daman_payment_methods_id' => 1, // À vista
             'created_at' => date('Y-m-d H:i:s'),],
 
             ['adms_daman_supplier_id' => 1, //Id do fornecedor
-            'adms_daman_user_id' => 4, // Id do usuário comprador
+            'adms_daman_user_id' => 3, // Id do usuário comprador
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'adms_daman_order_id' => 2,  // Id do pedido de compra
             'adms_daman_project_id' => 2, // Id da Obra João Paulo
@@ -43,7 +43,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
             'delivery_address' => "Av. João Paulo II, 1758 - Marco - Belém/PA - Entre: Travessa Dr. Enéias Pinheiros e Travessa Lomas Valentinas", 
             'delivery_value' => null,
             'discount' => null,
-            'payment_methods_id' => 1, // À vista
+            'adms_daman_payment_methods_id' => 1, // À vista
             'created_at' => date('Y-m-d H:i:s'),],
         ];
 
@@ -61,7 +61,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
                     'delivery_address' => $purchasing['delivery_address'],
                     'delivery_value' => $purchasing['delivery_value'],
                     'discount' => $purchasing['discount'],
-                    'payment_methods_id' => $purchasing['payment_methods_id'],
+                    'adms_daman_payment_methods_id' => $purchasing['adms_daman_payment_methods_id'],
                     'created_at' => $purchasing['created_at'],
                 ];
         }

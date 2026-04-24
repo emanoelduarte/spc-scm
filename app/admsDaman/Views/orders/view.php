@@ -81,7 +81,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 
                 <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing'; ?>" class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/'. ($this->data['order']['id'] ?? ''); ?>" class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
 
                 <?php  // Formulário para envio dos dados para deletar Pedido 
                 ?>
