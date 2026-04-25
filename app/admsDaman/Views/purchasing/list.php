@@ -50,53 +50,53 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             if ($this->data['purchasings'] ?? false) {
             ?>
 
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">N°. Compra</th>
-                        <th scope="col">N°. Pedido</th>
-                        <th scope="col">Comprador</th>
-                        <th scope="col">Obra</th>
-                        <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
-                        <th scope="col" class="text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">N°. Compra</th>
+                            <th scope="col">N°. Pedido</th>
+                            <th scope="col">Comprador</th>
+                            <th scope="col">Obra</th>
+                            <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
+                            <th scope="col" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                    <?php
+                        <?php
                         // Percorrer o array de compras
                         foreach ($this->data['purchasings'] as $purchasing) {
                             extract($purchasing);
                         ?>
-                    <tr>
-                        <td><?= $id ?></td>
-                        <td><?= $adms_daman_order_id ?></td>
-                        <td><?= $buyer_name ?></td>
-                        <td><?= $project_name ?></td>
-                        <td><?= $trade_name ?></td>
-                        <td class="d-md-flex flex-row justify-content-center">
-                            <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
-                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <tr>
+                                <td><?= $id ?></td>
+                                <td><?= $adms_daman_order_id ?></td>
+                                <td><?= $buyer_name ?></td>
+                                <td><?= $project_name ?></td>
+                                <td><?= $trade_name ?></td>
+                                <td class="d-md-flex flex-row justify-content-center">
+                                    <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
+                                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
 
-                            <?php  // Formulário para envio dos dados para deletar compra 
+                                    <?php  // Formulário para envio dos dados para deletar compra 
                                     ?>
-                            <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
-                                method="POST">
+                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
+                                        method="POST">
 
-                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                        <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                    onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
-                                    Apagar</button>
-                            </form>
+                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                            onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                            Apagar</button>
+                                    </form>
 
-                        </td>
-                    </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
 
             <?php
                 // Adiconar o arquivo de paginação

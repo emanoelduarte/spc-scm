@@ -98,6 +98,9 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             // Permissions
             ['name' => 'Editar Permissão', 'controller' => 'ListAccessLevelsPermissions', 'controller_url' => 'list-access-levels-permissions', 'directory' => 'permission', 'obs' => 'Página para editar permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
 
+            // Pdfs
+            ['name' => 'Gerar PDF Compra', 'controller' => 'GeneratePdfPurchasing', 'controller_url' => 'generate-pdf-purchasing', 'directory' => 'pdfs', 'obs' => 'Página para gerar PDF de Compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 14],
+
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar
