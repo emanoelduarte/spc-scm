@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
 
-class AddAdmsDamanOrdersTypes extends AbstractSeed
+class AddAdmsDamanAcquisitionTypes extends AbstractSeed
 {
     /**
      * Run Method.
@@ -20,7 +20,7 @@ class AddAdmsDamanOrdersTypes extends AbstractSeed
 
         ## 1 COMPRA
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_order_types WHERE name=:name', ['name' => 'COMPRA'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_acquisition_types WHERE name=:name', ['name' => 'COMPRA'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
@@ -32,7 +32,7 @@ class AddAdmsDamanOrdersTypes extends AbstractSeed
 
         ## 2 LOCAÇÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_order_types WHERE name=:name', ['name' => 'LOCAÇÃO'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_acquisition_types WHERE name=:name', ['name' => 'LOCAÇÃO'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
@@ -44,10 +44,9 @@ class AddAdmsDamanOrdersTypes extends AbstractSeed
 
 
         // Obter a tabela 'adms_daman_orders_type' para inserir os registros
-        $adms_daman_order_types = $this->table('adms_daman_order_types');
+        $adms_daman_acquisition_types = $this->table('adms_daman_acquisition_types');
 
         // Insere os registros na tabela
-        $adms_daman_order_types->insert($data)->save();
-
+        $adms_daman_acquisition_types->insert($data)->save();
     }
 }

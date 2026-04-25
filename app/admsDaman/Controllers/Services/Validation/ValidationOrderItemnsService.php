@@ -35,11 +35,11 @@ class ValidationOrderItemnsService
         $rules['description'] = 'required';
         $rules['adms_daman_measurement_units_id'] = 'required';
 
-        if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 1)) {
+        if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_acquisition_types_id']) && ($data['adms_daman_acquisition_types_id'] == 1)) {
 
             $rules['purchased_quantity'] = 'required';
 
-        } else if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_order_types_id']) && ($data['adms_daman_order_types_id'] == 2)) {
+        } else if (isset($data['id']) && isset($data['item_id']) && isset($data['adms_daman_acquisition_types_id']) && ($data['adms_daman_acquisition_types_id'] == 2)) {
 
             $rules['rented_quantity'] = 'required';
 

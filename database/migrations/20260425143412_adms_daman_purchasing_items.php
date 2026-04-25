@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class AdmsDamanPurchasingItemns extends AbstractMigration
+final class AdmsDamanPurchasingItems extends AbstractMigration
 {
     /**
      * Change Method.

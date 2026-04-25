@@ -27,7 +27,7 @@ function showLoading() {
 
 }
 
-const div = document.querySelector('.adms_daman_order_types_id');
+const div = document.querySelector('.adms_daman_acquisition_types_id');
 const selectField = document.getElementById('locationPeriod');
 
 if (div) {

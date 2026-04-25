@@ -22,7 +22,7 @@ class AddAdmsDamanOrders extends AbstractSeed
 
         // Variável para receber os dados que devem ser validados antes de cadastrar
         $orders = [
-            ['adms_daman_order_types_id' => 1, //Compra
+            ['adms_daman_acquisition_types_id' => 1, //Compra
             'adms_daman_category_id' => 4, // Eletrica/Logica
             'adms_daman_user_id' => 4, 
             'adms_daman_project_id' => 4, // Autozelio
@@ -35,7 +35,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'rental_period' => NULL, 
             'created_at' => date('Y-m-d H:i:s'),],
 
-            ['adms_daman_order_types_id' => 2, //Locação
+            ['adms_daman_acquisition_types_id' => 2, //Locação
             'adms_daman_category_id' => 4, // Eletrica/Logica
             'adms_daman_user_id' => 4, 
             'adms_daman_project_id' => 2, // João Paulo
@@ -48,7 +48,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'rental_period' => '7', 
             'created_at' => date('Y-m-d H:i:s'),],
 
-            ['adms_daman_order_types_id' => 1, //Compra
+            ['adms_daman_acquisition_types_id' => 1, //Compra
             'adms_daman_category_id' => 4, // Eletrica/Logica
             'adms_daman_user_id' => 4, 
             'adms_daman_project_id' => 2, // João Paulo
@@ -61,7 +61,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'rental_period' => NULL, 
             'created_at' => date('Y-m-d H:i:s'),],
 
-            ['adms_daman_order_types_id' => 1, //Compra
+            ['adms_daman_acquisition_types_id' => 1, //Compra
             'adms_daman_category_id' => 2, // Civil
             'adms_daman_user_id' => 4, 
             'adms_daman_project_id' => 2, // João Paulo
@@ -80,7 +80,7 @@ class AddAdmsDamanOrders extends AbstractSeed
         foreach ($orders as $order) {
 
                 $data[] = [
-                    'adms_daman_order_types_id' => $order['adms_daman_order_types_id'],
+                    'adms_daman_acquisition_types_id' => $order['adms_daman_acquisition_types_id'],
                     'adms_daman_category_id' => $order['adms_daman_category_id'],
                     'adms_daman_user_id' => $order['adms_daman_user_id'],
                     'adms_daman_project_id' => $order['adms_daman_project_id'],

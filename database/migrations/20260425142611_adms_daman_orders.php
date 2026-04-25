@@ -20,7 +20,8 @@ final class AdmsDamanOrders extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function up() {
+    public function up()
+    {
         // Acessa o if quando não existir a tabela no banco de dados
         if (!$this->hasTable('adms_daman_orders')) {
             // Define o nome da tabela
@@ -28,8 +29,8 @@ final class AdmsDamanOrders extends AbstractMigration
 
             // Define as colunas da tabela
             // Coluna de Compra ou Locação
-            $table->addColumn('adms_daman_order_types_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'compra ou locação'])
-                ->addForeignKey('adms_daman_order_types_id', 'adms_daman_order_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+            $table->addColumn('adms_daman_acquisition_types_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'compra ou locação'])
+                ->addForeignKey('adms_daman_acquisition_types_id', 'adms_daman_acquisition_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
                 // categoria do pedido
                 ->addColumn('adms_daman_category_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'civil, eletrica, carpintaria e etc.'])
@@ -46,12 +47,12 @@ final class AdmsDamanOrders extends AbstractMigration
 
                 ->addColumn('expected_receipt_date', 'timestamp', ['null' => false, 'comment' => 'Data de previsão de recebimento'])
 
-                ->addColumn('observation', 'text', ['null' => true, 'comment' => 'Observações do pedido'])                
+                ->addColumn('observation', 'text', ['null' => true, 'comment' => 'Observações do pedido'])
 
                 // Status
                 ->addColumn('adms_daman_order_status_id', 'integer', ['null' => false, 'signed' => false])
                 ->addForeignKey('adms_daman_order_status_id', 'adms_daman_order_status', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
-                
+
                 ->addColumn('status_date', 'timestamp')
 
                 ->addColumn('created_at', 'timestamp', ['null' => false, 'comment' => 'Data do pedido'])
@@ -59,10 +60,10 @@ final class AdmsDamanOrders extends AbstractMigration
 
                 // Colunas de Locação
                 ->addColumn('rental_contract', 'string', ['null' => true, 'comment' => 'Numero do contrato'])
-                
+
                 ->addColumn('rental_period', 'integer', ['null' => true, 'comment' => 'dias'])
-            
-                
+
+
                 ->create();
         }
     }
@@ -70,10 +71,9 @@ final class AdmsDamanOrders extends AbstractMigration
     /**
      * Metodo down() para reverter a migração (caso necessário)
      */
-    public function down():void
+    public function down(): void
     {
         // Apagar a tabela adms_users
         $this->table('adms_daman_orders')->drop()->save();
     }
 }
-

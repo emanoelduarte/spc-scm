@@ -33,6 +33,9 @@ final class AdmsDamanPurchasings extends AbstractMigration
                 ->addColumn('adms_daman_user_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id do usuário comprador'])
                 ->addForeignKey('adms_daman_user_id', 'adms_daman_users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
+                ->addColumn('adms_daman_acquisition_types_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id do tipo (compra locação)'])
+                ->addForeignKey('adms_daman_acquisition_types_id', 'adms_daman_acquisition_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+
                 ->addColumn('expected_receipt_date', 'timestamp', ['null' => false, 'comment' => 'Data de previsão de recebimento'])
 
                 ->addColumn('adms_daman_order_id', 'integer', ['null' => false, 'signed' => false])
@@ -65,6 +68,6 @@ final class AdmsDamanPurchasings extends AbstractMigration
     public function down(): void
     {
         // Apagar a tabela adms_users
-        $this->table('adms_daman_orders')->drop()->save();
+        $this->table('adms_daman_purchasings')->drop()->save();
     }
 }

@@ -141,13 +141,15 @@ class PurchasingRepository extends DbConnection
                 ads.legal_name,
                 ado.id AS order_number,
                 adu.name AS buyer_name,
-                adpm.name AS payment_method
+                adpm.name AS payment_method,
+                adat.name AS acquisition_type
         FROM adms_daman_purchasings AS adpu
         INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
         INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
         INNER JOIN adms_daman_orders AS ado ON ado.id = adpu.adms_daman_order_id
         INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id 
         INNER JOIN adms_daman_payment_methods AS adpm ON adpm.id = adpu.adms_daman_user_id 
+        INNER JOIN adms_daman_acquisition_types AS adat ON adat.id = adpu.adms_daman_acquisition_types_id 
         WHERE adpu.id = :id';
 
             // Preparar a query
@@ -206,7 +208,7 @@ class PurchasingRepository extends DbConnection
 
 
             $sql = 'INSERT INTO adms_daman_purchasings 
-                    (adms_daman_supplier_id, adms_daman_user_id, expected_receipt_date, adms_daman_order_id, adms_daman_project_id, service, delivery_address, adms_daman_payment_methods_id, created_at';
+                    (adms_daman_supplier_id, adms_daman_user_id, adms_daman_acquisition_types_id, expected_receipt_date, adms_daman_order_id, adms_daman_project_id, service, delivery_address, adms_daman_payment_methods_id, created_at';
 
             if (!$data['delivery_value'] == '') {
                 $sql .= ', delivery_value';
@@ -215,7 +217,7 @@ class PurchasingRepository extends DbConnection
             if (!$data['discount_value'] == '') {
                 $sql .= ', discount';
             }
-            $sql .= ') VALUES (:adms_daman_supplier_id, :adms_daman_user_id, :expected_receipt_date, :adms_daman_order_id, :adms_daman_project_id, :service, :delivery_address, :adms_daman_payment_methods_id, :created_at';
+            $sql .= ') VALUES (:adms_daman_supplier_id, :adms_daman_user_id, :adms_daman_acquisition_types_id, :expected_receipt_date, :adms_daman_order_id, :adms_daman_project_id, :service, :delivery_address, :adms_daman_payment_methods_id, :created_at';
 
             if (!$data['delivery_value'] == '') {
                 $sql .= ', :delivery_value';
@@ -231,6 +233,7 @@ class PurchasingRepository extends DbConnection
 
             $stmt->bindValue(':adms_daman_supplier_id', $data['adms_daman_supplier_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_acquisition_types_id', $data['adms_daman_acquisition_types_id'], PDO::PARAM_INT);
             $stmt->bindValue(':expected_receipt_date', $FormatedDate);
             $stmt->bindValue(':adms_daman_order_id', $data['adms_daman_order_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);

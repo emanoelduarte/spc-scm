@@ -26,7 +26,7 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsDamanSuppliers',
             'AddAdmsDamanCategories',
             'AddAdmsDamanOrdersStatus',
-            'AddAdmsDamanOrdersTypes',
+            'AddAdmsDamanAcquisitionTypes',
             'AddAdmsDamanOrders',
             'AddAdmsDamanMeasurementUnits',
             'AddAdmsDamanOrderItems',
