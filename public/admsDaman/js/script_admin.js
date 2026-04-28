@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             newItem.innerHTML = `
 
+                <input type="hidden" name="items[${index}][is_new]" value="1">
                 <input type="hidden" name="items[${index}][item_id]" value="">
                 
                 <div class="col-lg-6 col-md-6 col-sm-12">

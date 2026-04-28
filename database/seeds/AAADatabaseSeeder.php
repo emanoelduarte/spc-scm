@@ -34,6 +34,7 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsDamanAcquisitionPurchasingStatus',
             'AddAdmsDamanPurchasings',
             'AddAdmsDamanPurchasingItems',
+            'AddAdmsDamanOrderComments',
         ];
     }
 }
