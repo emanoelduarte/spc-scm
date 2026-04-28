@@ -38,7 +38,7 @@ class ForgotPassword
     {
 
         // Receber os dados do formulário de cadastro de usuário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Acessa o IF se existir o CSRF e for válido o CSRF
         if (isset($this->data['form']['csrf_token']) and CSRFHelper::validateCSRFToken('form_forgot_password', $this->data['form']['csrf_token'])) {

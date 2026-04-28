@@ -33,7 +33,7 @@ class DeleteGroupPage
     public function index(): void
     {
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Acessar o IF se existir o CSRF e for valido o CSRF
         if (!isset($this->data['form']['csrf_token']) or !CSRFHelper::validateCSRFToken('form_delete_group', $this->data['form']['csrf_token']) or empty($this->data['form']['id'])) {

@@ -17,7 +17,7 @@ class ListPurchasings
 
     public function index(string|int $page = 1): void
     {
-        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listPurchasings = new PurchasingRepository();

@@ -37,7 +37,7 @@ class UpdateOrder
     public function index(int|string $id): void
     {
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Validar o CSRF token e a existência do ID do pedido
         if (

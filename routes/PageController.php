@@ -26,8 +26,8 @@ class PageController
     {
 
         // Verificar se tem o valor na váriável URL enviada pelo .htaccess
-        if(!empty(filter_input(INPUT_GET, 'url', FILTER_DEFAULT))) {
-            $this->url = filter_input(INPUT_GET, 'url', FILTER_DEFAULT);
+        if(!empty(filter_input(INPUT_GET, 'url', FILTER_UNSAFE_RAW))) {
+            $this->url = filter_input(INPUT_GET, 'url', FILTER_UNSAFE_RAW);
 
             // Chamar a classe helper para limpar a URL
             $this->url = ClearUrl::clearUrl($this->url);

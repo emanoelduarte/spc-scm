@@ -148,6 +148,7 @@ class PurchasingRepository extends DbConnection
                 adu.name AS buyer_name,
                 adpm.name AS payment_method,
                 adat.name AS acquisition_type,
+                adaps.id AS purchasing_status_id,
                 adaps.name AS purchasing_status
         FROM adms_daman_purchasings AS adpu
         INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
@@ -331,6 +332,45 @@ class PurchasingRepository extends DbConnection
         }
 
         return true;
+    }
+
+    /**
+     * Metodo para Cancelar a Compra
+     */
+    public function updateCancelPurchasing(int $idPurchasing): bool
+    {
+        try {
+
+            $sql = "UPDATE adms_daman_purchasings SET adms_daman_acquisition_purchasing_status_id = :adms_daman_acquisition_purchasing_status_id, updated_at = :updated_at
+        WHERE id = :id";
+
+            // Preparar a QUERY
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':adms_daman_acquisition_purchasing_status_id', 2, PDO::PARAM_INT);
+            $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
+            $stmt->bindValue(':id', $idPurchasing, PDO::PARAM_INT);
+
+            // Executar a QUERY
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Compra não cancelada.", ['id_compra' => $idPurchasing]);
+
+                return false;
+            }
+        } catch (Exception $e) {
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Compra não cancelada.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     /**

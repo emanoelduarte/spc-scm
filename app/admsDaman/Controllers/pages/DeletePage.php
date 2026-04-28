@@ -33,7 +33,7 @@ class DeletePage
     public function index(): void
     {
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Verificar a validade do token CSRF e a existência do ID da página
         if (

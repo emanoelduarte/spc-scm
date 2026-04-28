@@ -459,6 +459,45 @@ class OrdersRepository extends DbConnection
     }
 
     /**
+     * Metodo para mudar status automático do pedido a gerar uma compra.
+     */
+    public function updateAutomaticOrderStatus(int $idOrder): bool
+    {
+        try {
+
+            $sql = "UPDATE adms_daman_orders SET adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, status_date = :status_date
+                    WHERE id = :id";
+
+            // Preparar a QUERY
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':adms_daman_acquisition_status_id', 3, PDO::PARAM_INT);
+            $stmt->bindValue(':status_date', date("Y-m-d H:i:s"));
+            $stmt->bindValue(':id', $idOrder, PDO::PARAM_INT);
+
+            // Executar a QUERY
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Status de pedido não editado.", ['id_compra' => $idOrder]);
+
+                return false;
+            }
+        } catch (Exception $e) {
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Status de pedido não editado.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    /**
      * Deletar um pedido pelo ID.
      *
      * Este método remove um pedido específico da tabela `adms_daman_orders' caso de erro, um log é gerado.

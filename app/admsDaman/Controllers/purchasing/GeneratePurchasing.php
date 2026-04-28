@@ -35,7 +35,7 @@ class GeneratePurchasing
         $this->id = $orderId;
 
         // Receber os dados do formulário de cadastro de pedido
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
 
         // Acessa o IF se existir o CSRF e for válido o CSRF
@@ -152,6 +152,10 @@ class GeneratePurchasing
 
         // Acesso o IF se o repository retornou true
         if ($result) {
+            // Atualizar Status do pedido
+            $changeStatus = new OrdersRepository();
+            $changeStatus->updateAutomaticOrderStatus($this->data['form']['adms_daman_order_id']);
+
             // Criar a mensagem de sucesso ao cadastrar
             $_SESSION['success'] = "Compra cadastrada com sucesso!";
 

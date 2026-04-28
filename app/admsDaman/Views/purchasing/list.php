@@ -80,7 +80,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                     $highlightClass = "highlight-purchasing-canceled";
                                     break;
                             }
-                            ?>
+                        ?>
                             <tr class="<?= $highlightClass ?>">
                                 <td><?= $id ?></td>
                                 <td><?= $adms_daman_order_id ?></td>

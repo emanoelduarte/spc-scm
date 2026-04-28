@@ -30,7 +30,7 @@ class ListAccessLevelsPermissions
         $this->id = $id;
 
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Acessa o if se existir o CSRF e for válido
         if (isset($this->data['form']['csrf_token']) and CSRFHelper::validateCSRFToken('form_update_access_level_permissions', $this->data['form']['csrf_token'])) {

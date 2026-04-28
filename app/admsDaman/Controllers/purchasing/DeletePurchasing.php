@@ -26,15 +26,15 @@ class DeletePurchasing
      * Recuperar os detalhes da compra e processar a exclusão.
      *
      * Este método verifica a validade do token CSRF e a existência do ID da compra. Se válido, recupera os
-     * detalhes da compra do banco de dados e tenta excluir a compra. Redireciona a compra para a página de 
-     * listagem de pedidos com mensagens apropriadas baseadas no sucesso ou falha da operação.
+     * detalhes da compra do banco de dados e tenta excluir a compra. Redireciona o usuário para a página de 
+     * listagem de compras com mensagens apropriadas baseadas no sucesso ou falha da operação.
      * 
      * @return void
      */
     public function index(): void
     {
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Acessar o IF se existir o CSRF e for valido o CSRF
         if (!isset($this->data['form']['csrf_token']) or !CSRFHelper::validateCSRFToken('form_delete_purchasing', $this->data['form']['csrf_token']) or empty($this->data['form']['id'])) {
@@ -43,7 +43,7 @@ class DeletePurchasing
             GenerateLog::generateLog("error", "Compra não encontrada", []);
 
             // Criar a mensagem de erro
-            $_SESSION['error'] = "Compra não encontrado!";
+            $_SESSION['error'] = "Compra não encontrada!";
 
             // Redirecionar o usuário para a página listar
             header("Location: {$_ENV['URL_ADM']}list-purchasings");
@@ -75,7 +75,7 @@ class DeletePurchasing
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {
             // Criar a mensagem de sucesso ao apagar
-            $_SESSION['success'] = "Pedido apagado com sucesso!";
+            $_SESSION['success'] = "Compra apagada com sucesso!";
 
             // Redirecionar o usuário para a página de listar
             header("Location: {$_ENV['URL_ADM']}list-purchasings");
@@ -83,7 +83,7 @@ class DeletePurchasing
             return;
         } else {
             // Criar a mensagem de erro ao tentar apagar
-            $_SESSION['error'] = "Pedido não apagado!";
+            $_SESSION['error'] = "Compra não apagada!";
 
             // Redirecionar o usuário para a página de listar
             header("Location: {$_ENV['URL_ADM']}list-purchasings");

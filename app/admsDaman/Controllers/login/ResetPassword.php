@@ -16,7 +16,7 @@ class ResetPassword
     public function index(string|null $recoverPassword): void
     {
         // Receber os dados do formulário de cadastro de usuário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // receber o código para recuperar a senha $recoverPassword
         $this->data['form']['recover_password'] = (string) $recoverPassword;

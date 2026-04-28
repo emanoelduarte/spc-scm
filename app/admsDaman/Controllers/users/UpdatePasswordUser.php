@@ -27,7 +27,7 @@ class UpdatePasswordUser
     public function index(int|string $id): void
     {
         // Receber os dados do formulário de cadastro de usuário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
 
 
