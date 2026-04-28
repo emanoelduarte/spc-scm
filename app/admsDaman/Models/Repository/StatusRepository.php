@@ -16,7 +16,7 @@ class StatusRepository extends DbConnection
     {
         // QUERY para recuperar os registros do banco de dados
         $sql = 'SELECT id, name 
-                FROM adms_daman_order_status
+                FROM adms_daman_acquisition_status
                 ORDER BY id ASC';
 
         // Preparar a QUERY

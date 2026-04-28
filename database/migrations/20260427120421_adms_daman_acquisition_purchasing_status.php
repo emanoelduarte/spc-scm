@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-/**
- * Migrations responsável por criar a tabela 'adms_daman_order_status' de status de pedido
- */
-final class AdmsDamanOrderStatus extends AbstractMigration
+final class AdmsDamanAcquisitionPurchasingStatus extends AbstractMigration
 {
     /**
      * Change Method.
@@ -22,13 +19,13 @@ final class AdmsDamanOrderStatus extends AbstractMigration
      */
     public function up() {
         // Acessa o if quando não existir a tabela no banco de dados
-        // Verificar se a tabela 'adms_daman_order_status' não existe no banco de dados
-        if (!$this->hasTable('adms_daman_order_status')) {
-            // Cria a tabela 'adms_daman_order_status'
-            $table = $this->table('adms_daman_order_status');
+        // Verificar se a tabela 'adms_daman_acquisition_purchasing_status' não existe no banco de dados
+        if (!$this->hasTable('adms_daman_acquisition_purchasing_status')) {
+            // Cria a tabela 'adms_daman_acquisition_purchasing_status'
+            $table = $this->table('adms_daman_acquisition_purchasing_status');
 
             //Define as colunas da tabela
-            $table->addColumn('name', 'string', ['null' => false, 'comment' => '(Análise, Comprado, Entrege e etc.)'])
+            $table->addColumn('name', 'string', ['null' => false, 'comment' => '(Comprado, Cancelada.)'])
                 ->addColumn('created_at', 'timestamp')
                 ->addColumn('updated_at', 'timestamp')
                 ->addIndex(['name'], ['unique' => true, 'name' => 'idx_unique_name']) // Adiciona o índice único com nome específico
@@ -41,7 +38,7 @@ final class AdmsDamanOrderStatus extends AbstractMigration
      */
     public function down():void
     {
-        // Apagar a tabela adms_daman_order_status
-        $this->table('adms_daman_order_status')->drop()->save();
+        // Apagar a tabela adms_daman_acquisition_purchasing_status
+        $this->table('adms_daman_acquisition_purchasing_status')->drop()->save();
     }
 }

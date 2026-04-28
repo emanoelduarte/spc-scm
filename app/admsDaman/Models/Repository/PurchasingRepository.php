@@ -35,6 +35,7 @@ class PurchasingRepository extends DbConnection
             'purchasing_number' => 'adpu.id',
             'order_number' => 'adpu.adms_daman_order_id',
             'adms_daman_project_id' => 'adpu.adms_daman_project_id',
+            'adms_daman_acquisition_purchasing_status_id' => 'adpu.adms_daman_acquisition_purchasing_status_id',
         ];
 
         foreach ($map as $field => $column) {
@@ -60,11 +61,15 @@ class PurchasingRepository extends DbConnection
         $sql = "SELECT adpu.id, adpu.adms_daman_order_id,
                 adp.name AS project_name,
                 ads.trade_name,
-                adu.name AS buyer_name
+                adu.name AS buyer_name,
+                adaps.id AS purchasing_status_id,
+                adaps.name AS purchasing_status
                 FROM adms_daman_purchasings AS adpu
                 INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
                 INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
                 INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id
+                INNER JOIN adms_daman_acquisition_purchasing_status AS adaps ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id 
+
                 {$where}
                 ORDER BY adpu.id DESC
                 LIMIT :limit OFFSET :offset";
@@ -142,7 +147,8 @@ class PurchasingRepository extends DbConnection
                 ado.id AS order_number,
                 adu.name AS buyer_name,
                 adpm.name AS payment_method,
-                adat.name AS acquisition_type
+                adat.name AS acquisition_type,
+                adaps.name AS purchasing_status
         FROM adms_daman_purchasings AS adpu
         INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
         INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
@@ -150,6 +156,7 @@ class PurchasingRepository extends DbConnection
         INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id 
         INNER JOIN adms_daman_payment_methods AS adpm ON adpm.id = adpu.adms_daman_user_id 
         INNER JOIN adms_daman_acquisition_types AS adat ON adat.id = adpu.adms_daman_acquisition_types_id 
+        INNER JOIN adms_daman_acquisition_purchasing_status AS adaps ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id 
         WHERE adpu.id = :id';
 
             // Preparar a query
@@ -208,7 +215,7 @@ class PurchasingRepository extends DbConnection
 
 
             $sql = 'INSERT INTO adms_daman_purchasings 
-                    (adms_daman_supplier_id, adms_daman_user_id, adms_daman_acquisition_types_id, expected_receipt_date, adms_daman_order_id, adms_daman_project_id, service, delivery_address, adms_daman_payment_methods_id, created_at';
+                    (adms_daman_supplier_id, adms_daman_user_id, adms_daman_acquisition_types_id, adms_daman_acquisition_purchasing_status_id, expected_receipt_date, adms_daman_order_id, adms_daman_project_id, service, delivery_address, adms_daman_payment_methods_id, created_at';
 
             if (!$data['delivery_value'] == '') {
                 $sql .= ', delivery_value';
@@ -217,7 +224,7 @@ class PurchasingRepository extends DbConnection
             if (!$data['discount_value'] == '') {
                 $sql .= ', discount';
             }
-            $sql .= ') VALUES (:adms_daman_supplier_id, :adms_daman_user_id, :adms_daman_acquisition_types_id, :expected_receipt_date, :adms_daman_order_id, :adms_daman_project_id, :service, :delivery_address, :adms_daman_payment_methods_id, :created_at';
+            $sql .= ') VALUES (:adms_daman_supplier_id, :adms_daman_user_id, :adms_daman_acquisition_types_id, :adms_daman_acquisition_purchasing_status_id, :expected_receipt_date, :adms_daman_order_id, :adms_daman_project_id, :service, :delivery_address, :adms_daman_payment_methods_id, :created_at';
 
             if (!$data['delivery_value'] == '') {
                 $sql .= ', :delivery_value';
@@ -234,6 +241,7 @@ class PurchasingRepository extends DbConnection
             $stmt->bindValue(':adms_daman_supplier_id', $data['adms_daman_supplier_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_acquisition_types_id', $data['adms_daman_acquisition_types_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_acquisition_purchasing_status_id', 1, PDO::PARAM_INT);
             $stmt->bindValue(':expected_receipt_date', $FormatedDate);
             $stmt->bindValue(':adms_daman_order_id', $data['adms_daman_order_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
@@ -362,5 +370,27 @@ class PurchasingRepository extends DbConnection
 
             return false;
         }
+    }
+
+    /**
+     * Recuperar uma obra específica
+     * 
+     * @return array|bool Obra recuperada do banco de dados
+     */
+    public function getAllPurchasingStatusSelect(): array|bool
+    {
+        // QUERY para recuperar os registros do banco de dados
+        $sql = 'SELECT id, name 
+                FROM adms_daman_acquisition_purchasing_status
+                ORDER BY id ASC';
+
+        // Preparar a QUERY
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a QUERY
+        $stmt->execute();
+
+        // Ler os registros e retornar 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

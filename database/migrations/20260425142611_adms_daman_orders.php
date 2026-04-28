@@ -50,8 +50,8 @@ final class AdmsDamanOrders extends AbstractMigration
                 ->addColumn('observation', 'text', ['null' => true, 'comment' => 'Observações do pedido'])
 
                 // Status
-                ->addColumn('adms_daman_order_status_id', 'integer', ['null' => false, 'signed' => false])
-                ->addForeignKey('adms_daman_order_status_id', 'adms_daman_order_status', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+                ->addColumn('adms_daman_acquisition_status_id', 'integer', ['null' => false, 'signed' => false])
+                ->addForeignKey('adms_daman_acquisition_status_id', 'adms_daman_acquisition_status', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
                 ->addColumn('status_date', 'timestamp')
 

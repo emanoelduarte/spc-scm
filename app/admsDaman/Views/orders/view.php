@@ -170,14 +170,14 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <table class="table table-striped mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Item</th>
+                        <th class="d-none d-md-table-cell">Item</th>
                         <th>Descrição</th>
                         <th>Unidade</th>
                         <?php if ($order_name_type == 'LOCAÇÃO'): ?>
                         <th>Locado</th>
                         <th>Devolvido</th>
                         <?php else: ?>
-                        <th>Qtd</th>
+                        <th class="d-none d-md-table-cell">Qtd</th>
                         <th>Comprado</th>
                         <?php endif ?>
                         <th>Preço Unit.</th>
@@ -193,7 +193,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                         foreach ($this->data['items'] as $item):
                         ?>
                     <tr>
-                        <td><?= $qtd_items += 1 ?></td>
+                        <td class="d-none d-md-table-cell"><?= $qtd_items += 1 ?></td>
                         <td><?= $item['description'] ?></td>
                         <td><?= $item['measurement_units'] ?></td>
 
@@ -215,7 +215,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                                         ?>
                         </td>
                         <?php else: ?>
-                        <td><?= $item['quantity'] ?></td>
+                        <td class="d-none d-md-table-cell"><?= $item['quantity'] ?></td>
                         <td>
                             <?php
 

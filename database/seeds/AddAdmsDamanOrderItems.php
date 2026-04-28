@@ -30,7 +30,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 1,
+                'adms_daman_acquisition_status_id' => 1,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -48,7 +48,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 2,
+                'adms_daman_acquisition_status_id' => 2,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -66,7 +66,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 2,
+                'adms_daman_acquisition_status_id' => 2,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -84,7 +84,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 2,
+                'adms_daman_acquisition_status_id' => 2,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -110,7 +110,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => date('Y-m-d H:i:s', strtotime('-5 days')),
                 'rental_end_date' => date('Y-m-d H:i:s', strtotime('+2 days')),
 
-                'adms_daman_order_status_id' => 3,
+                'adms_daman_acquisition_status_id' => 3,
                 'created_at' => date("Y-m-d H:i:s H:i:s"),
                 'updated_at' => null
             ],
@@ -131,7 +131,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_end_date' => date('Y-m-d H:i:s', strtotime('+5 days')),
 
 
-                'adms_daman_order_status_id' => 4,
+                'adms_daman_acquisition_status_id' => 4,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -154,7 +154,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 2,
+                'adms_daman_acquisition_status_id' => 2,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],
@@ -177,7 +177,7 @@ class AddAdmsDamanOrderItems extends AbstractSeed
                 'rental_start_date' => null,
                 'rental_end_date' => null,
 
-                'adms_daman_order_status_id' => 2,
+                'adms_daman_acquisition_status_id' => 2,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => null
             ],

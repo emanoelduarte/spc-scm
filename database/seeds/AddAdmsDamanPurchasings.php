@@ -26,6 +26,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
                 'adms_daman_supplier_id' => 1, //Id do fornecedor
                 'adms_daman_user_id' => 3, // Id do usuário comprador
                 'adms_daman_acquisition_types_id' => 1, // Id do tipo de aquisição
+                'adms_daman_acquisition_purchasing_status_id' => 1, // Id do status da compra
                 'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
                 'adms_daman_order_id' => 1,  // Id do pedido de compra
                 'adms_daman_project_id' => 4, // Id da Obra Autozelio
@@ -41,6 +42,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
                 'adms_daman_supplier_id' => 1, //Id do fornecedor
                 'adms_daman_user_id' => 3, // Id do usuário comprador
                 'adms_daman_acquisition_types_id' => 1, // Id do tipo de aquisição
+                'adms_daman_acquisition_purchasing_status_id' => 2, // Id do status da compra
                 'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
                 'adms_daman_order_id' => 2,  // Id do pedido de compra
                 'adms_daman_project_id' => 2, // Id da Obra João Paulo
@@ -61,6 +63,7 @@ class AddAdmsDamanPurchasings extends AbstractSeed
                 'adms_daman_supplier_id' => $purchasing['adms_daman_supplier_id'],
                 'adms_daman_user_id' => $purchasing['adms_daman_user_id'],
                 'adms_daman_acquisition_types_id' => $purchasing['adms_daman_acquisition_types_id'],
+                'adms_daman_acquisition_purchasing_status_id' => $purchasing['adms_daman_acquisition_purchasing_status_id'],
                 'expected_receipt_date' => $purchasing['expected_receipt_date'],
                 'adms_daman_order_id' => $purchasing['adms_daman_order_id'],
                 'adms_daman_project_id' => $purchasing['adms_daman_project_id'],

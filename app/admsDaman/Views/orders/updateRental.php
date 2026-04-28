@@ -62,8 +62,8 @@ use App\admsDaman\Helpers\CSRFHelper;
                 </div>
 
                 <div class="col-lg-2 col-md-6 col-sm-12">
-                    <label for="adms_daman_order_status_id" class="form-label">Status</label>
-                    <select name="adms_daman_order_status_id" class="form-select" id="adms_daman_order_status_id">
+                    <label for="adms_daman_acquisition_status_id" class="form-label">Status</label>
+                    <select name="adms_daman_acquisition_status_id" class="form-select" id="adms_daman_acquisition_status_id">
                         <option value="" selected>Selecione</option>
 
                         <?php
@@ -75,7 +75,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                                 extract($getAllStatusSelect);
 
                                 // Verificar se deve manter selecionada a opção
-                                $selected = isset($this->data['form']['adms_daman_order_status_id']) && $this->data['form']['adms_daman_order_status_id'] == $id ? 'selected' : '';
+                                $selected = isset($this->data['form']['adms_daman_acquisition_status_id']) && $this->data['form']['adms_daman_acquisition_status_id'] == $id ? 'selected' : '';
 
                                 echo "<option value='$id' $selected>$name</option>";
                             }
@@ -264,10 +264,10 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                         <div class="col-lg-2">
                             <?php if ($index === 0): ?><label class="fw-bold">Status</label><?php endif; ?>
-                            <select name="items[<?= $index ?>][adms_daman_order_status_id]" class="form-select">
+                            <select name="items[<?= $index ?>][adms_daman_acquisition_status_id]" class="form-select">
                                 <option value="">Selecione</option>
                                 <?php foreach ($this->data['getAllStatusSelect'] as $status):
-                                                $selected = ($item['adms_daman_order_status_id'] ?? '') == $status['id'] ? 'selected' : '';
+                                                $selected = ($item['adms_daman_acquisition_status_id'] ?? '') == $status['id'] ? 'selected' : '';
                                             ?>
                                 <option value="<?= $status['id'] ?>" <?= $selected ?>><?= $status['name'] ?></option>
                                 <?php endforeach; ?>

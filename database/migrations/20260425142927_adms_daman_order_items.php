@@ -61,8 +61,8 @@ final class AdmsDamanOrderItems extends AbstractMigration
                  | STATUS GERAL
                  |========================
                 */
-                ->addColumn('adms_daman_order_status_id', 'integer', ['null' => false, 'signed' => false])
-                ->addForeignKey('adms_daman_order_status_id', 'adms_daman_order_status', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+                ->addColumn('adms_daman_acquisition_status_id', 'integer', ['null' => false, 'signed' => false])
+                ->addForeignKey('adms_daman_acquisition_status_id', 'adms_daman_acquisition_status', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
 
                 /*
                  |========================

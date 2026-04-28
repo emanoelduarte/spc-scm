@@ -50,13 +50,13 @@ class ValidationOrderItemnsService
 
         // Definir mensagens personalizadas
         $messages = [
-            'description:required' => 'O Campo descrição é obrigatório',
+            'description:required' => 'O Campo descrição é obrigatório.',
 
-            'quantity:required' => 'O Campo quantidade é obrigatório',
-            'purchased_quantity:required' => 'O Campo quantidade comprada é obrigatório',
-            'rented_quantity:required' => 'O Campo quantidade locada é obrigatório',
+            'quantity:required' => 'O Campo quantidade é obrigatório.',
+            'purchased_quantity:required' => 'O Campo quantidade comprada é obrigatório.',
+            'rented_quantity:required' => 'O Campo quantidade locada é obrigatório.',
 
-            'adms_daman_measurement_units_id:required' => 'O campo unidade é obrigatório',
+            'adms_daman_measurement_units_id:required' => 'O campo unidade é obrigatório.',
         ];
 
         $errors = [];

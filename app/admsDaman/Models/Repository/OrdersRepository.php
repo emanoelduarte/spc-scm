@@ -30,7 +30,7 @@ class OrdersRepository extends DbConnection
         $map = [
             'order_number' => 'ado.id',
             'adms_daman_project_id' => 'ado.adms_daman_project_id',
-            'adms_daman_order_status_id' => 'ado.adms_daman_order_status_id',
+            'adms_daman_acquisition_status_id' => 'ado.adms_daman_acquisition_status_id',
             'adms_daman_category_id' => 'ado.adms_daman_category_id',
         ];
 
@@ -70,7 +70,7 @@ class OrdersRepository extends DbConnection
                 ado.id AS pedido_id, 
                 ado.adms_daman_acquisition_types_id, 
                 ado.adms_daman_project_id, 
-                ado.adms_daman_order_status_id, 
+                ado.adms_daman_acquisition_status_id, 
                 ado.created_at,
                 adp.name AS project_name, 
                 ados.id AS status_id,
@@ -78,7 +78,7 @@ class OrdersRepository extends DbConnection
                 adc.name AS category_name, adc.id AS categoria_id
             FROM adms_daman_orders AS ado
             INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
-            INNER JOIN adms_daman_order_status AS ados ON ados.id = ado.adms_daman_order_status_id
+            INNER JOIN adms_daman_acquisition_status AS ados ON ados.id = ado.adms_daman_acquisition_status_id
             INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
             {$where}
             ORDER BY pedido_id DESC
@@ -143,7 +143,7 @@ class OrdersRepository extends DbConnection
             // Consultar pedido e itens de compra
             $order = 'SELECT ado.id, ado.adms_daman_acquisition_types_id, ado.adms_daman_category_id, ado.adms_daman_user_id, 
                 ado.adms_daman_project_id, 
-                ado.service, ado.expected_receipt_date, ado.observation, ado.adms_daman_order_status_id, ado.status_date, ado.created_at, ado.updated_at, ado.rental_contract, ado.rental_period,
+                ado.service, ado.expected_receipt_date, ado.observation, ado.adms_daman_acquisition_status_id, ado.status_date, ado.created_at, ado.updated_at, ado.rental_contract, ado.rental_period,
 
                 adot.name AS order_name_type,
                 adc.name AS category_name,
@@ -157,7 +157,7 @@ class OrdersRepository extends DbConnection
                 INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
                 INNER JOIN adms_daman_users AS adu ON adu.id=ado.adms_daman_user_id
                 INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
-                INNER JOIN adms_daman_order_status AS ados ON ados.id=ado.adms_daman_order_status_id
+                INNER JOIN adms_daman_acquisition_status AS ados ON ados.id=ado.adms_daman_acquisition_status_id
                 WHERE ado.id = :id';
 
             $stmt_order = $this->getConnection()->prepare($order);
@@ -180,10 +180,10 @@ class OrdersRepository extends DbConnection
     {
 
         // Consultar Itens de Compra
-        $items = 'SELECT adoi.id AS item_id, adoi.description, adoi.adms_daman_measurement_units_id, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_order_status_id, ados.name AS item_status_name, admu.name AS measurement_units
+        $items = 'SELECT adoi.id AS item_id, adoi.description, adoi.adms_daman_measurement_units_id, adoi.quantity, adoi.purchased_quantity, adoi.unit_price, adoi.rented_quantity, adoi.returned_quantity, adoi.adms_daman_acquisition_status_id, ados.name AS item_status_name, admu.name AS measurement_units
                 
             FROM adms_daman_order_items AS adoi
-            INNER JOIN adms_daman_order_status AS ados ON ados.id=adoi.adms_daman_order_status_id
+            INNER JOIN adms_daman_acquisition_status AS ados ON ados.id=adoi.adms_daman_acquisition_status_id
             INNER JOIN adms_daman_measurement_units AS admu ON admu.id=adoi.adms_daman_measurement_units_id
             WHERE adoi.adms_daman_order_id = :id';
 
@@ -210,7 +210,7 @@ class OrdersRepository extends DbConnection
             if ($data['adms_daman_acquisition_types_id']) {
                 // QUERY cadastrar pedido Compra
                 $sql = 'INSERT INTO adms_daman_orders 
-                    (adms_daman_acquisition_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_order_status_id, created_at';
+                    (adms_daman_acquisition_types_id, adms_daman_category_id, adms_daman_user_id, adms_daman_project_id, service, expected_receipt_date, observation, adms_daman_acquisition_status_id, created_at';
 
                 // Incluir campo de periodo de locação caso seja do tipo locação
                 if ($data['adms_daman_acquisition_types_id'] == 2) {
@@ -218,7 +218,7 @@ class OrdersRepository extends DbConnection
                 }
 
                 $sql .= ') VALUES (:adms_daman_acquisition_types_id, :adms_daman_category_id, :adms_daman_user_id, :adms_daman_project_id, :service, :expected_receipt_date, 
-                    :observation, :adms_daman_order_status_id, :created_at';
+                    :observation, :adms_daman_acquisition_status_id, :created_at';
 
                 // Incluir campo de periodo de locação caso seja do tipo locação
                 if ($data['adms_daman_acquisition_types_id'] == 2) {
@@ -240,7 +240,7 @@ class OrdersRepository extends DbConnection
                 $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
                 $stmt->bindValue(':expected_receipt_date', $FormatedDate);
                 $stmt->bindValue(':observation', $data['observation'], PDO::PARAM_STR);
-                $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
+                $stmt->bindValue(':adms_daman_acquisition_status_id', 1, PDO::PARAM_INT);
                 $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
 
                 // Substituir link campo de periodo de locação caso seja do tipo locação
@@ -291,8 +291,8 @@ class OrdersRepository extends DbConnection
 
                     // QUERY cadastrar pedido
                     $sql = 'INSERT INTO adms_daman_order_items 
-                    (adms_daman_order_id, description, adms_daman_measurement_units_id, quantity, adms_daman_order_status_id, created_at) 
-                    VALUES (:adms_daman_order_id, :description, :adms_daman_measurement_units_id, :quantity, :adms_daman_order_status_id, :created_at)';
+                    (adms_daman_order_id, description, adms_daman_measurement_units_id, quantity, adms_daman_acquisition_status_id, created_at) 
+                    VALUES (:adms_daman_order_id, :description, :adms_daman_measurement_units_id, :quantity, :adms_daman_acquisition_status_id, :created_at)';
 
                     // Preparar a QUERY
                     $stmt = $this->getConnection()->prepare($sql);
@@ -304,7 +304,7 @@ class OrdersRepository extends DbConnection
                     $stmt->bindValue(':description', $descriptionUpper, PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $adms_daman_measurement_units_id, PDO::PARAM_INT);
                     $stmt->bindValue(':quantity', $quantity);
-                    $stmt->bindValue(':adms_daman_order_status_id', 1, PDO::PARAM_INT);
+                    $stmt->bindValue(':adms_daman_acquisition_status_id', 1, PDO::PARAM_INT);
                     $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
 
                     $stmt->execute();
@@ -328,7 +328,7 @@ class OrdersRepository extends DbConnection
         try {
 
             // QUERY para atualizar PEDIDO
-            $sql = 'UPDATE adms_daman_orders SET adms_daman_order_status_id = :adms_daman_order_status_id, adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
+            $sql = 'UPDATE adms_daman_orders SET adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
 
             // Incluir campo de periodo de locação caso seja do tipo locação
             if ($data['adms_daman_acquisition_types_id'] == 2) {
@@ -343,7 +343,7 @@ class OrdersRepository extends DbConnection
             $stmt = $this->getConnection()->prepare($sql);
 
             // Substituir os links da QUERY pelo valor
-            $stmt->bindValue(':adms_daman_order_status_id', $data['adms_daman_order_status_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_acquisition_status_id', $data['adms_daman_acquisition_status_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
@@ -399,7 +399,7 @@ class OrdersRepository extends DbConnection
                 if (!empty($item['item_id'])) {
 
                     // QUERY para atualizar pedido
-                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, unit_price = :unit_price, adms_daman_order_status_id = :adms_daman_order_status_id, updated_at = :updated_at';
+                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, unit_price = :unit_price, adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, updated_at = :updated_at';
 
                     // Incluir campo de periodo de locação caso seja do tipo Compra ou locação
                     if ($data['adms_daman_acquisition_types_id'] == 1) {
@@ -419,7 +419,7 @@ class OrdersRepository extends DbConnection
                     $stmt->bindValue(':description', $descriptionUpper, PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $item['adms_daman_measurement_units_id'], PDO::PARAM_INT);
                     $stmt->bindValue(':unit_price', (float)$item['unit_price']);
-                    $stmt->bindValue(':adms_daman_order_status_id', $item['adms_daman_order_status_id'], PDO::PARAM_INT);
+                    $stmt->bindValue(':adms_daman_acquisition_status_id', $item['adms_daman_acquisition_status_id'], PDO::PARAM_INT);
                     $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
                     $stmt->bindValue(':item_id', $item['item_id'], PDO::PARAM_INT);
 
@@ -452,7 +452,7 @@ class OrdersRepository extends DbConnection
             }
         } catch (Exception $e) {
             // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Itens não editados.", ['id_status' => (int) $data['adms_daman_order_status_id'], 'error' => $e->getMessage()]);
+            GenerateLog::generateLog("error", "Itens não editados.", ['id_status' => (int) $data['adms_daman_acquisition_status_id'], 'error' => $e->getMessage()]);
 
             return false;
         }

@@ -29,7 +29,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'service' => "Tomadas do térreo", 
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_order_status_id' => 1, // Analise
+            'adms_daman_acquisition_status_id' => 1, // Analise
             'status_date' => date('Y-m-d H:i:s'),
             'rental_contract' => NULL, 
             'rental_period' => NULL, 
@@ -42,7 +42,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'service' => "Tomadas aéreas do segundo pavimento", 
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_order_status_id' => 1, // Analise
+            'adms_daman_acquisition_status_id' => 1, // Analise
             'status_date' => date('Y-m-d H:i:s'),
             'rental_contract' => NULL, 
             'rental_period' => '7', 
@@ -55,7 +55,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'service' => "Finalização Quadro Elétrico", 
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_order_status_id' => 1, // Analise
+            'adms_daman_acquisition_status_id' => 1, // Analise
             'status_date' => date('Y-m-d H:i:s'),
             'rental_contract' => NULL, 
             'rental_period' => NULL, 
@@ -68,7 +68,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             'service' => "Revestimento", 
             'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
             'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_order_status_id' => 1, // Analise
+            'adms_daman_acquisition_status_id' => 1, // Analise
             'status_date' => date('Y-m-d H:i:s'),
             'rental_contract' => NULL, 
             'rental_period' => NULL, 
@@ -87,7 +87,7 @@ class AddAdmsDamanOrders extends AbstractSeed
                     'service' => $order['service'],
                     'expected_receipt_date' => $order['expected_receipt_date'],
                     'observation' => $order['observation'],
-                    'adms_daman_order_status_id' => $order['adms_daman_order_status_id'],
+                    'adms_daman_acquisition_status_id' => $order['adms_daman_acquisition_status_id'],
                     'status_date' => date("Y-m-d H:i:s"),
                     'rental_contract' => $order['rental_contract'],
                     'rental_period' => $order['rental_period'],

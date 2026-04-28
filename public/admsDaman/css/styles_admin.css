@@ -141,3 +141,11 @@
 .highlight-canceled{
     border-left: 10px solid var(--pd-canceled) !important;
 }
+
+.highlight-purchasing-purchased{
+    border-left: 10px solid var(--pd-delivered) !important;
+}
+
+.highlight-purchasing-canceled{
+    border-left: 10px solid var(--pd-canceled) !important;
+}

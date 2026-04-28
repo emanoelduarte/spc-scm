@@ -42,6 +42,9 @@ class ListPurchasings
         $getAllProjectsSelect = new ProjectsRepository();
         $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
 
+        $getAllPurchasingStatusSelect = new PurchasingRepository();
+        $this->data['getAllPurchasingStatusSelect'] = $getAllPurchasingStatusSelect->getAllPurchasingStatusSelect();
+
         // Criar o título da página
         $this->data['title_head'] = "Compras";
 

@@ -31,6 +31,7 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsDamanMeasurementUnits',
             'AddAdmsDamanOrderItems',
             'AddAdmsDamanPaymentMethods',
+            'AddAdmsDamanAcquisitionPurchasingStatus',
             'AddAdmsDamanPurchasings',
             'AddAdmsDamanPurchasingItems',
         ];

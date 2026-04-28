@@ -224,7 +224,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 
         <div class="mb-2">
             <label class="fw-bold">Status</label>
-            <select name="adms_daman_order_status_id" class="form-select" id="adms_daman_order_status_id">
+            <select name="adms_daman_acquisition_status_id" class="form-select" id="adms_daman_acquisition_status_id">
                 <option value="" selected>Selecione</option>
 
                 <?php
@@ -236,7 +236,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                         extract($getAllStatusSelect);
 
                         // Verificar se deve manter selecionada a opção
-                        $selected = isset($this->data['search']['adms_daman_order_status_id']) && $this->data['search']['adms_daman_order_status_id'] == $id ? 'selected' : '';
+                        $selected = isset($this->data['search']['adms_daman_acquisition_status_id']) && $this->data['search']['adms_daman_acquisition_status_id'] == $id ? 'selected' : '';
 
                         echo "<option value='$id' $selected>$name</option>";
                     }

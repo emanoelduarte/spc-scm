@@ -55,9 +55,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                         <tr>
                             <th scope="col">N°. Compra</th>
                             <th scope="col">N°. Pedido</th>
-                            <th scope="col">Comprador</th>
+                            <th scope="col" class="d-none d-md-table-cell">Comprador</th>
                             <th scope="col">Obra</th>
                             <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
+                            <th scope="col">Status</th>
                             <th scope="col" class="text-center">Ações</th>
                         </tr>
                     </thead>
@@ -68,12 +69,25 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                         foreach ($this->data['purchasings'] as $purchasing) {
                             extract($purchasing);
                         ?>
-                            <tr>
+
+                        <?php
+                            // Verificar o Status e aplicar a cor na borda do pedido
+                            switch ($purchasing_status_id) {
+                                case 1:
+                                    $highlightClass = "highlight-purchasing-purchased";
+                                    break;
+                                case 2:
+                                    $highlightClass = "highlight-purchasing-canceled";
+                                    break;
+                            }
+                            ?>
+                            <tr class="<?= $highlightClass ?>">
                                 <td><?= $id ?></td>
                                 <td><?= $adms_daman_order_id ?></td>
-                                <td><?= $buyer_name ?></td>
+                                <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
                                 <td><?= $project_name ?></td>
-                                <td><?= $trade_name ?></td>
+                                <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
+                                <td><?= $purchasing_status ?></td>
                                 <td class="d-md-flex flex-row justify-content-center">
                                     <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
                                         class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
@@ -150,6 +164,30 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
 
                         // Verificar se deve manter selecionada a opção
                         $selected = isset($this->data['search']['adms_daman_project_id']) && $this->data['search']['adms_daman_project_id'] == $id ? 'selected' : '';
+
+                        echo "<option value='$id' $selected>$name</option>";
+                    }
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label class="fw-bold">Status</label>
+
+            <select name="adms_daman_acquisition_purchasing_status_id" class="form-select" id="adms_daman_acquisition_purchasing_status_id">
+                <option value="" selected>Selecione</option>
+
+                <?php
+                // Verificar se existe pacotes
+                if ($this->data['getAllPurchasingStatusSelect'] ?? false) {
+
+                    // Percorrer array de pacotes
+                    foreach ($this->data['getAllPurchasingStatusSelect'] as $getAllPurchasingStatusSelect) {
+                        extract($getAllPurchasingStatusSelect);
+
+                        // Verificar se deve manter selecionada a opção
+                        $selected = isset($this->data['search']['adms_daman_acquisition_purchasing_status_id']) && $this->data['search']['adms_daman_acquisition_purchasing_status_id'] == $id ? 'selected' : '';
 
                         echo "<option value='$id' $selected>$name</option>";
                     }
