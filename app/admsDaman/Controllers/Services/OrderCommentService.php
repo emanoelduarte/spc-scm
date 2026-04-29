@@ -2,8 +2,6 @@
 
 namespace App\admsDaman\Controllers\Services;
 
-use App\admsDaman\Helpers\NormalizeDecimal;
-use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
@@ -156,6 +154,33 @@ class OrderCommentService
         return $changes;
     }
 
+    public function logBatchUserComment(array $data): array
+    {
+        $this->data = $data;
+
+        $userId = $_SESSION['user_id'] ?? null;
+
+        $changes = [];        
+
+        // USER COMMENTS
+        if (isset($this->data['new_user_comment'])) {
+            
+            $changes[] = [
+                'order_id' => $this->data['id'],
+                'user_id' => $userId,
+                'type' => 'manual',
+                'action' => 'comment_user',
+                'field' => 'user',
+                'old_value' => null,
+                'new_value' => null,
+                'comment' =>  $this->data['new_user_comment'],
+                'item_id' => null
+            ];
+        }
+
+        return $changes;
+    }
+
     public function commentPresenter(array $arrayComments): array
     {
 
@@ -173,6 +198,13 @@ class OrderCommentService
             ];
 
             switch ($comment['action']) {
+
+                case 'comment_user':
+                    $item['title'] = 'Comentário';
+                    $item['message'] = $this->formatCommentUser($comment);
+                    $item['icon'] = 'bi-plus-circle';
+                    $item['color'] = 'success';
+                    break;
 
                 case 'update_item':
                     $item['title'] = 'Item atualizado';
@@ -234,15 +266,14 @@ class OrderCommentService
 
         $field = $fieldNames[$c['field']] ?? $c['field'];
 
-        if($field == 'valor unitário') {
-            $oldValue = number_format($c['old_value'] ?? 0, 2, ',','.');
-            $newValue = number_format($c['new_value'] ?? 0, 2, ',','.');
+        if ($field == 'valor unitário') {
+            $oldValue = number_format((float)$c['old_value'] ?? 0, 2, ',', '.');
+            $newValue = number_format((float)$c['new_value'] ?? 0, 2, ',', '.');
 
             return "{$c['user_name']} alterou {$field} de  {$oldValue} para {$newValue}";
         } else {
             return "{$c['user_name']} alterou {$field} de {$c['old_value']} para {$c['new_value']}";
         }
-        
     }
 
     private function formatUpdateStatus(array $c): string
@@ -260,6 +291,11 @@ class OrderCommentService
         return "{$c['user_name']} alterou a obra de destino do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
+    private function formatCommentUser(array $c): string
+    {
+        return "{$c['comment']}";
+    }
+
     private function formatAddItem(array $c): string
     {
         $data = json_decode($c['new_value'], true);
@@ -268,7 +304,7 @@ class OrderCommentService
         $qty  = $data['quantity'] ?? '—';
         $price = $data['unit_price'] ?? '—';
 
-        return "{$c['user_name']} adicionou um novo item: {$desc} (Qtd: {$qty}, Valor: {$price})";
+        return "{$c['user_name']} adicionou um novo item: {$desc} (Qtd: {$qty})";
     }
 
     private function formatDeleteItem(array $c): string

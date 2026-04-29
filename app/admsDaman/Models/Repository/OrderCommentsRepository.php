@@ -34,7 +34,7 @@ class OrderCommentsRepository extends DbConnection
         if (empty($changes)) return;
 
         $sql = "INSERT INTO adms_daman_order_comments
-        (adms_daman_order_id, adms_daman_user_id, type, action, field, old_value, new_value, adms_daman_order_item_id, created_at)
+        (adms_daman_order_id, adms_daman_user_id, type, action, field, old_value, new_value, adms_daman_order_item_id, comment, created_at)
         VALUES ";
 
         $values = [];
@@ -58,6 +58,7 @@ class OrderCommentsRepository extends DbConnection
             :old_value_$index,
             :new_value_$index,
             :item_id_$index,
+            :comment_$index,
             :created_at
         )";
 
@@ -69,6 +70,7 @@ class OrderCommentsRepository extends DbConnection
             $params[":old_value_$index"] = $change['old_value'];
             $params[":new_value_$index"] = $change['new_value'];
             $params[":item_id_$index"] = $change['item_id'];
+            $params[":comment_$index"] = $change['comment'];
             $params[":created_at"] = date("Y-m-d H:i:s");
         }
 

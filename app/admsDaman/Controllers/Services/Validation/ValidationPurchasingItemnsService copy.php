@@ -52,31 +52,17 @@ class ValidationPurchasingItemnsService
         // VALIDAÇÃO PRINCIPAL: pelo menos um checkbox marcado
         $items = $data['items'] ?? [];
 
-        // var_dump($items);
-        // exit;
-
         $temSelecionado = false;
-        $temErroQuantidade = false;
-        $temErroValor = false;
 
         foreach ($items as $item) {
-            if (!empty($item['selected_item']) && $item['selected_item'] == 1) {
+            if (isset($item['selected_item']) && $item['selected_item'] == 1) {
                 $temSelecionado = true;
-                if (empty($item['purchased_quantity'])) {
-                    $temErroQuantidade = true;
-                }
-                if (empty($item['unit_price']) || $item['unit_price'] == '0.00') {
-                    $temErroValor = true;
-                }
+                break;
             }
         }
 
         if (!$temSelecionado) {
             $errors['items'] = 'Selecione pelo menos um item para continuar.';
-        } else if ($temErroQuantidade) {
-            $errors['items'] = 'Quantidade do item selecionado não pode ser vazio, altere no pedido.';
-        } else if ($temErroValor) {
-            $errors['items'] = 'Valor do item selecionado não pode ser vazio ou zerado, altere no pedido.';
         }
 
         return $errors;

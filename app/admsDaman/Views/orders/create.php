@@ -34,7 +34,6 @@ use App\admsDaman\Helpers\CSRFHelper;
         </div>
         <div class="card-body">
             <?php
-            // var_dump($this->data['getAllMeasurementUnitsSelect']);
             // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
             ?>

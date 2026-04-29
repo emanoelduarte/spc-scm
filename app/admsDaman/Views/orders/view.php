@@ -5,6 +5,7 @@ use App\admsDaman\Helpers\CSRFHelper;
 // Gerar o token CSRF para validar o usuário
 $csrf_token_item = CSRFHelper::generateCSRFToken('form_delete_item');
 $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
+$csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment');
 
 ?>
 <div class="container-fluid px-4">
@@ -273,7 +274,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
     <?php endif ?>
 
-    <?php if($this->data['formatedComments'] ?? false): ?>
+    <?php if ($this->data['formatedComments'] ?? false): ?>
         <!-- Card de atividades-->
         <div class="card">
             <div class="card-header d-flex flex-column flex-sm-row gap-2">
@@ -283,6 +284,28 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             </div>
 
             <div class="card-body">
+
+                <?php  // Formulário para envio dos dados para deletar Pedido 
+                // 
+                ?>
+                <form action="" method="POST">
+
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token_add_comment; ?>">
+
+                    <input type="hidden" name="id" id="id" value="<?= $this->data['order']['id'] ?? ''; ?>">
+
+                    <div class="col-12 mb-2">
+                        <label for="new_user_comment" class="form-label fw-bold">Adicionar novo comentário</label>
+                        <textarea class="form-control" placeholder="Digite o comentário" name="new_user_comment" id="new_user_comment"
+                            style="height: 100px"><?= $this->data['form']['new_user_comment'] ?? ''; ?></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-sm me-1 mb-1"> <i class="fa-solid fa-share"></i> Comentar</button>
+                    </div>
+
+
+                </form>
 
                 <div class="timeline mt-4">
 
@@ -331,5 +354,5 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         </div>
     <?php else : ?>
         <div class='alert alert-primary' role='alert'>Nenhuma atividade para exibir!</div>
-    <?php endif; ?>    
+    <?php endif; ?>
 </div>

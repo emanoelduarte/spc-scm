@@ -26,7 +26,11 @@ class ViewOrder
      */
     public function index(int|string $id)
     {
-         // Acessa o IF se o id for valor do tipo inteiro
+
+        // Receber os dados do formulário
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+
+        // Acessa o IF se o id for valor do tipo inteiro
         if (!(int) $id) {
             // Chamar o método para salvar o log
             GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $id]);
@@ -56,6 +60,19 @@ class ViewOrder
             header("Location: {$_ENV['URL_ADM']}list-orders");
 
             return;
+        }
+
+        // Chamar serviço de comentários adicionar comentário
+        $commentService = new OrderCommentService();
+        $arrayAddUserComment = $this->data['form'] ?? [];
+
+        $changesArray = $commentService->logBatchUserComment($arrayAddUserComment);
+
+        // Verificar se o retorno teve dados ou foi array vazio
+        if (!empty($changesArray)) {
+            $orderComments = new OrderCommentsRepository();
+            $orderComments->insertMultipleComments($changesArray);
+            $this->data['form']['new_user_comment'] = '';
         }
 
         $getComments = new OrderCommentsRepository();
