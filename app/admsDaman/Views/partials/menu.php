@@ -25,6 +25,10 @@
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-diagram-project"></i></div>
                     Projetos
                 </a>
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-suppliers')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-suppliers">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-industry"></i></div>
+                    Fornecedores
+                </a>
                 
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-access-levels')) ? 'active' : '' ?>" href="<?php echo $_ENV['URL_ADM'] ?>list-access-levels">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>

@@ -118,6 +118,18 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
         }
 
         // Verifica se o grupo de página com o name especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Fornecedores'])->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Fornecedores',
+                'obs' => '',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        // Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Pedidos de Compra'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data

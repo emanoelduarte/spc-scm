@@ -89,18 +89,26 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Editar Obra', 'controller' => 'UpdateProject', 'controller_url' => 'update-project', 'directory' => 'projects', 'obs' => 'Página para editar Obra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
             ['name' => 'Apagar Obra', 'controller' => 'DeleteProject', 'controller_url' => 'delete-project', 'directory' => 'projects', 'obs' => 'Página para deletar Obra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 11],
 
+            // Páginas Fornecedores
+            ['name' => 'Cadastrar Fornecedor', 'controller' => 'CreateSupplier', 'controller_url' => 'create-supplier', 'directory' => 'suppliers', 'obs' => 'Página para cadastrar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Listar Fornecedores', 'controller' => 'ListSuppliers', 'controller_url' => 'list-suppliers', 'directory' => 'suppliers', 'obs' => 'Página para listar fornecedores', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Visualizar Fornecedor', 'controller' => 'ViewSupplier', 'controller_url' => 'view-supplier', 'directory' => 'suppliers', 'obs' => 'Página para visualizar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Editar Fornecedor', 'controller' => 'UpdateSupplier', 'controller_url' => 'update-supplier', 'directory' => 'suppliers', 'obs' => 'Página para atualizar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Apagar Fornecedor', 'controller' => 'DeleteSupplier', 'controller_url' => 'delete-supplier', 'directory' => 'suppliers', 'obs' => 'Página para apagar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+        
+
             // Páginas Compras
-            ['name' => 'Gerar Compra', 'controller' => 'GeneratePurchasing', 'controller_url' => 'generate-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para gerar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-            ['name' => 'Cancelar Compra', 'controller' => 'CancelPurchasing', 'controller_url' => 'cancel-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para cancelar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-            ['name' => 'Listar Compras', 'controller' => 'ListPurchasings', 'controller_url' => 'list-purchasings', 'directory' => 'purchasing', 'obs' => 'Página para listar compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-            ['name' => 'Visualizar Compra', 'controller' => 'ViewPurchasing', 'controller_url' => 'view-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para visualizar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-            ['name' => 'Apagar Compra', 'controller' => 'DeletePurchasing', 'controller_url' => 'delete-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para deletar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
+            ['name' => 'Gerar Compra', 'controller' => 'GeneratePurchasing', 'controller_url' => 'generate-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para gerar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
+            ['name' => 'Cancelar Compra', 'controller' => 'CancelPurchasing', 'controller_url' => 'cancel-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para cancelar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
+            ['name' => 'Listar Compras', 'controller' => 'ListPurchasings', 'controller_url' => 'list-purchasings', 'directory' => 'purchasing', 'obs' => 'Página para listar compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
+            ['name' => 'Visualizar Compra', 'controller' => 'ViewPurchasing', 'controller_url' => 'view-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para visualizar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
+            ['name' => 'Apagar Compra', 'controller' => 'DeletePurchasing', 'controller_url' => 'delete-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para deletar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
 
             // Permissions
-            ['name' => 'Editar Permissão', 'controller' => 'ListAccessLevelsPermissions', 'controller_url' => 'list-access-levels-permissions', 'directory' => 'permission', 'obs' => 'Página para editar permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
+            ['name' => 'Editar Permissão', 'controller' => 'ListAccessLevelsPermissions', 'controller_url' => 'list-access-levels-permissions', 'directory' => 'permission', 'obs' => 'Página para editar permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 14],
 
             // Pdfs
-            ['name' => 'Gerar PDF Compra', 'controller' => 'GeneratePdfPurchasing', 'controller_url' => 'generate-pdf-purchasing', 'directory' => 'pdfs', 'obs' => 'Página para gerar PDF de Compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 14],
+            ['name' => 'Gerar PDF Compra', 'controller' => 'GeneratePdfPurchasing', 'controller_url' => 'generate-pdf-purchasing', 'directory' => 'pdfs', 'obs' => 'Página para gerar PDF de Compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 15],
 
         ];
 

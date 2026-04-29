@@ -164,7 +164,13 @@ class OrderCommentService
 
         // USER COMMENTS
         if (isset($this->data['new_user_comment'])) {
-            
+
+            if(empty($this->data['new_user_comment'])) {
+
+            $_SESSION['error'] = 'O comentário não pode ser vazio.';
+                return [];
+            }
+
             $changes[] = [
                 'order_id' => $this->data['id'],
                 'user_id' => $userId,
@@ -239,13 +245,6 @@ class OrderCommentService
                     $item['message'] = $this->formatAddItem($comment);
                     $item['icon'] = 'bi-plus-circle';
                     $item['color'] = 'success';
-                    break;
-
-                case 'delete_item':
-                    $item['title'] = 'Item removido';
-                    $item['message'] = $this->formatDeleteItem($comment);
-                    $item['icon'] = 'bi-trash';
-                    $item['color'] = 'danger';
                     break;
             }
 
