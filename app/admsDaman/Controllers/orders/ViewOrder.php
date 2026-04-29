@@ -2,7 +2,9 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\OrderCommentService;
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -55,6 +57,12 @@ class ViewOrder
 
             return;
         }
+
+        $getComments = new OrderCommentsRepository();
+        $this->data['comments'] = $getComments->getComment((int) $id);
+
+        $sendComments = new OrderCommentService();
+        $this->data['formatedComments'] = $sendComments->commentPresenter($this->data['comments']);
 
         // Criar o título da página
         $this->data['title_head'] = "Visualizar Pedido";

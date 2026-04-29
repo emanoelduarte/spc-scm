@@ -149,3 +149,25 @@
 .highlight-purchasing-canceled{
     border-left: 10px solid var(--pd-canceled) !important;
 }
+
+/** Time line simples para comentário*/
+.timeline {
+    position: relative;
+    padding-left: 10px;
+}
+
+.timeline .badge {
+    position: relative;
+    z-index: 1;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+    z-index: 0 !important;
+}

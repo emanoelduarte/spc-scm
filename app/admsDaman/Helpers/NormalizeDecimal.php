@@ -5,10 +5,10 @@ namespace App\admsDaman\Helpers;
 class NormalizeDecimal
 {
     /**
-     * Gerar um token único.
+     * Normatizar decimal.
      * 
      * @param string $formIdentifier Identificador do formulário
-     * @return string Token CSRF gerado.
+     * @return float Numero formatado.
      */
 
     public static function normalizeDecimal(string $value): float

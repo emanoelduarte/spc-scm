@@ -148,7 +148,7 @@ class OrdersRepository extends DbConnection
                 adot.name AS order_name_type,
                 adc.name AS category_name,
                 adu.name AS usr_name,
-                adp.name AS project_name, adp.address AS project_adrress,
+                adp.name AS project_name, adp.address AS project_adrress, adp.id AS order_project_id,
                 ados.id AS order_status_id,
                 ados.name AS order_status
 
@@ -274,8 +274,9 @@ class OrdersRepository extends DbConnection
     /**
      * Método eclusivo para criação de itens.
      */
-    private function createItems(array $data, int $orderId): bool|int
+    private function createItems(array $data, int $orderId): array|bool
     {
+        $newItemsMap = [];
         // Usar try e catch para gerenciar exceção/erro
         try { // Permanece no try se não houver nenhum erro
 
@@ -308,9 +309,20 @@ class OrdersRepository extends DbConnection
                     $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
 
                     $stmt->execute();
+
+                    // pegar temp_id
+                    $tempId = $item['temp_id'] ?? null;
+
+                    // pegar ID real
+                    $newId = $this->getConnection()->lastInsertId();
+
+                    // mapear
+                    if ($tempId) {
+                        $newItemsMap[$tempId] = $newId;
+                    }
                 }
             }
-            return true;
+            return $newItemsMap;
         } catch (Exception $e) { // Acessa o catch quando houver erro no try
 
             // Chamar o método para salvar o log
@@ -323,7 +335,7 @@ class OrdersRepository extends DbConnection
     /**
      * Metodo para atualizar o pedido
      */
-    public function updateOrder(array $data): bool
+    public function updateOrder(array $data): array|bool
     {
         try {
 
@@ -362,22 +374,22 @@ class OrdersRepository extends DbConnection
             // Executar a QUERY
             $stmt->execute();
 
-            // Verificar o número de linhas afetadas
-            if ($stmt->rowCount() > 0) {
-                $this->updateItems($data);
-                return true;
-            } else {
+            $newItemsMap = $this->updateItems($data);
 
-                // Chamar o método para salvar o log
-                GenerateLog::generateLog("error", "Pedido não editado.", ['id' => $data['id']]);
+            return [
+                'success' => true,
+                'newItemsMap' => $newItemsMap
+            ];
 
-                return false;
-            }
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Pedido não editado.", ['id' => $data['id']]);
         } catch (Exception $e) {
             // Chamar o método para salvar o log
             GenerateLog::generateLog("error", "Pedido não editado.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
 
-            return false;
+            return [
+                'fail' => false
+            ];
         }
     }
 
@@ -387,7 +399,7 @@ class OrdersRepository extends DbConnection
      * Esta função recebe um array de dados que usa para identificar qual o tipo de ordem, para editar os campos específicos de cada ordem, ou seja se for do tipo locação vai editar na tabela itens o que é usado para locação.
      * @return bool
      */
-    public function updateItems(array $data): bool
+    public function updateItems(array $data): array|bool
     {
         try {
 
@@ -438,18 +450,8 @@ class OrdersRepository extends DbConnection
                 }
             }
 
-            $this->createItems($data, $data['id']); // chama a função para cadastrar novos itens
-
-            // Verificar o número de linhas afetadas
-            if ($stmt->rowCount() > 0) {
-                return true;
-            } else {
-
-                // Chamar o método para salvar o log
-                GenerateLog::generateLog("error", "Itens não editados.", ['id' => $data['id']]);
-
-                return false;
-            }
+            $newItemsMap = $this->createItems($data, $data['id']);
+            return $newItemsMap;
         } catch (Exception $e) {
             // Chamar o método para salvar o log
             GenerateLog::generateLog("error", "Itens não editados.", ['id_status' => (int) $data['adms_daman_acquisition_status_id'], 'error' => $e->getMessage()]);

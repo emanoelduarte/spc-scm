@@ -116,10 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const selectedUnit = oldItems[index]?.adms_daman_measurement_units_id ?? '';
 
+            const tempId = 'tmp_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+
             newItem.innerHTML = `
 
                 <input type="hidden" name="items[${index}][is_new]" value="1">
                 <input type="hidden" name="items[${index}][item_id]" value="">
+                <input type="hidden" name="items[${index}][temp_id]" value="${tempId}">
                 
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <input type="text" name="items[${index}][description]" class="form-control" placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">

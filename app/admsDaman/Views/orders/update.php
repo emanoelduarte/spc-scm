@@ -1,5 +1,6 @@
 <?php
 
+use App\admsDaman\Controllers\Services\OrderCommentService;
 use App\admsDaman\Helpers\CSRFHelper;
 
 // Gerar o token CSRF para validar o usuário
@@ -249,6 +250,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
 
                         <input type="hidden" name="items[<?= $index ?>][is_new]" value="1">
                         <input type="hidden" name="items[<?= $index ?>][item_id]" value="">
+                        <input type="hidden" name="items[<?= $index ?>][temp_id]" value="<?= uniqid('tmp_', true) ?>">
 
                         <div class="col-lg-6">
                             <input type="text" class="form-control" name="items[<?= $index ?>][description]"

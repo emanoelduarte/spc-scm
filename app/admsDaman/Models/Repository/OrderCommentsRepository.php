@@ -3,9 +3,32 @@
 namespace App\admsDaman\Models\Repository;
 
 use App\admsDaman\Models\Services\DbConnection;
+use PDO;
 
 class OrderCommentsRepository extends DbConnection
 {
+    public function getComment(int $orderId): string|array
+    {
+        $sql = "SELECT adoc.id, adoc.adms_daman_order_id, adoc.adms_daman_user_id, adoc.type, adoc.action, adoc.field, adoc.old_value, adoc.new_value, adoc.adms_daman_order_item_id, adoc.comment, adoc.created_at,
+        
+        adu.name AS user_name
+        FROM adms_daman_order_comments AS adoc
+        INNER JOIN adms_daman_users AS adu ON adu.id=adoc.adms_daman_user_id 
+        WHERE adoc.adms_daman_order_id = :adms_daman_order_id
+        ORDER BY id DESC";
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        $stmt->bindValue(':adms_daman_order_id', $orderId, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Adicionar comentários ao pedido
+     */
     public function insertMultipleComments(array $changes, $itemNewId = null): void
     {
         if (empty($changes)) return;

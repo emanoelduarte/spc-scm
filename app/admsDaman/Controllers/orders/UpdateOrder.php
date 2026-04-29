@@ -152,15 +152,29 @@ class UpdateOrder
         $commentService = new OrderCommentService();
         $changesArray = $commentService->logBatch($this->data['form']);
 
-        // Verificar se o retorno teve dados ou foi array vazio
-        if(!empty($changesArray)) {
-            $orderComments = new OrderCommentsRepository();
-            $orderComments->insertMultipleComments($changesArray);
-        }
-
         // Instanciar o OrdersRepository para chamar o método que faz a edição do pedido
         $orderUpdate = new OrdersRepository();
         $result = $orderUpdate->updateOrder($this->data['form']);
+
+        $newItemsMap = $result['newItemsMap'] ?? [];
+
+        foreach ($changesArray as &$change) {
+
+            if (
+                $change['action'] === 'add_item' &&
+                !empty($change['temp_id']) &&
+                isset($newItemsMap[$change['temp_id']])
+            ) {
+                $change['item_id'] = $newItemsMap[$change['temp_id']];
+            }
+        }
+        unset($change);
+
+        // Verificar se o retorno teve dados ou foi array vazio
+        if (!empty($changesArray)) {
+            $orderComments = new OrderCommentsRepository();
+            $orderComments->insertMultipleComments($changesArray);
+        }
 
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {
