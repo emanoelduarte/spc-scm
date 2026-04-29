@@ -75,10 +75,12 @@ class OrdersRepository extends DbConnection
                 adp.name AS project_name, 
                 ados.id AS status_id,
                 ados.name AS status_name,
+                adot.name AS name_tape,
                 adc.name AS category_name, adc.id AS categoria_id
             FROM adms_daman_orders AS ado
             INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
             INNER JOIN adms_daman_acquisition_status AS ados ON ados.id = ado.adms_daman_acquisition_status_id
+            INNER JOIN adms_daman_acquisition_types AS adot ON adot.id=ado.adms_daman_acquisition_types_id
             INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
             {$where}
             ORDER BY pedido_id DESC

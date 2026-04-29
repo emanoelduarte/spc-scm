@@ -71,6 +71,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             <th scope="col">Pedido</th>
                             <th scope="col">Obra</th>
                             <th scope="col" class="d-none d-md-table-cell">Status</th>
+                            <th scope="col" class="d-none d-md-table-cell">Tipo</th>
                             <th scope="col" class="d-none d-md-table-cell">Data do Pedido</th>
                             <th scope="col" class="text-center">Ações</th>
                         </tr>
@@ -126,6 +127,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                                 <td><?= $pedido_id; ?></td>
                                 <td><?= $project_name; ?></td>
                                 <td><?= $status_name; ?></td>
+                                <td><?= $name_tape; ?></td>
 
                                 <td class="d-none d-md-table-cell"><?= $created; ?></td>
                                 <td class="d-md-flex flex-row justify-content-center">

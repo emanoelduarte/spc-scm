@@ -46,6 +46,7 @@ class OrderCommentService
                 'field' => 'status',
                 'old_value' => $oldStatus['name'],
                 'new_value' =>  $newStatus['name'],
+                'comment' => null,
                 'item_id' => null
             ];
         }
@@ -66,6 +67,7 @@ class OrderCommentService
                 'field' => 'project',
                 'old_value' => $oldProject['name'] ?? null,
                 'new_value' => $newProject['name'] ?? null,
+                'comment' => null,
                 'item_id' => null
             ];
         }
@@ -81,6 +83,7 @@ class OrderCommentService
                 'field' => 'service',
                 'old_value' => $orderOld['service'],
                 'new_value' => $this->data['service'],
+                'comment' => null,
                 'item_id' => null
             ];
         }
@@ -112,6 +115,7 @@ class OrderCommentService
                         'purchased_quantity' => $item['purchased_quantity'] ?? null,
                         'unit_price' => $item['unit_price'] ?? null,
                     ]),
+                    'comment' => null,
                     'item_id' => null,
 
                     'temp_id' => $item['temp_id'] ?? null
@@ -145,6 +149,7 @@ class OrderCommentService
                         'field' => $label,
                         'old_value' => $oldValue,
                         'new_value' => $newValue,
+                        'comment' => null,
                         'item_id' => $item['item_id']
                     ];
                 }
@@ -160,14 +165,14 @@ class OrderCommentService
 
         $userId = $_SESSION['user_id'] ?? null;
 
-        $changes = [];        
+        $changes = [];
 
         // USER COMMENTS
         if (isset($this->data['new_user_comment'])) {
 
-            if(empty($this->data['new_user_comment'])) {
+            if (empty($this->data['new_user_comment'])) {
 
-            $_SESSION['error'] = 'O comentário não pode ser vazio.';
+                $_SESSION['error'] = 'O comentário não pode ser vazio.';
                 return [];
             }
 
