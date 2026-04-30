@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\purchasing;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Helpers\DiscountCalculator;
 use App\admsDaman\Helpers\NormalizeDecimal;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
@@ -115,35 +116,20 @@ class GeneratePurchasing
             return;
         }
 
-        // Calacular desconto para enviar para a models
-        if (!empty($this->data['form']['discount_value'])) {
+        // Calcular Desconto e atribuir novo valor ao array ou retornar mensagem de erro para o usuário
+        $calculateDiscount = new DiscountCalculator();
+        $discount = $calculateDiscount->calculateDiscount($this->data['form']);
 
-            $formatedDiscountValue = NormalizeDecimal::normalizeDecimal($this->data['form']['discount_value']);
+        if ($discount !== false) {
+            $this->data['form']['discount_value'] = $discount;
+        } else {
+            // Criar a mensagem de erro ao tentar cadastrar
+            $this->data['errors'][] = "Para aplicar o desconto, é necessário informar o valor e escolher uma modalidade de desconto!";
 
-            $selectedItems = [];
+            // Chamar o método carregar a view
+            $this->viewPurchasing();
 
-            foreach ($this->data['form']['items'] as $item) {
-                if (isset($item['selected_item']) && $item['selected_item'] == 1) {
-                    $selectedItems[] = $item;
-                }
-            }
-
-            $sub_tot = 0;
-
-            foreach ($selectedItems as $item) {
-                $tot_item = (float)$item['purchased_quantity'] * (float)$item['unit_price'];
-                $sub_tot += $tot_item;
-            }
-
-            if ($this->data['form']['discount_type'] == 'fixed') {
-
-                $discount_value = $formatedDiscountValue;
-
-                $this->data['form']['discount_value'] = $discount_value;
-            } else {
-                $discount_value = $sub_tot * ($formatedDiscountValue / 100);
-                $this->data['form']['discount_value'] = $discount_value;
-            }
+            return;
         }
 
         // Instanciar o Repository para cadastrar o Compra
