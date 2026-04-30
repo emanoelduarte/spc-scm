@@ -274,39 +274,40 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
         <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
     <?php endif ?>
 
-    <?php if ($this->data['formatedComments'] ?? false): ?>
-        <!-- Card de atividades-->
-        <div class="card">
-            <div class="card-header d-flex flex-column flex-sm-row gap-2">
-                <span>Atividades do pedido</span>
-                <span class="ms-sm-auto d-sm-flex flex-row">
-                </span>
-            </div>
+    <!-- Card de atividades-->
+    <div class="card">
+        <div class="card-header d-flex flex-column flex-sm-row gap-2">
+            <span>Atividades do pedido</span>
+            <span class="ms-sm-auto d-sm-flex flex-row">
+            </span>
+        </div>
 
-            <div class="card-body">
+        <div class="card-body">
 
-                <?php  // Formulário para envio dos dados para deletar Pedido 
-                // 
-                ?>
-                <form action="" method="POST">
+            <?php  // Formulário para envio dos dados para deletar Pedido 
+            // 
+            ?>
+            <form action="" method="POST">
 
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_token_add_comment; ?>">
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token_add_comment; ?>">
 
-                    <input type="hidden" name="id" id="id" value="<?= $this->data['order']['id'] ?? ''; ?>">
+                <input type="hidden" name="id" id="id" value="<?= $this->data['order']['id'] ?? ''; ?>">
 
-                    <div class="col-12 mb-2">
-                        <label for="new_user_comment" class="form-label fw-bold">Adicionar novo comentário</label>
-                        <textarea class="form-control" placeholder="Digite o comentário" name="new_user_comment" id="new_user_comment"
-                            style="height: 100px"><?= $this->data['form']['new_user_comment'] ?? ''; ?></textarea>
-                    </div>
+                <div class="col-12 mb-2">
+                    <label for="new_user_comment" class="form-label fw-bold">Adicionar novo comentário</label>
+                    <textarea class="form-control" placeholder="Digite o comentário" name="new_user_comment"
+                        id="new_user_comment"
+                        style="height: 100px"><?= $this->data['form']['new_user_comment'] ?? ''; ?></textarea>
+                </div>
 
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary btn-sm me-1 mb-1"> <i class="fa-solid fa-share"></i> Comentar</button>
-                    </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-sm me-1 mb-1">
+                        Comentar <i class="fa-solid fa-share"></i></button>
+                </div>
 
 
-                </form>
-
+            </form>
+            <?php if ($this->data['formatedComments'] ?? false): ?>
                 <div class="timeline mt-4">
 
                     <?php foreach ($this->data['formatedComments'] as $comment): ?>
@@ -350,9 +351,9 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                     <?php endforeach; ?>
 
                 </div>
-            </div>
+            <?php else : ?>
+                <div class='alert alert-primary' role='alert'>Nenhuma atividade para exibir!</div>
+            <?php endif; ?>
         </div>
-    <?php else : ?>
-        <div class='alert alert-primary' role='alert'>Nenhuma atividade para exibir!</div>
-    <?php endif; ?>
+    </div>
 </div>
