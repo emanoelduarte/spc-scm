@@ -56,6 +56,18 @@ class PurchasingRepository extends DbConnection
             $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
 
+        // Pesquisar por Fornecedor
+        if (!empty($filters['legal_name'])) {
+            $conditions[] = "EXISTS (
+                SELECT 1 
+                FROM adms_daman_suppliers ads
+                WHERE ads.id = adpu.adms_daman_supplier_id
+                AND ads.legal_name LIKE :legal_name
+            )";
+
+            $params['legal_name'] = '%' . $filters['legal_name'] . '%';
+        }
+
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
         $sql = "SELECT adpu.id, adpu.adms_daman_order_id,

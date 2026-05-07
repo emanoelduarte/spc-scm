@@ -2,7 +2,9 @@
 
 namespace App\admsDaman\Models\Repository;
 
+use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Services\DbConnection;
+use Exception;
 use PDO;
 
 class OrderCommentsRepository extends DbConnection
@@ -78,5 +80,45 @@ class OrderCommentsRepository extends DbConnection
 
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($params);
+    }
+
+    /**
+     * Metodo para mudar status automático do pedido a gerar uma compra.
+     */
+    public function createAutomaticOrderPurchased(int $idOrder): bool
+    {
+        try {
+            $sql = "INSERT INTO adms_daman_order_comments  (adms_daman_order_id, adms_daman_user_id, type, action, created_at)
+        VALUES (:adms_daman_order_id, :adms_daman_user_id, :type, :action, :created_at)";
+
+            // Preparar a QUERY
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':adms_daman_order_id', $idOrder, PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':type', 'auto', PDO::PARAM_STR);
+            $stmt->bindValue(':action', 'purchased_in', PDO::PARAM_STR);
+            $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+            // Executar a QUERY
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Comentário não inserido.", ['id_pedido' => $idOrder]);
+
+                return false;
+            }
+        } catch (Exception $e) {
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Comentário não inserido.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 }

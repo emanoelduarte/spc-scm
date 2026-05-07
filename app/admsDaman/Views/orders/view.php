@@ -317,7 +317,7 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                             <!-- Ícone -->
                             <div class="me-3">
                                 <span class="badge bg-<?= $comment['color'] ?> p-2 rounded-circle">
-                                    <i class="bi <?= $comment['icon'] ?>"></i>
+                                    <i class="fa-solid <?= $comment['icon'] ?>"></i>
                                 </span>
                             </div>
 

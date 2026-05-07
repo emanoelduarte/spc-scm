@@ -7,6 +7,7 @@ use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\DiscountCalculator;
 use App\admsDaman\Helpers\NormalizeDecimal;
+use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
 use App\admsDaman\Models\Repository\PurchasingRepository;
@@ -141,6 +142,10 @@ class GeneratePurchasing
             // Atualizar Status do pedido
             $changeStatus = new OrdersRepository();
             $changeStatus->updateAutomaticOrderStatus($this->data['form']['adms_daman_order_id']);
+
+            // Criar comentário com a data da compra relacionada ao pedido
+            $createComment = new OrderCommentsRepository();
+            $createComment->createAutomaticOrderPurchased($this->data['form']['adms_daman_order_id']);
 
             // Criar a mensagem de sucesso ao cadastrar
             $_SESSION['success'] = "Compra cadastrada com sucesso!";

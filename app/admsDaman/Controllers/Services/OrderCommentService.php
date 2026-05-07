@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\Services;
 
+use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
@@ -72,6 +73,27 @@ class OrderCommentService
             ];
         }
 
+        // CATEGORIAS
+        if ($orderOld['adms_daman_category_id'] != $this->data['adms_daman_category_id']) {
+
+            $categoriesRepo = new CategoriesRepository();
+
+            $oldCategorie = $categoriesRepo->getCategory($orderOld['adms_daman_category_id']);
+            $newCategorie = $categoriesRepo->getCategory($data['adms_daman_category_id']);
+
+            $changes[] = [
+                'order_id' => $data['id'],
+                'user_id' => $userId,
+                'type' => 'auto',
+                'action' => 'update_project',
+                'field' => 'project',
+                'old_value' => $oldCategorie['name'] ?? null,
+                'new_value' => $newCategorie['name'] ?? null,
+                'comment' => null,
+                'item_id' => null
+            ];
+        }
+
         // DESCRIÇÃO DO SERVIÇO
         if ($orderOld['service'] != $this->data['service']) {
 
@@ -83,6 +105,22 @@ class OrderCommentService
                 'field' => 'service',
                 'old_value' => $orderOld['service'],
                 'new_value' => $this->data['service'],
+                'comment' => null,
+                'item_id' => null
+            ];
+        }
+
+        // OBSERVAÇÃO DO PEDIDO
+        if ($orderOld['observation'] != $this->data['observation']) {
+
+            $changes[] = [
+                'order_id' => $this->data['id'],
+                'user_id' => $userId,
+                'type' => 'auto',
+                'action' => 'update_observation',
+                'field' => 'observation',
+                'old_value' => $orderOld['observation'],
+                'new_value' => $this->data['observation'],
                 'comment' => null,
                 'item_id' => null
             ];
@@ -213,43 +251,64 @@ class OrderCommentService
                 case 'comment_user':
                     $item['title'] = 'Comentário';
                     $item['message'] = $this->formatCommentUser($comment);
-                    $item['icon'] = 'bi-plus-circle';
+                    $item['icon'] = 'fa-comment';
+                    $item['color'] = 'primary';
+                    break;
+
+                case 'purchased_in':
+                    $item['title'] = 'Compra';
+                    $item['message'] = $this->formatCommentPurchased($comment);
+                    $item['icon'] = 'fa-basket-shopping';
                     $item['color'] = 'success';
                     break;
 
                 case 'update_item':
-                    $item['title'] = 'Item atualizado';
+                    $item['title'] = 'Item Editado';
                     $item['message'] = $this->formatUpdateItem($comment);
-                    $item['icon'] = 'bi-pencil';
+                    $item['icon'] = 'fa-pencil';
                     $item['color'] = 'warning';
                     break;
 
                 case 'update_status':
-                    $item['title'] = 'Status do pedido atualizado';
+                    $item['title'] = 'Status do pedido editado';
                     $item['message'] = $this->formatUpdateStatus($comment);
-                    $item['icon'] = 'bi-arrow-repeat';
-                    $item['color'] = 'primary';
+                    $item['icon'] = 'fa-pencil';
+                    $item['color'] = 'warning';
                     break;
 
                 case 'update_service':
-                    $item['title'] = 'Descrição atualizada';
+                    $item['title'] = 'Descrição Editada';
                     $item['message'] = $this->formatUpdateService($comment);
-                    $item['icon'] = 'bi-file-text';
-                    $item['color'] = 'info';
+                    $item['icon'] = 'fa-align-left';
+                    $item['color'] = 'warning';
+                    break;
+                
+                case 'update_categorie':
+                    $item['title'] = 'Obra Editada';
+                    $item['message'] = $this->formatUpdateCategorie($comment);
+                    $item['icon'] = 'fa-pencil';
+                    $item['color'] = 'warning';
                     break;
 
                 case 'update_project':
-                    $item['title'] = 'Obra atualizada';
+                    $item['title'] = 'Obra Editada';
                     $item['message'] = $this->formatUpdateProject($comment);
-                    $item['icon'] = 'bi-building';
-                    $item['color'] = 'primary';
+                    $item['icon'] = 'fa-pencil';
+                    $item['color'] = 'warning';
+                    break;
+                
+                case 'update_observation':
+                    $item['title'] = 'Observação Editada';
+                    $item['message'] = $this->formatUpdateObservation($comment);
+                    $item['icon'] = 'fa-pencil';
+                    $item['color'] = 'warning';
                     break;
 
                 case 'add_item':
                     $item['title'] = 'Novo item adicionado';
                     $item['message'] = $this->formatAddItem($comment);
-                    $item['icon'] = 'bi-plus-circle';
-                    $item['color'] = 'success';
+                    $item['icon'] = 'fa-circle-plus';
+                    $item['color'] = 'info';
                     break;
             }
 
@@ -274,30 +333,47 @@ class OrderCommentService
             $oldValue = number_format((float)$c['old_value'] ?? 0, 2, ',', '.');
             $newValue = number_format((float)$c['new_value'] ?? 0, 2, ',', '.');
 
-            return "{$c['user_name']} alterou {$field} de  {$oldValue} para {$newValue}";
+            return "Alterou {$field} de  {$oldValue} para {$newValue}";
         } else {
-            return "{$c['user_name']} alterou {$field} de {$c['old_value']} para {$c['new_value']}";
+            return "Alterou {$field} de {$c['old_value']} para {$c['new_value']}";
         }
     }
 
     private function formatUpdateStatus(array $c): string
     {
-        return "{$c['user_name']} alterou o status de {$c['old_value']} para {$c['new_value']}";
+        return "Alterou o status de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatUpdateService(array $c): string
     {
-        return "{$c['user_name']} alterou a descrição do serviço de {$c['old_value']} para {$c['new_value']}";
+        return "Alterou a descrição do serviço de {$c['old_value']} para {$c['new_value']}";
+    }
+
+    private function formatCommentPurchased(array $c): string
+    {
+        $formatedDate = date('d/m/Y', strtotime($c['created_at']));
+        $formatedHour = date('H:i', strtotime($c['created_at']));
+        return "Uma compra realizada deste pedido em {$formatedDate} às {$formatedHour}";
     }
 
     private function formatUpdateProject(array $c): string
     {
-        return "{$c['user_name']} alterou a obra de destino do pedido de {$c['old_value']} para {$c['new_value']}";
+        return "Alterou a obra de destino do pedido de {$c['old_value']} para {$c['new_value']}";
+    }
+
+    private function formatUpdateCategorie(array $c): string
+    {
+        return "Alterou a categoria do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatCommentUser(array $c): string
     {
         return "{$c['comment']}";
+    }
+
+     private function formatUpdateObservation(array $c): string
+    {
+        return "Editou a observação do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatAddItem(array $c): string
@@ -308,7 +384,7 @@ class OrderCommentService
         $qty  = $data['quantity'] ?? '—';
         $price = $data['unit_price'] ?? '—';
 
-        return "{$c['user_name']} adicionou um novo item: {$desc} (Qtd: {$qty})";
+        return "Adicionou um novo item: {$desc} (Qtd: {$qty})";
     }
 
     private function formatDeleteItem(array $c): string
@@ -317,6 +393,6 @@ class OrderCommentService
 
         $desc = $data['description'] ?? 'Item removido';
 
-        return "{$c['user_name']} removeu o item: {$desc}";
+        return "Removeu o item: {$desc}";
     }
 }

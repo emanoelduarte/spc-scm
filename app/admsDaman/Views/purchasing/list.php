@@ -25,6 +25,23 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
         </div>
 
         <div class="card-body">
+
+            <?php  // Formulário para buscar Obras 
+            ?>
+            <form action="" method="POST">
+                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+
+                    <input type="text" class="form-control w-50 p-2" name="legal_name"
+                        value="<?= ($this->data['search']['legal_name'] ?? '') ?>" placeholder="Pesquise por Razão Social do fornecedor">
+                    <button type="submit" class="btn btn-success h-100 ms-1"><i class="fa-solid fa-magnifying-glass"></i>
+                        Buscar
+                    </button>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-secondary h-100 ms-1">
+                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+                    </a>
+                </div>
+            </form>
+
             <div class="d-flex justify-content-end">
                 <button id="openFilter" class="btn btn-outline-secondary mt-2">
                     <i class="fa-solid fa-filter"></i> Filtros
@@ -206,7 +223,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             <input type="date" name="data_fim" class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i> 
+        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i>
             Filtrar
         </button>
         <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-secondary w-100 mt-3">
