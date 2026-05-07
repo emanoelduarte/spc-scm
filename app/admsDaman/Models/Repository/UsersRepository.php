@@ -74,10 +74,9 @@ class UsersRepository extends DbConnection
 
             // Executar a Query
             $stmt->execute();
-            
-            return $stmt->fetch(PDO::FETCH_ASSOC);
 
-        }catch(Exception $err) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
             GenerateLog::generateLog("error", "Usuário não encontrado", ['id' => (int) $id]);
             die("Usuário não encontrado " . $err->getMessage());
         }
@@ -107,12 +106,12 @@ class UsersRepository extends DbConnection
             $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
 
             // Executar a querry para cadastrar no banco de dados
-             $stmt->execute();
+            $stmt->execute();
 
             // Retornar o ID do usuário recém cadastrado
             return $this->getConnection()->lastInsertId();
-        }catch(Exception $e) {
-             // Chamar método para salvar o log
+        } catch (Exception $e) {
+            // Chamar método para salvar o log
             GenerateLog::generateLog("error", "Usuário tentou cadastrar usuário existente", ['email' => $data['email']]);
             return false;
         }
@@ -251,5 +250,4 @@ class UsersRepository extends DbConnection
             return false;
         }
     }
-    
 }

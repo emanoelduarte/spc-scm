@@ -28,7 +28,7 @@ class PagesRepository extends DbConnection
         // QUERY para recuperar os registros do banco de dados
         $sql = 'SELECT id, name, page_status, public_page 
                 FROM adms_daman_pages
-                ORDER BY id DESC
+                ORDER BY name ASC
                 LIMIT :limit OFFSET :offset';
 
         // Preparar a QUERY
@@ -261,7 +261,7 @@ class PagesRepository extends DbConnection
      *
      * @return array Lista de pages recuperados do banco de dados.
      */
-    public function getAllPagesFull() : array
+    public function getAllPagesFull(): array
     {
 
         // QUERY para recuperar os registros do banco de dados

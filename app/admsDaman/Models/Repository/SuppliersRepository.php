@@ -2,7 +2,9 @@
 
 namespace App\admsDaman\Models\Repository;
 
+use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Services\DbConnection;
+use Exception;
 use PDO;
 
 class SuppliersRepository extends DbConnection
@@ -48,6 +50,37 @@ class SuppliersRepository extends DbConnection
         $stmt->execute();
 
         return ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);
+    }
+
+    /**
+     * Recuperar o fornecedor
+     * 
+     * @return array|bool Fornecedor recuperado do banco de dados
+     */
+    public function getSupplier(int $id): array|bool
+    {
+        try {
+            $sql = 'SELECT ads.id, ads.legal_name, ads.trade_name, ads.cnpj, ads.contact_name, ads.phone, ads.adms_daman_suppliers_types_id, ads.supplier_status, ads.created_at, ads.updated_at,
+            adst.name AS supplier_type
+            FROM adms_daman_suppliers AS ads
+            INNER JOIN adms_daman_suppliers_types AS adst ON adst.id = ads.adms_daman_suppliers_types_id
+            WHERE ads.id = :id';
+
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substiruir os links pelos valores 
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+
+            // Executar a Query
+            $stmt->execute();
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
+            GenerateLog::generateLog("error", "Fornecedor não encontrado", ['id' => (int) $id]);
+            die("Fornecedor não encontrado " . $err->getMessage());
+        }
+        return false;
     }
 
     public function getAllSuppliersSelectActive(): array|bool
