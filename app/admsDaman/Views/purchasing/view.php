@@ -51,7 +51,7 @@ $csrf_cancel_token = CSRFHelper::generateCSRFToken('form_cancel_purchasing');
                         class="fa-solid fa-list"></i> Listar</a>
 
                 <a href="<?= $_ENV['URL_ADM'] . 'generate-pdf-purchasing/' . ($this->data['purchasing']['id'] ?? ''); ?>"
-                    class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</a>
+                    class="btn btn-primary btn-sm me-1 mb-1" onclick="showLoading()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</a>
 
                 <?php  // Formulário para envio dos dados para deletar Pedido 
                 ?>

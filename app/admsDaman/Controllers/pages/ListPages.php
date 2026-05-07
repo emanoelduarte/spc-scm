@@ -36,11 +36,21 @@ class ListPages
      */
     public function index(string|int $page = 1): void
     {
+        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listPages = new PagesRepository();
-        $this->data['pages'] = $listPages->getAllPages((int) $page, (int) $this->limitResult);
+        $this->data['pages'] = $listPages->getAllPages(
+            (int) $page, 
+            (int) $this->limitResult,
+            $this->data['search']
+        );
 
-        $this->data['pagination'] = PaginationService::generatePagination((int) $listPages->getAmountPages(), (int) $this->limitResult, (int) $page, 'list-pages');
+        $this->data['pagination'] = PaginationService::generatePagination(
+            (int) $listPages->getAmountPages($this->data['search']), 
+            (int) $this->limitResult, 
+            (int) $page, 'list-pages'
+        );
 
         // Criar o título da página
         $this->data['title_head'] = "Listar Paginas";

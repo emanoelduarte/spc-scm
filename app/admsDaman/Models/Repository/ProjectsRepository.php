@@ -12,19 +12,34 @@ use PDO;
  */
 class ProjectsRepository extends DbConnection
 {
-    public function getAllProjects(int $page = 1, int $limitResult = 10): array|false
+    public function getAllProjects(int $page = 1, int $limitResult = 10, ?array $filters = []): array|false
     {
         // Calcular o registro inicial de cada página exemplo:
         // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
         $offset = max(0, ($page - 1) * $limitResult);
 
-        $sql = 'SELECT id, name, status
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $conditions[] = "name LIKE :name";
+            $params['name'] = '%' . $filters['name'] . '%';
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+        $sql = "SELECT id, name, status
         FROM adms_daman_projects
+        {$where}
         ORDER BY id DESC
-        LIMIT :limit OFFSET :offset';
+        LIMIT :limit OFFSET :offset";
 
         // Preparar a query
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
 
         // Substituir o link da QUERY pelo valor
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
@@ -41,14 +56,29 @@ class ProjectsRepository extends DbConnection
      * @return int|bool Quantidade de obras encontrados no banco de dados
      */
 
-    public function getAmountProjects(): int|bool
+    public function getAmountProjects(?array $filters = []): int|bool
     {
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $conditions[] = "name LIKE :name";
+            $params['name'] = '%' . $filters['name'] . '%';
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
         // Criar Query para recuperar todos os registros no banco de dados
-        $sql = 'SELECT COUNT(id) AS amount_records
-        FROM adms_daman_projects';
+        $sql = "SELECT COUNT(id) AS amount_records
+        FROM adms_daman_projects
+        {$where}";
 
         // Preparar a Query
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
 
         // Executar a query
         $stmt->execute();

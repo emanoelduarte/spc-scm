@@ -48,12 +48,12 @@ class PurchasingRepository extends DbConnection
         // Filtro por intervalo de datas
         if (!empty($filters['data_inicio'])) {
             $conditions[] = "adpu.created_at >= :data_inicio";
-            $params['data_inicio'] = $filters['data_inicio'];
+            $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
         }
 
         if (!empty($filters['data_fim'])) {
             $conditions[] = "adpu.created_at <= :data_fim";
-            $params['data_fim'] = $filters['data_fim'];
+            $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
 
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';

@@ -2,7 +2,7 @@
 
 namespace App\admsDaman\Helpers;
 
-class ClearUrl 
+class ClearUrl
 {
     /**
      * Método estático pode ser chamado diretamente na classe, sem a necessidade de criar uma instância (objeto) da classe.
@@ -12,6 +12,12 @@ class ClearUrl
      */
     public static function clearUrl(string $url): string
     {
+        // Bloquear tentativas de path traversal
+        if (strpos($url, '..') !== false) {
+            GenerateLog::generateLog("error", "Tentativa de path traversal.", ['url' => $url]);
+            die("Acesso negado.");
+        }
+        
         // Eliminar a barra no final da URL
         $url = rtrim($url, "/");
 

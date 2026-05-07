@@ -22,6 +22,31 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
 
     <div class="card mb-4 border-light shadow">
         <div class="card-header hstack gap-2">
+            <span>Filtrar</span>
+        </div>
+
+        <div class="card-body">
+
+            <?php  // Formulário para buscar Página 
+            ?>
+            <form action="" method="POST">
+                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+
+                    <input type="text" class="form-control w-50 p-2" name="name"
+                        value="<?= ($this->data['search']['name'] ?? '') ?>" placeholder="Pesquise por nome da pagina">
+                    <button type="submit" class="btn btn-success h-100 ms-1"><i class="fa-solid fa-magnifying-glass"></i> 
+                        Buscar
+                    </button>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-pages'; ?>" class="btn btn-secondary h-100 ms-1">
+                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4 border-light shadow">
+        <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
                 <a href="<?= $_ENV['URL_ADM'] . 'create-page'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>

@@ -46,7 +46,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <input type="email" class="form-control" id="email" name="email" value="<?= $this->data['form']['email'] ?? ''; ?>" placeholder="Seu melhor e-mail">
                 </div>
 
-                 <div class="col-12">
+                <div class="col-12">
                     <label for="username" class="form-label">Usuário:</label>
                     <input type="text" class="form-control" id="username" name="username" value="<?= $this->data['form']['username'] ?? ''; ?>" placeholder="Nome de usuário">
                 </div>

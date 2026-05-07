@@ -25,14 +25,20 @@ class ListSuppliers
      */
     public function index(string|int $page = 1): void
     {
+        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listSuppliers = new SuppliersRepository();
         $listSuppliers->getAllSuppliers();
 
-        $this->data['suppliers'] = $listSuppliers->getAllSuppliers((int) $page, (int) $this->limitResult);
+        $this->data['suppliers'] = $listSuppliers->getAllSuppliers(
+            (int) $page, 
+            (int) $this->limitResult,
+            $this->data['search']
+        );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listSuppliers->getAmountSuppliers(),
+            (int) $listSuppliers->getAmountSuppliers($this->data['search']),
             (int) $this->limitResult,
             (int) $page,
             'list-suppliers'

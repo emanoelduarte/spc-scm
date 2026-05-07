@@ -70,7 +70,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                             extract($purchasing);
                         ?>
 
-                        <?php
+                            <?php
                             // Verificar o Status e aplicar a cor na borda do pedido
                             switch ($purchasing_status_id) {
                                 case 1:
@@ -80,7 +80,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                     $highlightClass = "highlight-purchasing-canceled";
                                     break;
                             }
-                        ?>
+                            ?>
                             <tr class="<?= $highlightClass ?>">
                                 <td><?= $id ?></td>
                                 <td><?= $adms_daman_order_id ?></td>
@@ -206,9 +206,12 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             <input type="date" name="data_fim" class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-success w-100 mt-3">
+        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i> 
             Filtrar
         </button>
+        <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-secondary w-100 mt-3">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+        </a>
 
     </form>
 </div>

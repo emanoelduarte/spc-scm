@@ -101,6 +101,10 @@ Instalar a biblioteca para enviar e-mail com php
 ```
 composer require phpmailer/phpmailer
 ```
+Instalar a biblioteca domPdf
+```
+composer require dompdf/dompdf
+```
 
 ## Como usar o GitHub
 Baixar os arquivos do Git.

@@ -33,9 +33,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 
                     <input type="text" class="form-control w-50 p-2" name="description"
                         value="<?= ($this->data['search']['description'] ?? '') ?>" placeholder="Pesquise por item">
-                    <button type="submit" class="btn btn-success h-100 ms-1">
+                    <button type="submit" class="btn btn-success h-100 ms-1"> <i class="fa-solid fa-magnifying-glass"></i>
                         Buscar
                     </button>
+
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-secondary h-100 ms-1">
+                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+                    </a>
 
                 </div>
             </form>
@@ -280,9 +284,12 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <input type="date" name="data_fim" class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-success w-100 mt-3">
+        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i> 
             Filtrar
         </button>
+        <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-secondary w-100 mt-3">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+        </a>
 
     </form>
 </div>

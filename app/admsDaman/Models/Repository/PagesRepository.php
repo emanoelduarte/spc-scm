@@ -18,21 +18,36 @@ class PagesRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de pages recuperados do banco de dados.
      */
-    public function getAllPages(int $page = 1, int $limitResult = 10)
+    public function getAllPages(int $page = 1, int $limitResult = 10, ?array $filters = [])
     {
 
         // Calcular o registro inicial de cada página exemplo:
         // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
         $offset = max(0, ($page - 1) * $limitResult);
 
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $conditions[] = "name LIKE :name";
+            $params['name'] = '%' . $filters['name'] . '%';
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
         // QUERY para recuperar os registros do banco de dados
-        $sql = 'SELECT id, name, page_status, public_page 
+        $sql = "SELECT id, name, page_status, public_page 
                 FROM adms_daman_pages
+                {$where}
                 ORDER BY name ASC
-                LIMIT :limit OFFSET :offset';
+                LIMIT :limit OFFSET :offset";
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
 
         // Substituir o link da QUERY pelo valor
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
@@ -52,14 +67,30 @@ class PagesRepository extends DbConnection
      *
      * @return int Quantidade total de pages encontrados no banco de dados.
      */
-    public function getAmountPages(): int|bool
+    public function getAmountPages(?array $filters = []): int|bool
     {
+
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $conditions[] = "name LIKE :name";
+            $params['name'] = '%' . $filters['name'] . '%';
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
         // Criar Query para recuperar todos os registros no banco de dados
-        $sql = 'SELECT COUNT(id) AS amount_records
-        FROM adms_daman_pages';
+        $sql = "SELECT COUNT(id) AS amount_records
+        FROM adms_daman_pages
+        {$where}";
 
         // Preparar a Query
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
 
         // Executar a query
         $stmt->execute();

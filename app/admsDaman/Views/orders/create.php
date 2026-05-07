@@ -117,7 +117,7 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                     <select class="form-select adms_daman_acquisition_types_id" id="adms_daman_acquisition_types_id"
                         name="adms_daman_acquisition_types_id">
-                        <option value="" selected>Selecione a tipo</option>
+                        <option value="" selected>Selecione o tipo</option>
                         <option value="1"
                             <?= isset($this->data['form']['adms_daman_acquisition_types_id']) && $this->data['form']['adms_daman_acquisition_types_id'] == 1 ? 'selected' : ''; ?>>
                             COMPRA</option>

@@ -25,13 +25,22 @@ class ListProjects
      */
     public function index(string|int $page = 1):void 
     {
+        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listProjects = new ProjectsRepository();
         $listProjects->getAllProjects();
 
-       $this->data['projects'] = $listProjects->getAllProjects((int) $page, (int) $this->limitResult);
+       $this->data['projects'] = $listProjects->getAllProjects(
+        (int) $page, 
+        (int) $this->limitResult,
+        $this->data['search']
+        );
 
-       $this->data['pagination'] = PaginationService::generatePagination((int) $listProjects->getAmountProjects(), (int) $this->limitResult, (int) $page, 'list-projects');
+       $this->data['pagination'] = PaginationService::generatePagination(
+        (int) $listProjects->getAmountProjects($this->data['search']), 
+        (int) $this->limitResult, 
+        (int) $page, 'list-projects');
 
         // Criar o título da página
         $this->data['title_head'] = "Listar Projetos";

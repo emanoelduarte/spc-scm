@@ -28,12 +28,12 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                 <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
                         class="fa-solid fa-list"></i> Listar</a>
 
-                <!-- <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . ($this->data['supplier']['id'] ?? ''); ?>"
-                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a> -->
+                <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . ($this->data['supplier']['id'] ?? ''); ?>"
+                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
 
                 <?php  // Formulário para envio dos dados para deletar Usuário 
                 ?>
-                <!-- <form id="formDelete<?= $this->data['supplier']['id']; ?>"
+                <form id="formDelete<?= $this->data['supplier']['id']; ?>"
                     action="<?= $_ENV['URL_ADM']; ?>delete-supplier" method="POST">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
@@ -44,7 +44,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                         onclick="confirmDeletion(event, <?= $this->data['supplier']['id'] ?>)"> <i
                             class="fa-solid fa-trash"></i> Apagar</button>
 
-                </form> -->
+                </form>
             </span>
         </div>
 
@@ -64,31 +64,39 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                 $edited = ($updated_at ? date('d/m/Y H:i:s', strtotime($updated_at)) : "");
             ?>
 
-            <dl class="row">
-                <dt class="col-sm-3">ID: </dt>
-                <dd class="col-sm-9"><?= $id ?></dd>
-                <dt class="col-sm-3">Razão Social: </dt>
-                <dd class="col-sm-9"><?= $legal_name ?></dd>
-                <dt class="col-sm-3">Nome Fantasia </dt>
-                <dd class="col-sm-9"><?= $trade_name ?></dd>
-                <dt class="col-sm-3">CNPJ: </dt>
-                <dd class="col-sm-9"><?= $cnpj ?></dd>
-                <dt class="col-sm-3">Contato: </dt>
-                <dd class="col-sm-9"><?= $contact_name ?></dd>
-                <dt class="col-sm-3">Telefone: </dt>
-                <dd class="col-sm-9"><?= $phone ?></dd>
-                <dt class="col-sm-3">Atividade do Fornecedor: </dt>
-                <dd class="col-sm-9"><?= $supplier_type ?></dd>
-                <dt class="col-sm-3">Cadastrado: </dt>
-                <dd class="col-sm-9"><?= $created ?></dd>
-                <dt class="col-sm-3">Editado: </dt>
-                <dd class="col-sm-9"><?= $edited ?></dd>
-            </dl>
+                <dl class="row">
+                    <dt class="col-sm-3">ID: </dt>
+                    <dd class="col-sm-9"><?= $id ?></dd>
+                    <dt class="col-sm-3">Razão Social: </dt>
+                    <dd class="col-sm-9"><?= $legal_name ?></dd>
+                    <dt class="col-sm-3">Nome Fantasia </dt>
+                    <dd class="col-sm-9"><?= $trade_name ?></dd>
+                    <dt class="col-sm-3">CNPJ: </dt>
+                    <dd class="col-sm-9"><?= $cnpj ?></dd>
+                    <dt class="col-sm-3">Contato: </dt>
+                    <dd class="col-sm-9"><?= $contact_name ?></dd>
+                    <dt class="col-sm-3">Telefone: </dt>
+                    <dd class="col-sm-9"><?= $phone ?></dd>
+                    <dt class="col-sm-3">E-mail: </dt>
+                    <dd class="col-sm-9">
+                        <?php echo $email ? $email : "Email não cadastrado"; ?>
+                    </dd>
+                    <dt class="col-sm-3">Atividade do Fornecedor: </dt>
+                    <dd class="col-sm-9"><?= $supplier_type ?></dd>
+                    <dt class="col-sm-3">Status: </dt>
+                    <dd class="col-sm-9">
+                        <?= $supplier_status ? "<span class='badge text-bg-success'>Ativo</span>" : "<span class='badge text-bg-danger'>Inativo</span>"; ?>
+                    </dd>
+                    <dt class="col-sm-3">Cadastrado: </dt>
+                    <dd class="col-sm-9"><?= $created ?></dd>
+                    <dt class="col-sm-3">Editado: </dt>
+                    <dd class="col-sm-9"><?= $edited ?></dd>
+                </dl>
 
             <?php else: ?>
-            <?php // Caso o fornecedor não seja encontrado
+                <?php // Caso o fornecedor não seja encontrado
                 ?>
-            <div class='alert alert-danger' role='alert'>Fornecedor não encontrado</div>
+                <div class='alert alert-danger' role='alert'>Fornecedor não encontrado</div>
             <?php endif; ?>
         </div>
     </div>

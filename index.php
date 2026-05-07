@@ -2,9 +2,9 @@
 
 session_start(); // Inicia a sessão para se trabalhar com vaviáveis de sessão
 
-ini_set('display_errors', 1);
-ini_set('output_buffering', 'Off');
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('output_buffering', 'Off');
+// error_reporting(E_ALL);
 
 use Routes\PageController;
 

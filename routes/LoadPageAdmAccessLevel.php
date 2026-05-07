@@ -10,12 +10,12 @@ class LoadPageAdmAccessLevel
     /** 
      * @var string $urlController Recebe da URL o nome da controller 
      */
-    private string $urlController;
+    private string|null $urlController;
 
     /** 
-     * @var string $urlParameter Recebe da URL o parâmetro 
+     * @var string|null $urlParameter Recebe da URL o parâmetro 
      */
-    private string $urlParameter;
+    private string|null $urlParameter;
 
     /** 
      * @var string $classLoad Controller que deve ser carregada 
@@ -46,6 +46,12 @@ class LoadPageAdmAccessLevel
 
     private function verifyLogin(): bool
     {
+        if (!($_SESSION['user_id'] ?? false)) {
+            // Redirecionar o usuário para a página de visualizar usuário
+            header("Location: {$_ENV['URL_ADM']}login");
+            exit;
+        }
+
         if ($_SESSION['user_id'] ?? false) {
 
             $accessLevelPage = new PagesRoutesRepository();
