@@ -29,11 +29,17 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_project');
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListProjects", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-project/' . ($this->data['project']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php if (in_array("UpdateProject", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-project/' . ($this->data['project']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Grupo de página ?>
+                <?php if (in_array("DeleteProject", $this->data['buttonPermissions'])) : ?>
+                    <?php  // Formulário para envio dos dados para deletar Grupo de página 
+                    ?>
                     <form id="formDelete<?= $this->data['project']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-project" method="POST">
 
                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
@@ -43,6 +49,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_project');
                         <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['project']['id']; ?>)"><i class="fa-solid fa-trash"></i> Apagar</button>
 
                     </form>
+                <?php endif; ?>
                 </td>
             </span>
         </div>
@@ -71,8 +78,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_project');
                     <dd class="col-sm-9"><?= $description ?></dd>
                     <dt class="col-sm-3">Status: </dt>
                     <dd class="col-sm-9">
-                    <?= $status ? "<span class='badge text-bg-success'>Ativa</span>" : "<span class='badge text-bg-danger'>Inativa</span>"; ?>
-                </dd>
+                        <?= $status ? "<span class='badge text-bg-success'>Ativa</span>" : "<span class='badge text-bg-danger'>Inativa</span>"; ?>
+                    </dd>
                     <dt class="col-sm-3">Cadastrado: </dt>
                     <dd class="col-sm-9"><?= $created ?></dd>
                     <dt class="col-sm-3">Editado: </dt>

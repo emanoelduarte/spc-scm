@@ -57,8 +57,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
-                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php if (in_array("CreateOrder", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
+                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -134,40 +136,48 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                                 <td><?= $name_tape; ?></td>
 
                                 <td class="d-none d-md-table-cell"><?= $created; ?></td>
-                                <td class="d-md-flex flex-row justify-content-center">
+                                <td class="text-center">
+                                    <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
                                     <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . $pedido_id; ?>"
                                         class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
                                     <?php if (($order) and ($order['adms_daman_acquisition_types_id'] == 1)): ?>
 
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>"
-                                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                            Editar</a>
+                                        <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
+                                            <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>"
+                                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                                Editar</a>
+                                        <?php endif; ?>
 
                                     <?php else: ?>
 
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>"
-                                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                            Editar</a>
+                                        <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
+                                            <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>"
+                                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                                Editar</a>
 
+                                        <?php endif; ?>
                                     <?php endif; ?>
 
 
-                                    <?php  // Formulário para envio dos dados para deletar Pedido 
-                                    // 
-                                    ?>
-                                    <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order"
-                                        method="POST">
+                                    <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])): ?>
+                                        <?php  // Formulário para envio dos dados para deletar Pedido 
+                                        // 
+                                        ?>
+                                        <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order"
+                                            method="POST" class="d-inline">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
+                                            <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                            onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i
-                                                class="fa-solid fa-trash"></i> Apagar</button>
+                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                                onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i
+                                                    class="fa-solid fa-trash"></i> Apagar</button>
 
-                                    </form>
+                                        </form>
+                                    <?php endif; ?>
 
                                 </td>
                             </tr>
@@ -284,7 +294,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <input type="date" name="data_fim" class="form-control">
         </div>
 
-        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i> 
+        <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i>
             Filtrar
         </button>
         <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-secondary w-100 mt-3">

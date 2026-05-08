@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderService;
 use App\admsDaman\Helpers\CSRFHelper;
@@ -74,11 +75,15 @@ class CreateOrder
         $getMeasurementUnits = new OrdersRepository();
         $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
 
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Pedido";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Cadastrar Pedido",
+            'menu' => "list-orders",
+            'buttonPermissions' => ["ListOrders"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-orders";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Garantir que exista pelo menos uma linha no array, para evitar erro em que o php esconda os campos iniciais
         if (empty($this->data['form']['description'])) {

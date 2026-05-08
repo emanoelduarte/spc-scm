@@ -26,9 +26,13 @@ use App\admsDaman\Helpers\CSRFHelper;
         <div class="card-header hstack gap-2">
             <span>Editar Pacote</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-packages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if(in_array('ListPackages', $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-packages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'view-package/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php if(in_array('ViewPackage', $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'view-package/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
             </span>
         </div>
 

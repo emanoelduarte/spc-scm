@@ -23,7 +23,9 @@ use App\admsDaman\Helpers\CSRFHelper;
         <div class="card-header hstack gap-2">
             <span>Cadastrar</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if(in_array("ListSuppliers", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
             </span>
         </div>
 

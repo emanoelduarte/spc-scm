@@ -58,7 +58,7 @@ class UsersAccessLevelsRepository extends DbConnection
      * @param int $id ID do usuário
      * @return array|bool Retorna um array simples com os IDs ou false caso não encontre
      */
-    public function getUsersAccessLevelsArray(int $id): array|bool
+    public function getUserAccessLevelsArray(int $id): array|bool
     {
         // Query para recuperar os registros do banco de dados
         // (recupera os níveis de acesso dos usuários)
@@ -140,7 +140,7 @@ class UsersAccessLevelsRepository extends DbConnection
         try { // Permanece no try se não houver erro
 
             // Recuperar os níveis de aceso do usuário em formato de array
-            $userAccessLevelsArray = $this->getUsersAccessLevelsArray($data['adms_daman_user_id']);
+            $userAccessLevelsArray = $this->getUserAccessLevelsArray($data['adms_daman_user_id']);
 
             // Quando o usuário não tiver nível de acesso cadastrado ele irá criar um array vazio com a expressão ternária
             $userAccessLevelsArray = $userAccessLevelsArray ? $userAccessLevelsArray : [];

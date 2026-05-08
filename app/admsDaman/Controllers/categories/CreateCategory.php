@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\categories;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationCategoryService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\CategoriesRepository;
@@ -56,11 +57,14 @@ class CreateCategory
      */
     private function viewCategory(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Categoria";
+        $pageElements = [
+            'title_head' => "Cadastrar Categoria",
+            'menu' => "list-categories",
+            'buttonPermissions' => ["ListCategories"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-categories";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/categories/create", $this->data);
@@ -113,4 +117,3 @@ class CreateCategory
         }
     }
 }
-?>

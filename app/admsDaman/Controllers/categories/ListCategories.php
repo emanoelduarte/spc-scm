@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\categories;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -43,11 +44,14 @@ class ListCategories
 
         $this->data['pagination'] = PaginationService::generatePagination((int) $listCategories->getAmountCategories(), (int) $this->limitResult, (int) $page, 'list-categories');
 
-        // Criar o título da página
-        $this->data['title_head'] = "Listar Categorias";
+        $pageElements = [
+            'title_head' => "Listar Categorias",
+            'menu' => "list-categories",
+            'buttonPermissions' => ["CreateCategory", "ViewCategory", "UpdateCategory", "DeleteCategory"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-categories";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a View
         $loadView = new LoadViewService("admsDaman/Views/categories/list", $this->data);

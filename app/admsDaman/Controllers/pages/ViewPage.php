@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\pages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\PagesRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -66,11 +67,15 @@ class ViewPage
             return;
         }
 
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Página";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Página",
+            'menu' => "list-pages",
+            'buttonPermissions' => ["ListPages", "UpdatePage", "DeletePage"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-pages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/pages/view", $this->data);

@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\packages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPackageService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\PackagesRepository;
@@ -56,11 +57,15 @@ class CreatePackage
      */
     private function viewPackage(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Pacote";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Cadastrar Pacote",
+            'menu' => "list-packages",
+            'buttonPermissions' => [ "ListPackages"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-packages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/packages/create", $this->data);

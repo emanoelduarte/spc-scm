@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\projects;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationProjectService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\ProjectsRepository;
@@ -46,11 +47,15 @@ class CreateProject
      */
     private function viewProject(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Obra";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Cadastrar Obra",
+            'menu' => "list-projects",
+            'buttonPermissions' => ["ListProjects"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-projects";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/projects/create", $this->data);

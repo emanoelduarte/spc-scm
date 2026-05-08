@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
@@ -54,12 +55,15 @@ class ListOrders
         $getProjectSelect = new CategoriesRepository();
         $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Listar Pedidos",
+            'menu' => "list-orders",
+            'buttonPermissions' => ["CreateOrder", "ViewOrder", "UpdateOrder", "DeleteOrder", "UpdateRentalOrder"],
+        ];
 
-
-        // Criar o título da página
-        $this->data['title_head'] = "Pedidos";
-
-        $this->data['menu'] = "list-orders";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/orders/list", $this->data);

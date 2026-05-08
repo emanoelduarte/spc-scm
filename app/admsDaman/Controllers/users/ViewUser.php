@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\users;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
@@ -56,7 +57,7 @@ class ViewUser
         // $this->data['userAccessLevels'] = $viewUserAccessLevels->getUsersAccessLevels((int) $id);
         
         $viewUserAccessLevels = new UsersAccessLevelsRepository();
-        $this->data['userAccessLevelsArray'] = $viewUserAccessLevels->getUsersAccessLevelsArray((int) $id);
+        $this->data['userAccessLevelsArray'] = $viewUserAccessLevels->getUserAccessLevelsArray((int) $id);
 
         // Instanciar o Repository para recuperar os níveis de acesso com menor prioridade de maior prioridade do usuário
         $this->data['lowerPriorityAccessLevels'] = $viewUserAccessLevels->getLowerPriorityAccessLevels();
@@ -64,11 +65,14 @@ class ViewUser
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Usuário", ['id' => (int) $id]);
 
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Usuário";
+        $pageElements = [
+            'title_head' => "Visualizar Usuário",
+            'menu' => "list-users",
+            'buttonPermissions' => ["ListUsers", "UpdatePasswordUser","UpdateUser", "DeleteUser", "UpdateUserAccessLevels"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-users";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/view", $this->data);

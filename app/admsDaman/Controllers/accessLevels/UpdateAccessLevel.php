@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\accessLevels;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationAccessLevelService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -78,6 +79,15 @@ class UpdateAccessLevel
      */
     private function viewAccessLevel(): void
     {
+        $pageElements = [
+            'title_head' => "Editar Nível de Acesso",
+            'menu' => "list-access-levels",
+            'buttonPermissions' => ["ListAccessLevels"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
+        
         // Criar o título da página
         $this->data['title_head'] = "Editar Nível de Acesso";
 

@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\purchasing;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingService;
 use App\admsDaman\Helpers\CSRFHelper;
@@ -78,11 +79,15 @@ class GeneratePurchasing
         $getAllSuppliersSelectActive = new SuppliersRepository();
         $this->data['getAllSuppliersSelectActive'] = $getAllSuppliersSelectActive->getAllSuppliersSelectActive();
 
-        // Criar o título da compra
-        $this->data['title_head'] = "Gerar Compra";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Gerar Compra",
+            'menu' => "list-purchasings",
+            'buttonPermissions' => ["ListPurchasings"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-purchasings";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/purchasing/generate", $this->data);

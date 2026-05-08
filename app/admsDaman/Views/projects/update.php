@@ -26,9 +26,13 @@ use App\admsDaman\Helpers\CSRFHelper;
         <div class="card-header hstack gap-2">
             <span>Editar</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListProjects", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'view-project/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php if (in_array("ViewProject", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'view-project/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
             </span>
         </div>
 

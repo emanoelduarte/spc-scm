@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\projects;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationProjectService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -73,6 +74,17 @@ class UpdateProject
      */
     private function viewUpdateProject(): void
     {
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Obra",
+            'menu' => "list-projects",
+            'buttonPermissions' => ["ListProjects", "ViewProject"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
+        
         // Criar o título da página
         $this->data['title_head'] = "Editar Obra";
 
@@ -131,4 +143,3 @@ class UpdateProject
         }
     }
 }
-?>

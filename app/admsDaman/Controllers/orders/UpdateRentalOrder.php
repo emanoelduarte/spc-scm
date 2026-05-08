@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderService;
 use App\admsDaman\Helpers\CSRFHelper;
@@ -12,7 +13,7 @@ use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
-class UpdateRentalOrder 
+class UpdateRentalOrder
 {
     /** @var array|string|null $data Dados que devem ser enviados para a VIEW */
     private array|string|null $data = null;
@@ -87,11 +88,15 @@ class UpdateRentalOrder
         $getMeasurementUnits = new OrdersRepository();
         $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
 
-        // Definir o título da pedido
-        $this->data['title_head'] = "Editar Pedido";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Pedido",
+            'menu' => "list-orders",
+            'buttonPermissions' => ["ListOrders", "ViewOrder"],
+        ];
 
-        // Ativar o item de menu
-        $this->data['menu'] = "list-orders";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/orders/updateRental", $this->data);

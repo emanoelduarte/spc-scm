@@ -2,7 +2,7 @@
 
 use App\admsDaman\Helpers\CSRFHelper;
 
-    $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
+$csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
 ?>
 <div class="container-fluid px-4">
 
@@ -28,23 +28,29 @@ use App\admsDaman\Helpers\CSRFHelper;
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
 
-                <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array('ListAccessLevels', $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $this->data['levelAccess']['id']; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php if (in_array('UpdateAccessLevel', $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $this->data['levelAccess']['id']; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
-                <?php
-                // Formulário para envio dos dados para deletar nível de acesso 
-                ?>
-                <form id="formDelete<?= $this->data['levelAccess']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level" method="POST">
+                <?php if (in_array('DeleteAccessLevel', $this->data['buttonPermissions'])) : ?>
+                    <?php
+                    // Formulário para envio dos dados para deletar nível de acesso 
+                    ?>
+                    <form id="formDelete<?= $this->data['levelAccess']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level" method="POST">
 
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                    <input type="hidden" name="id" id="id" value="<?= $this->data['levelAccess']['id'] ?? ''; ?>">
+                        <input type="hidden" name="id" id="id" value="<?= $this->data['levelAccess']['id'] ?? ''; ?>">
 
-                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['levelAccess']['id']; ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['levelAccess']['id']; ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
 
-                </form>
+                    </form>
 
+                <?php endif; ?>
             </span>
         </div>
 

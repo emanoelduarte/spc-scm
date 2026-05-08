@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\accessLevels;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\AccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -67,11 +68,17 @@ class ViewAccessLevel
             return;
         }
 
+        $pageElements = [
+            'title_head' => "Visualizar Nível de Acesso",
+            'menu' => "list-access-levels",
+            'buttonPermissions' => ["ListAccessLevels", "UpdateAccessLevel", "DeleteAccessLevel"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
+
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o nível de acesso", ['id' => (int) $id]);
-
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Nível de Acesso";
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/accessLevels/view", $this->data);

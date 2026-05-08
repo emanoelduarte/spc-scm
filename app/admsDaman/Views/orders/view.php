@@ -70,38 +70,55 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                        class="fa-solid fa-list"></i> Listar</a>
+
+                <?php if (in_array("ListOrders", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                            class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
+
+                <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
+
 
                 <?php if (isset($this->data['order']) and ($this->data['order']['adms_daman_acquisition_types_id'] == 1)): ?>
 
-                    <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>"
-                        class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                    <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
+                        <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                    <?php endif; ?>
 
                 <?php else: ?>
 
-                    <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>"
-                        class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                    <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
+                        <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                    <?php endif; ?>
 
                 <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
-                    class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                <?php if (in_array("GeneratePurchasing", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
+                        class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Pedido 
-                ?>
-                <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>"
-                    action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
+                <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])) : ?>
+                    <?php  // Formulário para envio dos dados para deletar Pedido 
+                    ?>
+                    <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>"
+                        action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
 
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                    <input type="hidden" name="id" id="id" value="<?= ($this->data['order']['id'] ?? ''); ?>">
+                        <input type="hidden" name="id" id="id" value="<?= ($this->data['order']['id'] ?? ''); ?>">
 
-                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                        onclick="confirmDeletion(event, <?= ($this->data['order']['id'] ?? '') ?>)"> <i
-                            class="fa-solid fa-trash"></i> Apagar</button>
+                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                            onclick="confirmDeletion(event, <?= ($this->data['order']['id'] ?? '') ?>)"> <i
+                                class="fa-solid fa-trash"></i> Apagar</button>
 
-                </form>
+                    </form>
+                <?php endif; ?>
                 </td>
             </span>
         </div>

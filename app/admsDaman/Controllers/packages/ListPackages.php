@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\packages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\PackagesRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -38,11 +39,15 @@ class ListPackages
 
         $this->data['pagination'] = PaginationService::generatePagination((int) $listPackages->getAmountPackages(), (int) $this->limitResult, (int) $page, 'list-packages');
 
-        // Criar o título da página
-        $this->data['title_head'] = "Listar Pacotes";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Listar Pacotes",
+            'menu' => "list-packages",
+            'buttonPermissions' => ["CreatePackage", "ViewPackage", "UpdatePackage", "DeletePackage"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-packages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a View
         $loadView = new LoadViewService("admsDaman/Views/packages/list", $this->data);

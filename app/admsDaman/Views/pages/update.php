@@ -29,10 +29,12 @@ use App\admsDaman\Helpers\CSRFHelper;
             <span>Editar</span>
 
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?php echo $_ENV['URL_ADM']; ?>list-pages" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
-
-                <a href="<?php echo $_ENV['URL_ADM'] . 'view-page/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-regular fa-eye"></i> Visualizar</a>
-
+                <?php if (in_array("ListPages", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?php echo $_ENV['URL_ADM']; ?>list-pages" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
+                <?php if (in_array("ViewPage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?php echo $_ENV['URL_ADM'] . 'view-page/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-regular fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
             </span>
 
         </div>

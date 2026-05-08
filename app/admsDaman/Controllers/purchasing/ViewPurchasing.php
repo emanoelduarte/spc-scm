@@ -1,6 +1,7 @@
 <?php
 namespace App\admsDaman\Controllers\purchasing;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\PurchasingRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -47,6 +48,16 @@ class ViewPurchasing
         // Instanciar o Repository para recuperar os registros do banco de dados
         $viewItemsPurchasing = new PurchasingRepository();
         $this->data['itemsPurchasing'] = $viewItemsPurchasing->getItems((int) $id);
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Compra",
+            'menu' => "list-purchasings",
+            'buttonPermissions' => ["ListPurchasings", "GeneratePdfPurchasing", "CancelPurchasing"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Compras";

@@ -26,23 +26,29 @@ $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_le
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-users'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListUsers", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-users'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php if (in_array("UpdateUser", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
+                <?php if (in_array("UpdatePasswordUser", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-password-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar Senha</a>
+                <?php endif; ?>
+                <?php if (in_array("DeleteUser", $this->data['buttonPermissions'])) : ?>
+                    <?php  // Formulário para envio dos dados para deletar Usuário 
+                    ?>
+                    <form id="formDelete<?= $this->data['user']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-password-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar Senha</a>
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                <?php  // Formulário para envio dos dados para deletar Usuário 
-                ?>
-                <form id="formDelete<?= $this->data['user']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
+                        <input type="hidden" name="id" id="id" value="<?= $this->data['user']['id'] ?? ''; ?>">
 
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['user']['id'] ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
 
-                    <input type="hidden" name="id" id="id" value="<?= $this->data['user']['id'] ?? ''; ?>">
-
-                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['user']['id'] ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
-
-                </form>
+                    </form>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -85,53 +91,56 @@ $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_le
         </div>
     </div>
 
-     <div class="card mb-4 border-light shadow">
-        <div class="card-header d-flex flex-column flex-sm-row gap-2">
-            <span>Permissões do Usuário</span>
-        </div>
+    <?php if (in_array("UpdateUserAccessLevels", $this->data['buttonPermissions'])): ?>
+        <div class="card mb-4 border-light shadow">
+            <div class="card-header d-flex flex-column flex-sm-row gap-2">
+                <span>Permissões do Usuário</span>
+            </div>
 
-        <div class="card-body">
-            <?php
+            <div class="card-body">
+                <?php
                 // Verificar se há níveis de acesso do usuário com menor prioridade
                 if ($this->data['lowerPriorityAccessLevels'] ?? false): ?>
 
-            <dl class="row">
-                <dt class="col-sm-3">Níveis de acesso: </dt>
-                <dd class="col-sm-9">
-            </dl>
-            <form action="<?= $_ENV['URL_ADM']; ?>update-user-access-levels" method="POST">
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_update_access_level ?>">
+                    <dl class="row">
+                        <dt class="col-sm-3">Níveis de acesso: </dt>
+                        <dd class="col-sm-9">
+                    </dl>
+                    <form action="<?= $_ENV['URL_ADM']; ?>update-user-access-levels" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_update_access_level ?>">
 
-                    <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
+                        <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
 
-            <?php
-                // Percorre a array de níveis de acesso do usuário
-                foreach ($this->data['lowerPriorityAccessLevels'] as $lowerPriorityAccessLevel) {
+                        <?php
+                        // Percorre a array de níveis de acesso do usuário
+                        foreach ($this->data['lowerPriorityAccessLevels'] as $lowerPriorityAccessLevel) {
 
-                // Extrair o Array pela coluna de níveis de acesso
-                extract($lowerPriorityAccessLevel);
-                
-                // Verificar se o nível de acesso atual ($id) está no array de níveis de acesso do usuário
-                $userAccessLevels = $this->data['userAccessLevelsArray'] ? $this->data['userAccessLevelsArray'] : [];
+                            // Extrair o Array pela coluna de níveis de acesso
+                            extract($lowerPriorityAccessLevel);
 
-                $checked = in_array($id, $userAccessLevels) ? 'checked' : ''; ?>
+                            // Verificar se o nível de acesso atual ($id) está no array de níveis de acesso do usuário
+                            $userAccessLevels = $this->data['userAccessLevelsArray'] ? $this->data['userAccessLevelsArray'] : [];
 
-                <div class="form-check form-switch">
+                            $checked = in_array($id, $userAccessLevels) ? 'checked' : ''; ?>
 
-                    <input type="checkbox" name="userAccessLevels[<?= $id ?>]" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" value="<?= $id ?>" <?= $checked ?>>
+                            <div class="form-check form-switch">
 
-                    <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
-                </div>
+                                <input type="checkbox" name="userAccessLevels[<?= $id ?>]" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" value="<?= $id ?>" <?= $checked ?>>
 
-            <?php } ?>
-                <div class="col-12">
-                        <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
-                    </div>
-                </form>
-         <?php
-            else :
-                echo "<div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";endif; ?>
+                                <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
+                            </div>
+
+                        <?php } ?>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
+                        </div>
+                    </form>
+                <?php
+                else :
+                    echo "<div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";
+                endif; ?>
+            </div>
         </div>
-     </div>
+    <?php endif; ?>
 
 </div>

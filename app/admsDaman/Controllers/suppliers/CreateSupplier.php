@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\suppliers;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationSupplierService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\SuppliersRepository;
@@ -67,11 +68,15 @@ class CreateSupplier
     public function viewCreateSupplier()
     {
 
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Fornecedor";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Cadastrar Fornecedor",
+            'menu' => "list-suppliers",
+            'buttonPermissions' => ["ListSuppliers"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-suppliers";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/suppliers/create", $this->data);

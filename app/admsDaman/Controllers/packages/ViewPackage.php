@@ -2,6 +2,7 @@
     
 namespace App\admsDaman\Controllers\packages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\PackagesRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -66,11 +67,15 @@ class ViewPackage
             return;
         }
 
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Pacotes";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Pacote",
+            'menu' => "list-packages",
+            'buttonPermissions' => [ "ListPackages", "UpdatePackage", "DeletePackage"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-packages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/packages/view", $this->data);

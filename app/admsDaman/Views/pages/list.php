@@ -2,7 +2,7 @@
 
 use App\admsDaman\Helpers\CSRFHelper;
 
-// Gerar o token CSRF para validar o usuário
+// Gerar o token CSRF para validar a requisição de exclusão de Página
 $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
 
 ?>
@@ -49,14 +49,16 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-page'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php if (in_array("CreatePage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-page'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
             </span>
         </div>
         <div class="card-body">
             <?php // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
 
-            // Acessa o IF quando encontrar o elemento no array users
+            // Acessa o IF quando encontrar o elemento no array páginas
             if ($this->data['pages'] ?? false) :
             ?>
 
@@ -72,7 +74,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
                     </thead>
                     <tbody>
                         <?php
-                        // Percorrer o array de usuários
+                        // Percorrer o array de páginas
                         foreach ($this->data['pages'] as $page) :
                             extract($page);
                         ?>
@@ -86,14 +88,19 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
                                 <td class="d-none d-md-table-cell">
                                     <?= $public_page ? "<span class='badge text-bg-success'>Sim</span>" : "<span class='badge text-bg-danger'>Não</span>"; ?>
                                 </td>
-                                <td class="d-md-flex flex-row justify-content-center">
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-page/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                <td class="text-center">
+                                    <?php if (in_array("ViewPage", $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'view-page/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'update-page/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                                    <?php if (in_array("UpdatePage", $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'update-page/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                                    <?php endif; ?>
 
-                                    <?php  // Formulário para envio dos dados para deletar Usuário 
+                                    <?php if (in_array("DeletePage", $this->data['buttonPermissions'])) : ?>
+                                    <?php  // Formulário para envio dos dados para deletar Página 
                                     ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-page" method="POST">
+                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-page" method="POST" class="d-inline">
 
                                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
@@ -102,6 +109,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
                                         <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"><i class="fa-solid fa-trash"></i> Apagar</button>
 
                                     </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
 

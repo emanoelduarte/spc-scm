@@ -21,8 +21,12 @@ use App\admsDaman\Helpers\CSRFHelper;
         <div class="card-header hstack gap-2">
             <span>Editar</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
-                <a href="<?= $_ENV['URL_ADM'] . 'view-supplier/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php if (in_array("ViewSupplier", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
+                <?php if (in_array("ViewSupplier", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'view-supplier/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
             </span>
         </div>
         <div class="card-body">
@@ -60,7 +64,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <label for="phone" class="form-label">Telefone:</label>
                     <input type="text" class="form-control" id="phone" name="phone" value="<?= $this->data['form']['phone'] ?? ''; ?>" placeholder="Telefone de contato">
                 </div>
-                
+
                 <div class="col-lg-4">
                     <label for="adms_daman_suppliers_types_id" class="form-label">Atividade do fornecedor</label>
                     <select name="adms_daman_suppliers_types_id" class="form-select" id="adms_daman_suppliers_types_id">

@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\users;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserRakitService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -62,11 +63,14 @@ class UpdateUser
      */
     private function viewUpdateUser(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Usuário";
+        $pageElements = [
+            'title_head' => "Editar Usuário",
+            'menu' => "list-users",
+            'buttonPermissions' => ["ListUsers", "ViewUser"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-users";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/update", $this->data);

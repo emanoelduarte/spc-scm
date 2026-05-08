@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\categories;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationCategoryService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -73,11 +74,15 @@ class UpdateCategory
      */
     private function viewUpdateCategory(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Categoria";
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-categories";
+        $pageElements = [
+            'title_head' => "Editar Categoria",
+            'menu' => "list-categories",
+            'buttonPermissions' => ["ListCategories", "ViewCategory"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/categories/update", $this->data);
@@ -131,4 +136,3 @@ class UpdateCategory
         }
     }
 }
-?>

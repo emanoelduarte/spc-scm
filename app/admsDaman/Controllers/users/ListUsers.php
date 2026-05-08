@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\users;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\ButtonPermissionUserRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
@@ -30,16 +31,14 @@ class ListUsers
 
         $this->data['pagination'] = PaginationService::generatePagination((int) $listUsers->getAmountUsers(), (int) $this->limitResult, (int) $page, 'list-users');
 
-        // Criar o título da página
-        $this->data['title_head'] = "Listar Usuários";
+        $pageElements = [
+            'title_head' => "Listar Usuários",
+            'menu' => "list-users",
+            'buttonPermissions' => ["CreateUser", "ViewUser", "UpdateUser", "DeleteUser"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-users";
-
-        // Apresentar ou ocutar botão
-        $button = ['CreateUser', "ViewUser", "UpdateUser", "DeleteUser"];
-        $buttonPermission = new ButtonPermissionUserRepository(); 
-        $this->data['buttonPermissions'] = $buttonPermission->buttonPermission($button);
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a View do Listar Usuários
         $loadView = new LoadViewService("admsDaman/Views/users/list", $this->data);

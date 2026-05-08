@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\users;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserPasswordService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -63,11 +64,15 @@ class UpdatePasswordUser
     // Metodo responsável em carregar a VIEW
     private function viewUpdatePasswordUser(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Senha do Usuário";
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-users";
+        $pageElements = [
+            'title_head' => "Editar Senha do Usuário",
+            'menu' => "list-users",
+            'buttonPermissions' => ["ListUsers", "ViewUser"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/users/updatePassword", $this->data);

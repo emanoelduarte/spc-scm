@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\pages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPageService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -84,12 +85,15 @@ class UpdatePage
         $getAllGroupsPagesSelect = new GroupsRepository();
         $this->data['getAllGroupsPagesSelect'] = $getAllGroupsPagesSelect->getAllGroupsPagesSelect();
 
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Página",
+            'menu' => "list-pages",
+            'buttonPermissions' => ["ListPages", "ViewPage"],
+        ];
 
-        // Definir o título da página
-        $this->data['title_head'] = "Editar Página";
-
-        // Ativar o item de menu
-        $this->data['menu'] = "list-pages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/pages/update", $this->data);

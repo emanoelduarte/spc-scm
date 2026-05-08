@@ -33,8 +33,6 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_access_level_permission
         <div class="card-body">
             <?php // Incluir arquivo rsponsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
-            // var_dump($this->data['accessLevelsPages']);
-            // var_dump($this->data['pages']);
 
             // Acessa o IF quando encontrar páginas no array de pages
             if ($this->data['pages'] ?? false) {

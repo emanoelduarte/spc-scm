@@ -3,6 +3,7 @@
 namespace App\admsDaman\Controllers\orders;
 
 use App\admsDaman\Controllers\Services\OrderCommentService;
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderService;
 use App\admsDaman\Helpers\CSRFHelper;
@@ -96,11 +97,15 @@ class UpdateOrder
         $getMeasurementUnits = new OrdersRepository();
         $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
 
-        // Definir o título da pedido
-        $this->data['title_head'] = "Editar Pedido";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Pedido",
+            'menu' => "list-orders",
+            'buttonPermissions' => ["ListOrders", "ViewOrder"],
+        ];
 
-        // Ativar o item de menu
-        $this->data['menu'] = "list-orders";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/orders/update", $this->data);

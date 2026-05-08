@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\packages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPackageService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -73,11 +74,15 @@ class UpdatePackage
      */
     private function viewUpdatePackage(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Pacote";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Pacote",
+            'menu' => "list-packages",
+            'buttonPermissions' => ["ListPackages", "ViewPackage"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-packages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/packages/update", $this->data);

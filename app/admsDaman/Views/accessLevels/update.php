@@ -27,9 +27,12 @@ use App\admsDaman\Helpers\CSRFHelper;
             <span>Editar</span>
             <span class="ms-auto d-sm-flex flex-row">
                 <span class="ms-auto d-sm-flex flex-row">
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
-
-                    <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                    <?php if (in_array('ViewAccessLevel', $this->data['buttonPermissions'])) : ?>
+                        <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $this->data['form']['id']; ?>" class="btn btn-secondary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                    <?php endif; ?>
+                    <?php if (in_array('ListAccessLevels', $this->data['buttonPermissions'])) : ?>
+                        <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                    <?php endif; ?>
                 </span>
             </span>
         </div>
@@ -39,7 +42,6 @@ use App\admsDaman\Helpers\CSRFHelper;
             // Incluir arquivo responsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
             ?>
-
             <form action="" method="POST" class="row g-3">
                 <input type="hidden" name="csrf_token" value="<?= CSRFHelper::generateCSRFToken('form_update_level'); ?>" id="">
 

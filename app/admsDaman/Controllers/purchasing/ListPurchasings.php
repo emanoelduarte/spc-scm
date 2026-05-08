@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\purchasing;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\PurchasingRepository;
@@ -44,6 +45,16 @@ class ListPurchasings
 
         $getAllPurchasingStatusSelect = new PurchasingRepository();
         $this->data['getAllPurchasingStatusSelect'] = $getAllPurchasingStatusSelect->getAllPurchasingStatusSelect();
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Listar Compras",
+            'menu' => "list-purchasings",
+            'buttonPermissions' => ["ViewPurchasing", "DeletePurchasing"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Compras";

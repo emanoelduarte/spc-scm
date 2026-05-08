@@ -2,6 +2,7 @@
     
 namespace App\admsDaman\Controllers\suppliers;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationSupplierService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -60,6 +61,16 @@ class UpdateSupplier
         // Instanciar o repositório para preencher os selects.
         $getAllTypesSuppliersSelect = new SuppliersRepository();
         $this->data['getAllTypesSuppliersSelect'] = $getAllTypesSuppliersSelect->getAllTypesSuppliersSelect();
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Editar Fornecedor",
+            'menu' => "list-suppliers",
+            'buttonPermissions' => ["ListSuppliers", "ViewSupplier"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Editar Fornecedor";

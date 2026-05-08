@@ -105,23 +105,27 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                 <td><?= $project_name ?></td>
                                 <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
                                 <td><?= $purchasing_status ?></td>
-                                <td class="d-md-flex flex-row justify-content-center">
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
-                                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                <td class="text-center">
+                                    <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
+                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
-                                    <?php  // Formulário para envio dos dados para deletar compra 
-                                    ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
-                                        method="POST">
+                                    <?php if (in_array("DeletePurchasing", $this->data['buttonPermissions'])): ?>
+                                        <?php  // Formulário para envio dos dados para deletar compra 
+                                        ?>
+                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
+                                            method="POST" class="d-inline">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                            onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
-                                            Apagar</button>
-                                    </form>
+                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                                onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                                Apagar</button>
+                                        </form>
+                                    <?php endif; ?>
 
                                 </td>
                             </tr>

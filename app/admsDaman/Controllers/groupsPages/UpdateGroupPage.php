@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\groupsPages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationGroupService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -73,11 +74,15 @@ class UpdateGroupPage
      */
     private function viewUpdateGroup(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Grupo";
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-groups-pages";
+        $pageElements = [
+            'title_head' => "Editar Grupo",
+            'menu' => "list-groups-pages",
+            'buttonPermissions' => ["ListGroupsPages", "ViewGroupPage"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/groupsPages/update", $this->data);

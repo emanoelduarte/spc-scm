@@ -25,26 +25,31 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                        class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListSuppliers", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                            class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . ($this->data['supplier']['id'] ?? ''); ?>"
-                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php if (in_array("UpdateSupplier", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . ($this->data['supplier']['id'] ?? ''); ?>"
+                        class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Usuário 
-                ?>
-                <form id="formDelete<?= $this->data['supplier']['id']; ?>"
-                    action="<?= $_ENV['URL_ADM']; ?>delete-supplier" method="POST">
+                <?php if (in_array("DeleteSupplier", $this->data['buttonPermissions'])): ?>
+                    <?php  // Formulário para envio dos dados para deletar Usuário 
+                    ?>
+                    <form id="formDelete<?= $this->data['supplier']['id']; ?>"
+                        action="<?= $_ENV['URL_ADM']; ?>delete-supplier" method="POST">
 
-                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                    <input type="hidden" name="id" id="id" value="<?= $this->data['supplier']['id'] ?? ''; ?>">
+                        <input type="hidden" name="id" id="id" value="<?= $this->data['supplier']['id'] ?? ''; ?>">
 
-                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                        onclick="confirmDeletion(event, <?= $this->data['supplier']['id'] ?>)"> <i
-                            class="fa-solid fa-trash"></i> Apagar</button>
-
-                </form>
+                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                            onclick="confirmDeletion(event, <?= $this->data['supplier']['id'] ?>)"> <i
+                                class="fa-solid fa-trash"></i> Apagar</button>
+                    </form>
+                <?php endif; ?>
             </span>
         </div>
 

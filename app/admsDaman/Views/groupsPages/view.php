@@ -30,11 +30,16 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_group');
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-groups-pages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListGroupsPages", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-groups-pages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-group-page/' . ($this->data['group']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php if (in_array("UpdateGroupPage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-group-page/' . ($this->data['group']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Grupo de página ?>
+                <?php if (in_array("DeleteGroupPage", $this->data['buttonPermissions'])) : ?>
+                    <?php  // Formulário para envio dos dados para deletar Grupo de página ?>
                     <form id="formDelete<?= $this->data['group']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-group-page" method="POST">
 
                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
@@ -44,6 +49,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_group');
                         <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['group']['id']; ?>)"><i class="fa-solid fa-trash"></i> Apagar</button>
 
                     </form>
+                <?php endif; ?>
                 </td>
             </span>
         </div>

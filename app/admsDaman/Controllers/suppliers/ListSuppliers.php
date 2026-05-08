@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\suppliers;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -44,11 +45,15 @@ class ListSuppliers
             'list-suppliers'
         );
 
-        // Criar o título da página
-        $this->data['title_head'] = "Listar Fornecedores";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Listar Fornecedores",
+            'menu' => "list-suppliers",
+            'buttonPermissions' => ["CreateSupplier", "ViewSupplier", "UpdateSupplier", "DeleteSupplier"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-suppliers";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a View do Listar Fornecedores
         $loadView = new LoadViewService("admsDaman/Views/suppliers/list", $this->data);

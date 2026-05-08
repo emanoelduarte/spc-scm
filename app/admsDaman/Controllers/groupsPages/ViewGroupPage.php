@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\groupsPages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\GroupsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -66,11 +67,14 @@ class ViewGroupPage
             return;
         }
 
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Grupos";
+        $pageElements = [
+            'title_head' => "Visualizar Grupo",
+            'menu' => "list-groups-pages",
+            'buttonPermissions' => ["ListGroupsPages", "UpdateGroupPage", "DeleteGroupPage"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-groups-pages";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/groupsPages/view", $this->data);

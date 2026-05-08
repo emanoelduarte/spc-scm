@@ -47,16 +47,21 @@ $csrf_cancel_token = CSRFHelper::generateCSRFToken('form_cancel_purchasing');
         <div class="card-header d-flex flex-column border-ligth flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                        class="fa-solid fa-list"></i> Listar</a>
+                <?php if(in_array("ListPurchasings", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                            class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'generate-pdf-purchasing/' . ($this->data['purchasing']['id'] ?? ''); ?>"
-                    class="btn btn-primary btn-sm me-1 mb-1" onclick="showLoading()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</a>
+                <?php if(in_array("GeneratePdfPurchasing", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'generate-pdf-purchasing/' . ($this->data['purchasing']['id'] ?? ''); ?>"
+                        class="btn btn-primary btn-sm me-1 mb-1" onclick="showLoading()"><i class="fa-solid fa-file-pdf"></i> Gerar PDF</a>
+                <?php endif; ?>
 
-                <?php  // Formulário para envio dos dados para deletar Pedido 
-                ?>
-                <form id="formCancel<?= ($this->data['purchasing']['id'] ?? ''); ?>"
-                    action="<?= $_ENV['URL_ADM']; ?>cancel-purchasing" method="POST">
+                <?php if(in_array("CancelPurchasing", $this->data['buttonPermissions'])): ?>
+                    <?php  // Formulário para envio dos dados para deletar Pedido 
+                    ?>
+                    <form id="formCancel<?= ($this->data['purchasing']['id'] ?? ''); ?>"
+                        action="<?= $_ENV['URL_ADM']; ?>cancel-purchasing" method="POST">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_cancel_token; ?>">
 
@@ -66,6 +71,7 @@ $csrf_cancel_token = CSRFHelper::generateCSRFToken('form_cancel_purchasing');
                         onclick="confirmCancel(event, <?= ($this->data['purchasing']['id'] ?? '') ?>)"> <i class="fa-solid fa-xmark"></i> Cancelar Compra</button>
 
                 </form>
+                <?php endif; ?>
 
                 </td>
             </span>

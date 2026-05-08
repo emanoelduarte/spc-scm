@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\projects;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -49,6 +50,16 @@ class ViewProject
 
             return;
         }
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Obra",
+            'menu' => "list-projects",
+            'buttonPermissions' => ["ListProjects", "UpdateProject", "DeleteProject"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Visualizar Obra";

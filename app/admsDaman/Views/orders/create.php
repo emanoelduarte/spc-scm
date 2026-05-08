@@ -27,8 +27,10 @@ use App\admsDaman\Helpers\CSRFHelper;
             <span>Cadastrar</span>
 
             <span class="ms-auto d-sm-flex flex-row">
+                <?php if (in_array("ListOrders", $this->data['buttonPermissions'])): ?>
                 <a href="<?php echo $_ENV['URL_ADM']; ?>list-orders" class="btn btn-info btn-sm me-1 mb-1"><i
                         class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
             </span>
 
         </div>

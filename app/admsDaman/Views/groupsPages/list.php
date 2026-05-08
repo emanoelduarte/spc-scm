@@ -24,7 +24,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_group');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-group-page'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php if (in_array("CreateGroupPage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-group-page'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
             </span>
         </div>
         <div class="card-body">
@@ -53,14 +55,19 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_group');
                             <tr>
                                 <td><?= $id ?></td>
                                 <td><?= $name ?></td>
-                                <td class="d-md-flex flex-row justify-content-center">
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-group-page/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                <td class="text-center">
+                                    <?php if (in_array("ViewGroupPage", $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'view-group-page/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'update-group-page/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
-
-                                    <?php  // Formulário para envio dos dados para deletar Grupo de página 
-                                    ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-group-page" method="POST">
+                                    <?php if (in_array("UpdateGroupPage", $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'update-group-page/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                                    <?php endif; ?>
+ 
+                                    <?php if (in_array("DeleteGroupPage", $this->data['buttonPermissions'])) : ?>
+                                        <?php  // Formulário para envio dos dados para deletar Grupo de página 
+                                        ?>
+                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-group-page" method="POST" class="d-inline">
 
                                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
@@ -69,6 +76,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_group');
                                         <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id; ?>)"><i class="fa-solid fa-trash"></i> Apagar</button>
 
                                     </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
 

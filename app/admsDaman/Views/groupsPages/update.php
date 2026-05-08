@@ -24,11 +24,15 @@ use App\admsDaman\Helpers\CSRFHelper;
     </div>
     <div class="card mb-4 border-light shadow">
         <div class="card-header hstack gap-2">
-            <span>Editar Pacote</span>
+            <span>Editar Grupo</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-groups-pages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListGroupsPages", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-groups-pages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'view-group-page/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php if (in_array("ViewGroupPage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'view-group-page/' . ($this->data['form']['id'] ?? ''); ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <?php endif; ?>
             </span>
         </div>
 

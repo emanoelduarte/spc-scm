@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\categories;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -66,11 +67,14 @@ class ViewCategory
             return;
         }
 
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Categoria";
+        $pageElements = [
+            'title_head' => "Visualizar Categoria",
+            'menu' => "list-categories",
+            'buttonPermissions' => ["ListCategories", "UpdateCategory", "DeleteCategory"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-categories";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/categories/view", $this->data);

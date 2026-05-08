@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\suppliers;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -56,6 +57,16 @@ class ViewSupplier
 
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Fornecedor", ['id' => (int) $id]);
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Fornecedor",
+            'menu' => "list-suppliers",
+            'buttonPermissions' => ["ListSuppliers", "UpdateSupplier", "DeleteSupplier"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Visualizar Fornecedor";

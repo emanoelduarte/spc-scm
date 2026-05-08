@@ -3,6 +3,7 @@
 namespace App\admsDaman\Controllers\orders;
 
 use App\admsDaman\Controllers\Services\OrderCommentService;
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
@@ -80,6 +81,16 @@ class ViewOrder
 
         $sendComments = new OrderCommentService();
         $this->data['formatedComments'] = $sendComments->commentPresenter($this->data['comments']);
+
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Visualizar Pedido",
+            'menu' => "list-orders",
+            'buttonPermissions' => ["ListOrders", "UpdateOrder", "UpdateRentalOrder", "GeneratePurchasing", "DeleteOrder", ],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Visualizar Pedido";

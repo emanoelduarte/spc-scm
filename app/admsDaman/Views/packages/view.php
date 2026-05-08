@@ -29,11 +29,16 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_package');
         <div class="card-header d-flex flex-column flex-sm-row gap-2">
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-packages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListPackages", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-packages'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
+                <?php if (in_array("UpdatePackage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'update-package/' . ($this->data['package']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'update-package/' . ($this->data['package']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
-
-                <?php  // Formulário para envio dos dados para deletar Usuário ?>
+                <?php if (in_array("DeletePackage", $this->data['buttonPermissions'])) : ?>
+                    <?php  // Formulário para envio dos dados para deletar Pacote 
+                    ?>
                     <form id="formDelete<?= $this->data['package']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-package" method="POST">
 
                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
@@ -43,6 +48,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_package');
                         <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['package']['id'] ?>)"><i class="fa-solid fa-trash"></i> Apagar</button>
 
                     </form>
+                <?php endif; ?>
             </span>
         </div>
 

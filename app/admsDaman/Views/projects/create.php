@@ -23,7 +23,9 @@ use App\admsDaman\Helpers\CSRFHelper;
         <div class="card-header hstack gap-2">
             <span>Cadastrar</span>
             <span class="ms-auto d-sm-flex flex-row">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListProjects", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'list-projects'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -49,7 +51,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <textarea class="form-control" placeholder="Descrição da Obra" name="description" id="description" style="height: 100px"><?= $this->data['form']['description'] ?? ''; ?></textarea>
                 </div>
 
-                 <div class="col-12">
+                <div class="col-12">
                     <button type="submit" class="btn btn-primary btn-sm">Cadastrar</button>
                 </div>
             </form>

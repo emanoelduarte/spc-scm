@@ -31,23 +31,27 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_page');
             <span>Visualizar</span>
 
             <span class="ms-sm-auto d-sm-flex flex-row">
-                <a href="<?php echo $_ENV['URL_ADM']; ?>list-pages" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php if (in_array("ListPages", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?php echo $_ENV['URL_ADM']; ?>list-pages" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <?php endif; ?>
+                <?php if (in_array("UpdatePage", $this->data['buttonPermissions'])) : ?>
+                    <a href="<?php echo $_ENV['URL_ADM'] . 'update-page/' . ($this->data['page']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
+                <?php if (in_array("DeletePage", $this->data['buttonPermissions'])) : ?>
+                    <!-- Formulário para deletar página -->
+                    <form id="formDelete<?php echo ($this->data['page']['id'] ?? ''); ?>" action="<?php echo $_ENV['URL_ADM']; ?>delete-page" method="POST">
 
-                <a href="<?php echo $_ENV['URL_ADM'] . 'update-page/' . ($this->data['page']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                        <!-- Campo oculto para o token CSRF -->
+                        <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
-                <!-- Formulário para deletar página -->
-                <form id="formDelete<?php echo ($this->data['page']['id'] ?? ''); ?>" action="<?php echo $_ENV['URL_ADM']; ?>delete-page" method="POST">
+                        <!-- Campo oculto para o ID do página -->
+                        <input type="hidden" name="id" id="id" value="<?php echo ($this->data['page']['id'] ?? ''); ?>">
 
-                    <!-- Campo oculto para o token CSRF -->
-                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                        <!-- Botão para submeter o formulário -->
+                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?php echo ($this->data['page']['id'] ?? ''); ?>)"><i class="fa-regular fa-trash-can"></i> Apagar</button>
 
-                    <!-- Campo oculto para o ID do página -->
-                    <input type="hidden" name="id" id="id" value="<?php echo ($this->data['page']['id'] ?? ''); ?>">
-
-                    <!-- Botão para submeter o formulário -->
-                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?php echo ($this->data['page']['id'] ?? ''); ?>)"><i class="fa-regular fa-trash-can"></i> Apagar</button>
-
-                </form>
+                    </form>
+                <?php endif; ?>
 
             </span>
         </div>

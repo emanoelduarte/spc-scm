@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\pages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationPageService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\GroupsRepository;
@@ -66,12 +67,16 @@ class CreatePage
         $getAllGroupsPagesSelect = new GroupsRepository();
         $this->data['getAllGroupsPagesSelect'] = $getAllGroupsPagesSelect->getAllGroupsPagesSelect();
 
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Página";
+        // Configurar os elementos da página
+        $pageElements = [
+            'title_head' => "Cadastrar Página",
+            'menu' => "list-pages",
+            'buttonPermissions' => ["ListPages"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-pages";
-
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
+        
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/pages/create", $this->data);
         $loadView->loadView();

@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\groupsPages;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\GroupsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -41,6 +42,15 @@ class ListGroupsPages
         $this->data['groups'] = $listGroups->getAllGroups((int) $page, (int) $this->limitResult);
 
         $this->data['pagination'] = PaginationService::generatePagination((int) $listGroups->getAmountGroups(), (int) $this->limitResult, (int) $page, 'list-groups-pages');
+
+        $pageElements = [
+            'title_head' => "Listar Grupos",
+            'menu' => "list-groups-pages",
+            'buttonPermissions' => ["CreateGroupPage", "ListGroupsPages", "ViewGroupPage", "UpdateGroupPage", "DeleteGroupPage"],
+        ];
+
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Criar o título da página
         $this->data['title_head'] = "Listar Grupos";

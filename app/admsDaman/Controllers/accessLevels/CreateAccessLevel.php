@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\accessLevels;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationAccessLevelService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\AccessLevelsRepository;
@@ -55,10 +56,14 @@ class CreateAccessLevel
      */
     private function viewCreateAccessLevel(): void
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Cadastrar Nível de Acesso";
+        $pageElements = [
+            'title_head' => "Cadastrar Nível de Acesso",
+            'menu' => "list-access-levels",
+            'buttonPermissions' => ["ListAccessLevels"],
+        ];
 
-        $this->data['menu'] = "list-access-levels";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/accessLevels/create", $this->data);

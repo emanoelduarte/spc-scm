@@ -33,7 +33,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
 
                     <input type="text" class="form-control w-50 p-2" name="legal_name"
                         value="<?= ($this->data['search']['legal_name'] ?? '') ?>" placeholder="Pesquise por fornecedor">
-                    <button type="submit" class="btn btn-success h-100 ms-1"><i class="fa-solid fa-magnifying-glass"></i> 
+                    <button type="submit" class="btn btn-success h-100 ms-1"><i class="fa-solid fa-magnifying-glass"></i>
                         Buscar
                     </button>
                     <a href="<?= $_ENV['URL_ADM'] . 'list-suppliers'; ?>" class="btn btn-secondary h-100 ms-1">
@@ -48,8 +48,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-supplier'; ?>" class="btn btn-success btn-sm"><i
-                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php if (in_array("CreateSupplier", $this->data['buttonPermissions'])): ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-supplier'; ?>" class="btn btn-success btn-sm"><i
+                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -73,7 +75,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                     </thead>
                     <tbody>
                         <?php
-                        // Percorrer o array de usuários
+                        // Percorrer o array de Fornecedores e extrair os dados para exibir na tabela
                         foreach ($this->data['suppliers'] as $supplier) {
                             extract($supplier);
                         ?>
@@ -85,24 +87,30 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                                 <td class="d-none d-md-table-cell">
                                     <?= $supplier_status ? "<span class='badge text-bg-success'>Ativo</span>" : "<span class='badge text-bg-danger'>Inativo</span>"; ?>
                                 </td>
-                                <td class="d-md-flex flex-row justify-content-center">
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-supplier/' . $id; ?>"
-                                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                <td class="text-center">
+                                    <?php if (in_array("ViewSupplier", $this->data['buttonPermissions'])): ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'view-supplier/' . $id; ?>"
+                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                                    <?php if (in_array("UpdateSupplier", $this->data['buttonPermissions'])): ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'update-supplier/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                                    <?php endif; ?>
 
-                                    <?php  // Formulário para envio dos dados para deletar Obra 
-                                    // 
-                                    ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-supplier" method="POST">
+                                    <?php if (in_array("DeleteSupplier", $this->data['buttonPermissions'])): ?>
+                                        <?php  // Formulário para envio dos dados para deletar Fornecedor 
+                                        // 
+                                        ?>
+                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-supplier" method="POST" class="d-inline">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
 
-                                    </form>
+                                        </form>
+                                    <?php endif; ?>
 
                                 </td>
                             </tr>
