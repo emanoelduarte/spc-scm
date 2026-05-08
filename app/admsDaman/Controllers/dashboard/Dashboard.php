@@ -2,20 +2,25 @@
 
 namespace App\admsDaman\Controllers\dashboard;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
+use App\admsDaman\Models\Repository\MenuPermissionUserRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class Dashboard
 {
-    /** @var array|string|null $dados Rece os dados que devem ser enviados para a VIEW */
-    private array|string|null $data = null;
+    /** @var array $dados Rece os dados que devem ser enviados para a VIEW */
+    private array $data = [];
 
     public function index()
     {
-        // Criar o título da página
-        $this->data['title_head'] = "Dashboard";
+        $pageElements = [
+            'title_head' => "Dashboard",
+            'menu' => "dashboard",
+            'buttonPermissions' => [],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "dashboard";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/dashboard/dashboard", $this->data);

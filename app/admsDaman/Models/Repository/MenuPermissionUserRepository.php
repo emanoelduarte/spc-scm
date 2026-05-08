@@ -6,23 +6,23 @@ use App\admsDaman\Models\Services\DbConnection;
 use PDO;
 
 /**
- * Repository responsável em buscar o nivel de acesso do usuário no banco de dados para verificar as permissões dos botões.
+ * Repository responsável em buscar o nivel de acesso do usuário no banco de dados para verificar as permissões dos menus.
  *
  *
  * @package App\admsDaman\Models\Repository
  * @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
  */
-class ButtonPermissionUserRepository extends DbConnection
+class MenuPermissionUserRepository extends DbConnection
 {
-
-    public function buttonPermission(array $button): array|bool
+    public function menuPermission(array $menu): array|bool
     {
+
         // Se não houver botões, retorna array vazio
-        if (empty($button)) {
+        if (empty($menu)) {
             return [];
         }
         // Gerar string de placeholders para a consulta SQL
-        $placeholders = implode(',', array_fill(0, count($button), '?'));
+        $placeholders = implode(',', array_fill(0, count($menu), '?'));
 
         // Verificar as permissões do usuário para cada botão e retornar um array com as permissões em relação a página atual
         $sql = "SELECT 
@@ -42,7 +42,7 @@ class ButtonPermissionUserRepository extends DbConnection
         $stmt = $this->getConnection()->prepare($sql);
 
         // Combinar o valor do ID do usuário com os valores dos botões para a consulta
-        $params = array_merge([$_SESSION['user_id']], $button);
+        $params = array_merge([$_SESSION['user_id']], $menu);
 
         // Executar a consulta SQL com os parâmetros
         $stmt->execute($params);

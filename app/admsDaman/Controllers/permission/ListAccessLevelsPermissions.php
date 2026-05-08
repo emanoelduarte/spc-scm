@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\permission;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationAccessLevelPermissionService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
@@ -77,10 +78,14 @@ class ListAccessLevelsPermissions
         $listAccessLevelsPages = new AccessLevelsPagesRepository();
         $this->data['accessLevelsPages'] = $listAccessLevelsPages->getPagesAccessLevelsArray($this->id, true);
 
-        // Criar o título da página
-        $this->data['title_head'] = "Editar Permissão do Nível de Acesso";
+        $pageElements = [
+            'title_head' => "Editar Permissão do Nível de Acesso",
+            'menu' => "list-access-levels",
+            'buttonPermissions' => [],
+        ];
 
-        $this->data['menu'] = "list-access-levels";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/permission/list", $this->data);

@@ -3,6 +3,7 @@
 namespace App\admsDaman\Controllers\Services;
 
 use App\admsDaman\Models\Repository\ButtonPermissionUserRepository;
+use App\admsDaman\Models\Repository\MenuPermissionUserRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 
 /**
@@ -12,12 +13,15 @@ class PageLayoutService
 {
     public function configurePageElements(array $data): array
     {
+         // Array com os itens de menu
+        $menu = ['Dashboard', 'ListUsers', 'ListOrders', 'ListPurchasings', 'ListProjects', 'ListSuppliers', 'ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages'];
+
         // Verificar se o usuário tem o nível de acesso Super Administrador.
         // Nivel de acesso Super Administrador tem acesso a todas as páginas/funcionalidades do sistema, então não é necessário verificar as permissões de botões para este nível de acesso.
         $usersAccessLevels = new UsersAccessLevelsRepository(); // Instanciar o repositório para verificar o nível de acesso do usuário
 
         if(in_array(1, $usersAccessLevels->getUserAccessLevelsArray($_SESSION['user_id']))){ // Verificar se o usuário tem o nível de acesso Super Administrador (id 1)
-            return $data;
+            return array_merge($data, ['menuPermission' => $menu]);
         }
 
         // Definir o título da página
@@ -29,6 +33,9 @@ class PageLayoutService
         // Apresentar ou ocultar botão
         $buttonPermission = new ButtonPermissionUserRepository();
         $pageElements['buttonPermissions'] = $buttonPermission->buttonPermission($data['buttonPermissions'] ?? []);
+
+        $menuPermission = new MenuPermissionUserRepository();
+        $pageElements['menuPermission'] = $menuPermission->menuPermission($menu);
 
         return $pageElements;
     }

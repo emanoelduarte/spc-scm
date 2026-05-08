@@ -5,12 +5,13 @@ namespace App\admsDaman\Controllers\users;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\ButtonPermissionUserRepository;
+use App\admsDaman\Models\Repository\MenuPermissionUserRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
-class ListUsers 
+class ListUsers
 {
-     /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
+    /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
 
     /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
