@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\accessLevels;
 
+use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\AccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -42,13 +43,21 @@ class ListAccessLevels
         $listLevels = new AccessLevelsRepository();
         $this->data['levelsAccess'] = $listLevels->getAllAccessLevels((int) $page, (int) $this->limitResult);
 
-        $this->data['pagination'] = PaginationService::generatePagination((int) $listLevels->getAmountAccessLevels(), (int) $this->limitResult, (int) $page, 'list-access-levels');
+        $this->data['pagination'] = PaginationService::generatePagination(
+            (int) $listLevels->getAmountAccessLevels(),
+            (int) $this->limitResult,
+            (int) $page,
+            'list-access-levels'
+        );
 
-        // Criar o título da página
-        $this->data['title_head'] = "Níveis de Acesso";
+        $pageElements = [
+            'title_head' => "Níveis de Acesso",
+            'menu' => "list-access-levels",
+            'buttonPermissions' => ['CreateAccessLevel', "ViewAccessLevel", "UpdateAccessLevel", "AccessLevelPageSync", "DeleteAccessLevel", "ListAccessLevelsPermissions"],
+        ];
 
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-access-levels";
+        $pageLayoutService = new PageLayoutService();
+        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         //Carregar a View Listar níveis de acesso
         $loadViewAccessLevels = new LoadViewService("admsDaman/Views/accessLevels/list", $this->data);

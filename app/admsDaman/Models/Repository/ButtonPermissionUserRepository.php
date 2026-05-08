@@ -17,6 +17,10 @@ class ButtonPermissionUserRepository extends DbConnection
 
     public function buttonPermission(array $button): array|bool
     {
+        // Se não houver botões, retorna array vazio
+        if (empty($button)) {
+            return [];
+        }
         // Gerar string de placeholders para a consulta SQL
         $placeholders = implode(',', array_fill(0, count($button), '?'));
 

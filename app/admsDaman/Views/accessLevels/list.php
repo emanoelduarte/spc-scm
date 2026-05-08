@@ -23,9 +23,17 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'create-access-level'; ?>" class="btn btn-success btn-sm"><i class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php
+                if (in_array('CreateAccessLevel', $this->data['buttonPermissions'])) :
+                ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-access-level'; ?>" class="btn btn-success btn-sm"><i
+                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
 
-                <a href="<?= $_ENV['URL_ADM'] . 'access-level-page-sync'; ?>" class="btn btn-warning btn-sm" onclick="showLoading()"><i class="fa-solid fa-rotate"></i> Sincronizar</a>
+                <?php if (in_array('AccessLevelPageSync', $this->data['buttonPermissions'])) : ?>
+                    <a href="<?= $_ENV['URL_ADM'] . 'access-level-page-sync'; ?>" class="btn btn-warning btn-sm"
+                        onclick="showLoading()"><i class="fa-solid fa-rotate"></i> Sincronizar</a>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -58,25 +66,42 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
                                 <td><?= $name ?></td>
                                 <td><?= $order_levels ?></td>
 
-                                <td class="d-md-flex flex-row justify-content-center">
+                                <td class="text-center">
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels-permissions/' . $id; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-lock-open"></i> Permissões</a>
+                                    <?php if (in_array('ListAccessLevelsPermissions', $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels-permissions/' . $id; ?>"
+                                            class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-lock-open"></i>
+                                            Permissões</a>
+                                    <?php endif; ?>
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $id; ?>" class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php if (in_array('ViewAccessLevel', $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $id; ?>"
+                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                                    <?php endif; ?>
 
-                                    <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $id; ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
-                                    <?php
-                                    // Formulário para envio dos dados para deletar nível de acesso 
-                                    ?>
-                                    <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level" method="POST">
+                                    <?php if (in_array('UpdateAccessLevel', $this->data['buttonPermissions'])) : ?>
+                                        <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $id; ?>"
+                                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                            Editar</a>
+                                    <?php endif; ?>
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                    <?php if (in_array('DeleteAccessLevel', $this->data['buttonPermissions'])) : ?>
+                                        <?php
+                                        // Formulário para envio dos dados para deletar nível de acesso 
+                                        ?>
+                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level"
+                                            method="POST" class="d-inline">
 
-                                        <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                    </form>
+                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                                onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                                Apagar</button>
+
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
 
