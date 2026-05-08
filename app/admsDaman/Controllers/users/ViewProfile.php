@@ -6,27 +6,23 @@ use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserPasswordService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
-/**
- * Controller Editar senha do Usuário
- * 
- * @author Emanoel <emanoel.c.duarte@hotmail.com>
- */
-class UpdatePasswordUser
+class ViewProfile
 {
-    /** @var array|string $dados Recebe os dados que devem ser enviados para a VIEW */
+    /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
 
     /**
-     * Editar o usuário
+     * Recuperar os ultimos usuários
      * 
-     * @param int|string $id id do usuário
      * @return void
      */
     public function index(int|string $id): void
     {
+
         // Receber os dados do formulário de cadastro de usuário
         $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
@@ -49,7 +45,7 @@ class UpdatePasswordUser
                 $_SESSION['error'] = "Usuário não encontrado! 2";
 
                 // Redirecionar o usuário para a página listar
-                header("Location: {$_ENV['URL_ADM']}list-users");
+                header("Location: {$_ENV['URL_ADM']}view-profile/{$id}");
 
                 return;
             }
@@ -66,14 +62,14 @@ class UpdatePasswordUser
         $pageElements = [
             'title_head' => "Editar Senha do Usuário",
             'menu' => "list-users",
-            'buttonPermissions' => ["ListUsers", "ViewUser"],
+            'buttonPermissions' => [],
         ];
 
         $pageLayoutService = new PageLayoutService();
         $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
-        $loadView = new LoadViewService("admsDaman/Views/users/updatePassword", $this->data);
+        $loadView = new LoadViewService("admsDaman/Views/users/viewProfile", $this->data);
         $loadView->loadView();
     }
 
@@ -93,7 +89,7 @@ class UpdatePasswordUser
         $validationUser = new ValidationUserPasswordService();
         $this->data['errors'] = $validationUser->validate($this->data['form']);
 
-        // Acessa o IF quando existir o campo dados inclorretos
+        // Acessa o IF quando existir o campo dados incorretos
         if (!empty($this->data['errors'])) {
 
             // Chama o método carregar a view
@@ -103,8 +99,8 @@ class UpdatePasswordUser
         }
 
         // Instanciar o UsersRepository para chamar o método que faz a edição do usuário
-        $userPasswordUpdate = new UsersRepository();
-        $result = $userPasswordUpdate->updatePasswordUser($this->data['form']);
+        $userPasswordUpdateProfile = new UsersRepository();
+        $result = $userPasswordUpdateProfile->updatePasswordUser($this->data['form']);
 
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {
@@ -112,7 +108,7 @@ class UpdatePasswordUser
             $_SESSION['success'] = "Senha editado com sucesso!";
 
             // Redirecionar o usuário para a página de visualizar usuário
-            header("Location: {$_ENV['URL_ADM']}view-user/{$this->data['form']['id']}");
+            header("Location: {$_ENV['URL_ADM']}view-profile/{$this->data['form']['id']}");
 
             return;
         } else {

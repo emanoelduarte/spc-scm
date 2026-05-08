@@ -170,9 +170,9 @@ class UsersRepository extends DbConnection
     /**
      * Editar senha do usuário
      * 
-     * @return void
+     * @return bool Sucesso ou falha
      */
-    public function updatePasswordUser(array $data)
+    public function updatePasswordUser(array $data) : bool
     {
         //Usar try catch tratar exceção e erro
         try {
@@ -197,10 +197,11 @@ class UsersRepository extends DbConnection
             if ($affectedRows > 0) {
                 return true;
             } else {
-                return false;
-
+                
                 // Chamar o método para salvar o log
                 GenerateLog::generateLog("error", "Usuário não apagado.", ['id' => $data['id']]);
+                
+                return false;
             }
         } catch (Exception $e) {
             // Chamar o método para salvar o log
