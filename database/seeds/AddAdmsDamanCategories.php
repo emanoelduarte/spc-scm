@@ -107,14 +107,14 @@ class AddAdmsDamanCategories extends AbstractSeed
             ];
         }
 
-        ## 8 FERRAM/EQUIP
+        ## 8 FERRAMENTA
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'FERRAM/EQUIP'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'FERRAMENTA'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
             $data[] = [
-                'name' => 'FERRAM/EQUIP',
+                'name' => 'FERRAMENTA',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

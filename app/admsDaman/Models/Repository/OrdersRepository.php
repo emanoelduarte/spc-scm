@@ -413,7 +413,7 @@ class OrdersRepository extends DbConnection
                 if (!empty($item['item_id'])) {
 
                     // QUERY para atualizar pedido
-                    $sql = 'UPDATE adms_daman_order_items SET description = :description, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, unit_price = :unit_price, adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, updated_at = :updated_at';
+                    $sql = 'UPDATE adms_daman_order_items SET description = :description, quantity = :quantity, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, unit_price = :unit_price, adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, updated_at = :updated_at';
 
                     // Incluir campo de periodo de locação caso seja do tipo Compra ou locação
                     if ($data['adms_daman_acquisition_types_id'] == 1) {
@@ -432,6 +432,7 @@ class OrdersRepository extends DbConnection
                     // Substituir os links da QUERY pelo valor
                     $stmt->bindValue(':description', $descriptionUpper, PDO::PARAM_STR);
                     $stmt->bindValue(':adms_daman_measurement_units_id', $item['adms_daman_measurement_units_id'], PDO::PARAM_INT);
+                    $stmt->bindValue(':quantity', (float)$item['quantity']);
                     $stmt->bindValue(':unit_price', (float)$item['unit_price']);
                     $stmt->bindValue(':adms_daman_acquisition_status_id', $item['adms_daman_acquisition_status_id'], PDO::PARAM_INT);
                     $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));

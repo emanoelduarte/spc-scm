@@ -29,7 +29,10 @@ final class AdmsDamanOrders extends AbstractMigration
 
             // Define as colunas da tabela
             // Coluna de Compra ou Locação
-            $table->addColumn('adms_daman_acquisition_types_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'compra ou locação'])
+            $table->addColumn('adms_daman_supplier_id', 'integer', ['null' => true, 'signed' => false, 'comment' => 'compra ou locação'])
+                ->addForeignKey('adms_daman_supplier_id', 'adms_daman_suppliers', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+
+                ->addColumn('adms_daman_acquisition_types_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'compra ou locação'])
                 ->addForeignKey('adms_daman_acquisition_types_id', 'adms_daman_acquisition_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
                 // categoria do pedido

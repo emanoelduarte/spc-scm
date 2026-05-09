@@ -18,7 +18,7 @@ class GeneratePdfHelper
      * @param string|null $data Dados a serem incluídos no PDF
      * @return void
      */
-    public function generatePdfHelper(string|null $data): void
+    public function generatePdfHelper(string|null $data, string $fileName = 'ordem-de-compra'): void
     {
         // instantiate and use the dompdf class
         $dompdf = new Dompdf();
@@ -30,7 +30,9 @@ class GeneratePdfHelper
         // Render the HTML as PDF
         $dompdf->render();
 
-        // Output the generated PDF to Browser
-        $dompdf->stream();
+        // Gerar Pdf com o nome do arquivo
+        $dompdf->stream($fileName . '.pdf', [
+            'Attachment' => false // false = abre no navegador | true = força download
+        ]);
     }
 }

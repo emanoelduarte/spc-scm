@@ -20,187 +20,187 @@ if (!file_exists($logoPath)) {
 <head>
     <meta charset="UTF-8">
     <style>
-    body {
-        font-family: DejaVu Sans, sans-serif;
-        font-size: 11px;
-        margin: 0;
-        padding: 0;
-    }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+        }
 
-    h1,
-    h2 {
-        text-align: center;
-        margin: 0;
-    }
+        h1,
+        h2 {
+            text-align: center;
+            margin: 0;
+        }
 
-    h3 {
-        font-size: 10px;
-    }
+        h3 {
+            font-size: 10px;
+        }
 
-    .header {
-        text-align: center;
-        margin-top: -40px;
-    }
+        .header {
+            text-align: center;
+            margin-top: -40px;
+        }
 
-    .logo img {
-        width: 150px;
-        float: left;
-        margin-bottom: -10px;
-    }
+        .logo img {
+            width: 150px;
+            float: left;
+            margin-bottom: -10px;
+        }
 
-    td .text-end {
-        text-align: right;
-    }
+        td .text-end {
+            text-align: right;
+        }
 
-    .nome_empresa {
-        text-align: center;
-        margin: 10px 0;
-        font-size: 14px;
-    }
+        .nome_empresa {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
 
-    .info-table-top {
-        width: 190mm;
+        .info-table-top {
+            width: 190mm;
 
-    }
+        }
 
-    .info-table-top .label {
-        font-weight: bold;
-        width: 70px;
-    }
+        .info-table-top .label {
+            font-weight: bold;
+            width: 70px;
+        }
 
-    .info-table-top .value {
-        width: 120px;
-    }
+        .info-table-top .value {
+            width: 120px;
+        }
 
-    /*********************************** */
+        /*********************************** */
 
-    .info-table {
-        width: 190mm;
-        margin: 10px auto 10px;
-        border-collapse: collapse;
-    }
+        .info-table {
+            width: 190mm;
+            margin: 10px auto 10px;
+            border-collapse: collapse;
+        }
 
-    .info-table td {
-        border: 1px solid #000;
-        padding: 0 6px;
-    }
+        .info-table td {
+            border: 1px solid #000;
+            padding: 0 6px;
+        }
 
-    .info-table .label {
-        font-weight: bold;
-        min-width: 100px;
-    }
+        .info-table .label {
+            font-weight: bold;
+            min-width: 100px;
+        }
 
-    /************************************ */
+        /************************************ */
 
-    .info-table-entrega {
-        width: 190mm;
-        margin: 0 auto 10px;
-        border-collapse: collapse;
-    }
+        .info-table-entrega {
+            width: 190mm;
+            margin: 0 auto 10px;
+            border-collapse: collapse;
+        }
 
-    .info-table-entrega td {
-        border: 1px solid #000;
-        padding: 0 6px;
-    }
+        .info-table-entrega td {
+            border: 1px solid #000;
+            padding: 0 6px;
+        }
 
-    .info-table-entrega .label-entrega {
-        font-weight: bold;
-        max-width: 200px;
-    }
+        .info-table-entrega .label-entrega {
+            font-weight: bold;
+            max-width: 200px;
+        }
 
-    .info-table-entrega .value {
-        color: red;
-        font-weight: bold;
-        width: 85%;
-    }
+        .info-table-entrega .value {
+            color: red;
+            font-weight: bold;
+            width: 85%;
+        }
 
-    /******************** */
+        /******************** */
 
-    .tabela-itens {
-        width: 190mm;
-        margin: 0 auto;
-        border-collapse: collapse;
-    }
+        .tabela-itens {
+            width: 190mm;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
 
-    .tabela-itens th,
-    .tabela-itens td {
-        border: 1px solid #000;
-        padding: 3px;
-        text-align: left;
-    }
+        .tabela-itens th,
+        .tabela-itens td {
+            border: 1px solid #000;
+            padding: 3px;
+            text-align: left;
+        }
 
-    .totais {
-        width: 190mm;
-        margin: 10px auto;
-    }
+        .totais {
+            width: 190mm;
+            margin: 10px auto;
+        }
 
-    .totais p {
-        margin: 5px 0;
-    }
+        .totais p {
+            margin: 5px 0;
+        }
 
-    /************************ */
+        /************************ */
 
-    table.observacoes {
-        width: 190mm;
-        margin: 20px auto 10px;
-    }
+        table.observacoes {
+            width: 190mm;
+            margin: 20px auto 10px;
+        }
 
-    table.observacoes td {
-        border: 1px solid #000;
-        border-collapse: collapse;
-    }
+        table.observacoes td {
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
 
-    table.observacoes td.a {
-        text-align: center;
-    }
+        table.observacoes td.a {
+            text-align: center;
+        }
 
-    /**************************************** */
+        /**************************************** */
 
-    table.consideracoes-gerais {
-        width: 190mm;
-        margin: 0 auto 5px;
-        line-height: 1;
-        font-size: 9px;
-    }
+        table.consideracoes-gerais {
+            width: 190mm;
+            margin: 0 auto 5px;
+            line-height: 1;
+            font-size: 9px;
+        }
 
-    p {
-        text-align: justify;
-        font-size: 9px;
-        line-height: 1;
-        margin: 0;
-        padding: 0;
-    }
+        p {
+            text-align: justify;
+            font-size: 9px;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
+        }
 
-    table.consideracoes-gerais td {
-        border: 1px solid #000;
-        border-collapse: collapse;
-    }
+        table.consideracoes-gerais td {
+            border: 1px solid #000;
+            border-collapse: collapse;
+        }
 
-    table.consideracoes-gerais .title-consideracoes {
-        background-color: #ccc;
-        padding: -5px;
-        text-align: center;
-        column-span: 2;
-    }
+        table.consideracoes-gerais .title-consideracoes {
+            background-color: #ccc;
+            padding: -5px;
+            text-align: center;
+            column-span: 2;
+        }
 
-    /********************************* */
+        /********************************* */
 
-    .assinaturas {
-        width: 190mm;
-        margin: 10px auto 20px;
-        text-align: center;
-    }
+        .assinaturas {
+            width: 190mm;
+            margin: 10px auto 20px;
+            text-align: center;
+        }
 
-    .assinaturas td {
-        border: 1px solid #000;
-        padding-top: 40px;
-    }
+        .assinaturas td {
+            border: 1px solid #000;
+            padding-top: 40px;
+        }
 
-    .footer {
-        text-align: center;
-        font-size: 11px;
-        margin-bottom: 20px;
-    }
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -222,7 +222,7 @@ if (!file_exists($logoPath)) {
     ?>
     <table class="info-table-top">
         <tr>
-            <td class="label">N°:</td>
+            <td class="label">OC N°:</td>
             <td class="value"><?= $dataPdf['id'] ?></td>
             <td class="label">Data:</td>
             <td class="value"><?= $formatedData ?></td>
@@ -280,55 +280,55 @@ if (!file_exists($logoPath)) {
         ?>
         <tbody>
             <?php if ($items ?? false): ?>
-            <?php foreach ($items as $index => $item): ?>
-            <tr>
-                <td><?= $index + 1 ?></td>
-                <td><?= $item['description'] ?></td>
-                <td><?= $item['purchased_quantity'] ?></td>
-                <td><?= $item['measurement_unit'] ?></td>
-                <td><?= number_format($item['unit_price'], 2, ',', '.') ?></td>
-                <td>
-                    <?php
+                <?php foreach ($items as $index => $item): ?>
+                    <tr>
+                        <td><?= $index + 1 ?></td>
+                        <td><?= $item['description'] ?></td>
+                        <td><?= $item['purchased_quantity'] ?></td>
+                        <td><?= $item['measurement_unit'] ?></td>
+                        <td><?= number_format($item['unit_price'], 2, ',', '.') ?></td>
+                        <td>
+                            <?php
                             $tot_item = $item['purchased_quantity'] * $item['unit_price']
                             ?>
-                    R$ <?= number_format($tot_item, 2, ',', '.'); ?>
-                </td>
-            </tr>
-            <?php
+                            R$ <?= number_format($tot_item, 2, ',', '.'); ?>
+                        </td>
+                    </tr>
+                    <?php
                     $sub_tot += $tot_item;
                     ?>
-            <?php endforeach; ?>
-            <tr>
-                <td style="text-align: right; font-weight: bold;" colspan="5">Sub Total</td>
-                <td>R$ <?= number_format($sub_tot, 2, ',', '.') ?> </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; font-weight: bold;" colspan="5">Desconto</td>
-                <?php $discount =  $dataPdf['discount'] ? $dataPdf['discount'] : '0'; ?>
-                <td>R$ <?= number_format($discount, 2, ',', '.'); ?> </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; font-weight: bold;" colspan="5">Frete</td>
-                <?php $delivery_value =   $dataPdf['delivery_value'] ?  $dataPdf['delivery_value'] : '0'; ?>
-                <td>R$ <?= number_format($delivery_value, 2, ',', '.'); ?> </td>
-            </tr>
-            <tr>
-                <td style="text-align: right; font-weight: bold;" colspan="5">Total</td>
-                <?php
+                <?php endforeach; ?>
+                <tr>
+                    <td style="text-align: right; font-weight: bold;" colspan="5">Sub Total</td>
+                    <td>R$ <?= number_format($sub_tot, 2, ',', '.') ?> </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; font-weight: bold;" colspan="5">Desconto</td>
+                    <?php $discount =  $dataPdf['discount'] ? $dataPdf['discount'] : '0'; ?>
+                    <td>R$ <?= number_format($discount, 2, ',', '.'); ?> </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; font-weight: bold;" colspan="5">Frete</td>
+                    <?php $delivery_value =   $dataPdf['delivery_value'] ?  $dataPdf['delivery_value'] : '0'; ?>
+                    <td>R$ <?= number_format($delivery_value, 2, ',', '.'); ?> </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; font-weight: bold;" colspan="5">Total</td>
+                    <?php
                     $tot = $sub_tot + $delivery_value - $discount;
                     ?>
-                <td style="font-weight: bold; background: #ffff00;">R$ <?= number_format($tot, 2, ',', '.') ?> </td>
-            </tr>
-            <tr>
-                <td style="font-weight: bold;">Valor por extenso</td>
-                <td colspan="5">
-                    <?php
+                    <td style="font-weight: bold; background: #ffff00;">R$ <?= number_format($tot, 2, ',', '.') ?> </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Valor por extenso</td>
+                    <td colspan="5">
+                        <?php
                         $valueInWords = new ValueInWords();
                         $words = $valueInWords->numberToText($tot);
                         ?>
-                    <?= strtoupper($words) ?>
-                </td>
-            </tr>
+                        <?= strtoupper($words) ?>
+                    </td>
+                </tr>
             <?php endif; ?>
         </tbody>
     </table>

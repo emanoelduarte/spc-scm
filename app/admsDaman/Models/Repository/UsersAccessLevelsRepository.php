@@ -32,7 +32,7 @@ class UsersAccessLevelsRepository extends DbConnection
     {
         // Criar a Query para recuperar os dados
         // nome_da_tabela AS (recebe o apelido) lev ON (onde na tabela identificada por na coluna) [lev.id]=chave primária que deve ser igual a chave estrangeira da tabela que guarda o id do level dos usuários
-        $sql = 'SELECT lev.name
+        $sql = 'SELECT lev.id, lev.name
             FROM adms_daman_users_access_levels AS usr_lev
             INNER JOIN adms_daman_access_levels AS lev ON lev.id=usr_lev.adms_daman_access_level_id
             WHERE usr_lev.adms_daman_user_id = :adms_daman_user_id

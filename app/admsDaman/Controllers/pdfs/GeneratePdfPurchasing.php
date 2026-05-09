@@ -60,8 +60,11 @@ class GeneratePdfPurchasing
         require __DIR__ . '/../../Views/pdfs/viewpdf.php';
         $html_data = ob_get_clean();
 
+        // Monta o nome do arquivo aqui
+        $fileName = 'ORDEM_DE_COMPRA-' . $data['id'] . '-OS' . $data['project_id'] . '-' . date('d-m-Y');
+
         $generatePdf = new GeneratePdfHelper();
-        $generatePdf->generatePdfHelper($html_data);
+        $generatePdf->generatePdfHelper($html_data, $fileName);
 
         return true;
     }

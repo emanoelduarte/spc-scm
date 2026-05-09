@@ -17,82 +17,92 @@ class AddAdmsDamanOrders extends AbstractSeed
     public function run(): void
     {
 
-     // Variável para receber os dados a serem inseridos
+        // Variável para receber os dados a serem inseridos
         $data = [];
 
         // Variável para receber os dados que devem ser validados antes de cadastrar
         $orders = [
-            ['adms_daman_acquisition_types_id' => 1, //Compra
-            'adms_daman_category_id' => 4, // Eletrica/Logica
-            'adms_daman_user_id' => 4, 
-            'adms_daman_project_id' => 4, // Autozelio
-            'service' => "Tomadas do térreo", 
-            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
-            'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_acquisition_status_id' => 1, // Analise
-            'status_date' => date('Y-m-d H:i:s'),
-            'rental_contract' => NULL, 
-            'rental_period' => NULL, 
-            'created_at' => date('Y-m-d H:i:s'),],
+            [
+                'adms_daman_acquisition_types_id' => 1, //Compra
+                'adms_daman_category_id' => 4, // Eletrica/Logica
+                'adms_daman_user_id' => 4,
+                'adms_daman_project_id' => 4, // Autozelio
+                'service' => "Tomadas do térreo",
+                'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+                'observation' => 'Solicitado por Cleyton',
+                'adms_daman_acquisition_status_id' => 1, // Analise
+                'status_date' => date('Y-m-d H:i:s'),
+                'rental_contract' => NULL,
+                'rental_period' => NULL,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
 
-            ['adms_daman_acquisition_types_id' => 2, //Locação
-            'adms_daman_category_id' => 4, // Eletrica/Logica
-            'adms_daman_user_id' => 4, 
-            'adms_daman_project_id' => 2, // João Paulo
-            'service' => "Tomadas aéreas do segundo pavimento", 
-            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
-            'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_acquisition_status_id' => 1, // Analise
-            'status_date' => date('Y-m-d H:i:s'),
-            'rental_contract' => NULL, 
-            'rental_period' => '7', 
-            'created_at' => date('Y-m-d H:i:s'),],
+            [
+                'adms_daman_supplier_id' => 5, //Id do fornecedor
+                'adms_daman_acquisition_types_id' => 2, //Locação
+                'adms_daman_category_id' => 4, // Eletrica/Logica
+                'adms_daman_user_id' => 4,
+                'adms_daman_project_id' => 2, // João Paulo
+                'service' => "Tomadas aéreas do segundo pavimento",
+                'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+                'observation' => 'Solicitado por Cleyton',
+                'adms_daman_acquisition_status_id' => 1, // Analise
+                'status_date' => date('Y-m-d H:i:s'),
+                'rental_contract' => NULL,
+                'rental_period' => '7',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
 
-            ['adms_daman_acquisition_types_id' => 1, //Compra
-            'adms_daman_category_id' => 4, // Eletrica/Logica
-            'adms_daman_user_id' => 4, 
-            'adms_daman_project_id' => 2, // João Paulo
-            'service' => "Finalização Quadro Elétrico", 
-            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
-            'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_acquisition_status_id' => 1, // Analise
-            'status_date' => date('Y-m-d H:i:s'),
-            'rental_contract' => NULL, 
-            'rental_period' => NULL, 
-            'created_at' => date('Y-m-d H:i:s'),],
+            [
+                'adms_daman_acquisition_types_id' => 1, //Compra
+                'adms_daman_category_id' => 4, // Eletrica/Logica
+                'adms_daman_user_id' => 4,
+                'adms_daman_project_id' => 2, // João Paulo
+                'service' => "Finalização Quadro Elétrico",
+                'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+                'observation' => 'Solicitado por Cleyton',
+                'adms_daman_acquisition_status_id' => 1, // Analise
+                'status_date' => date('Y-m-d H:i:s'),
+                'rental_contract' => NULL,
+                'rental_period' => NULL,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
 
-            ['adms_daman_acquisition_types_id' => 1, //Compra
-            'adms_daman_category_id' => 2, // Civil
-            'adms_daman_user_id' => 4, 
-            'adms_daman_project_id' => 2, // João Paulo
-            'service' => "Revestimento", 
-            'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
-            'observation' => 'Solicitado por Cleyton', 
-            'adms_daman_acquisition_status_id' => 1, // Analise
-            'status_date' => date('Y-m-d H:i:s'),
-            'rental_contract' => NULL, 
-            'rental_period' => NULL, 
-            'created_at' => date('Y-m-d H:i:s'),],
+            [
+                'adms_daman_acquisition_types_id' => 1, //Compra
+                'adms_daman_category_id' => 2, // Civil
+                'adms_daman_user_id' => 4,
+                'adms_daman_project_id' => 2, // João Paulo
+                'service' => "Revestimento",
+                'expected_receipt_date' => date('Y-m-d H:i:s', strtotime('+3 days')), // Previsão de recebimento
+                'observation' => 'Solicitado por Cleyton',
+                'adms_daman_acquisition_status_id' => 1, // Analise
+                'status_date' => date('Y-m-d H:i:s'),
+                'rental_contract' => NULL,
+                'rental_period' => NULL,
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar
         foreach ($orders as $order) {
 
-                $data[] = [
-                    'adms_daman_acquisition_types_id' => $order['adms_daman_acquisition_types_id'],
-                    'adms_daman_category_id' => $order['adms_daman_category_id'],
-                    'adms_daman_user_id' => $order['adms_daman_user_id'],
-                    'adms_daman_project_id' => $order['adms_daman_project_id'],
-                    'service' => $order['service'],
-                    'expected_receipt_date' => $order['expected_receipt_date'],
-                    'observation' => $order['observation'],
-                    'adms_daman_acquisition_status_id' => $order['adms_daman_acquisition_status_id'],
-                    'status_date' => date("Y-m-d H:i:s"),
-                    'rental_contract' => $order['rental_contract'],
-                    'rental_period' => $order['rental_period'],
-                    'created_at' => date("Y-m-d H:i:s"),
-                ];
+            $data[] = [
+                'adms_daman_supplier_id' => $order['adms_daman_supplier_id'],
+                'adms_daman_acquisition_types_id' => $order['adms_daman_acquisition_types_id'],
+                'adms_daman_category_id' => $order['adms_daman_category_id'],
+                'adms_daman_user_id' => $order['adms_daman_user_id'],
+                'adms_daman_project_id' => $order['adms_daman_project_id'],
+                'service' => $order['service'],
+                'expected_receipt_date' => $order['expected_receipt_date'],
+                'observation' => $order['observation'],
+                'adms_daman_acquisition_status_id' => $order['adms_daman_acquisition_status_id'],
+                'status_date' => date("Y-m-d H:i:s"),
+                'rental_contract' => $order['rental_contract'],
+                'rental_period' => $order['rental_period'],
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
         }
 
         // Obtém a tabela 'adms_daman_orders' para inserir os registros
@@ -100,6 +110,5 @@ class AddAdmsDamanOrders extends AbstractSeed
 
         // Insere os registros na tabela
         $adms_daman_orders->insert($data)->save();
-
     }
 }

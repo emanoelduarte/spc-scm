@@ -22,12 +22,12 @@ use App\admsDaman\Helpers\CSRFHelper;
             <span>Editar</span>
             <span class="ms-auto d-sm-flex flex-row">
                 <?php if (in_array("ListOrders", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                            class="fa-solid fa-list"></i> Listar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                        class="fa-solid fa-list"></i> Listar</a>
                 <?php endif; ?>
                 <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . ($this->data['form']['id'] ?? ''); ?>"
-                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . ($this->data['form']['id'] ?? ''); ?>"
+                    class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
                 <?php endif; ?>
             </span>
         </div>
@@ -67,7 +67,8 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                 <div class="col-lg-2 col-md-6 col-sm-12">
                     <label for="adms_daman_acquisition_status_id" class="form-label">Status</label>
-                    <select name="adms_daman_acquisition_status_id" class="form-select" id="adms_daman_acquisition_status_id">
+                    <select name="adms_daman_acquisition_status_id" class="form-select"
+                        id="adms_daman_acquisition_status_id">
                         <option value="" selected>Selecione</option>
 
                         <?php
@@ -88,6 +89,9 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
+                <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se é comprador 
+                ?>
+
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <label for="adms_daman_project_id" class="form-label">Obras</label>
 
@@ -95,20 +99,20 @@ use App\admsDaman\Helpers\CSRFHelper;
                         <option value="" selected>Selecione</option>
 
                         <?php
-                        // Verificar se existe pacotes
-                        if ($this->data['getAllProjectsSelect'] ?? false) {
+                            // Verificar se existe pacotes
+                            if ($this->data['getAllProjectsSelect'] ?? false) {
 
-                            // Percorrer array de pacotes
-                            foreach ($this->data['getAllProjectsSelect'] as $getAllProjectsSelect) {
-                                extract($getAllProjectsSelect);
+                                // Percorrer array de pacotes
+                                foreach ($this->data['getAllProjectsSelect'] as $getAllProjectsSelect) {
+                                    extract($getAllProjectsSelect);
 
-                                // Verificar se deve manter selecionada a opção
-                                $selected = isset($this->data['form']['adms_daman_project_id']) && $this->data['form']['adms_daman_project_id'] == $id ? 'selected' : '';
+                                    // Verificar se deve manter selecionada a opção
+                                    $selected = isset($this->data['form']['adms_daman_project_id']) && $this->data['form']['adms_daman_project_id'] == $id ? 'selected' : '';
 
-                                echo "<option value='$id' $selected>$name</option>";
+                                    echo "<option value='$id' $selected>$name</option>";
+                                }
                             }
-                        }
-                        ?>
+                            ?>
                     </select>
                 </div>
 
@@ -119,20 +123,20 @@ use App\admsDaman\Helpers\CSRFHelper;
                         <option value="" selected>Selecione</option>
 
                         <?php
-                        // Verificar se existe pacotes
-                        if ($this->data['getAllCategoriesSelect'] ?? false) {
+                            // Verificar se existe pacotes
+                            if ($this->data['getAllCategoriesSelect'] ?? false) {
 
-                            // Percorrer array de pacotes
-                            foreach ($this->data['getAllCategoriesSelect'] as $getAllCategoriesSelect) {
-                                extract($getAllCategoriesSelect);
+                                // Percorrer array de pacotes
+                                foreach ($this->data['getAllCategoriesSelect'] as $getAllCategoriesSelect) {
+                                    extract($getAllCategoriesSelect);
 
-                                // Verificar se deve manter selecionada a opção
-                                $selected = isset($this->data['form']['adms_daman_category_id']) && $this->data['form']['adms_daman_category_id'] == $id ? 'selected' : '';
+                                    // Verificar se deve manter selecionada a opção
+                                    $selected = isset($this->data['form']['adms_daman_category_id']) && $this->data['form']['adms_daman_category_id'] == $id ? 'selected' : '';
 
-                                echo "<option value='$id' $selected>$name</option>";
+                                    echo "<option value='$id' $selected>$name</option>";
+                                }
                             }
-                        }
-                        ?>
+                            ?>
                     </select>
                 </div>
 
@@ -142,10 +146,9 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <input type="hidden" name="adms_daman_acquisition_types_id"
                         value="<?= $this->data['form']['adms_daman_acquisition_types_id'] ?? '' ?>">
 
-                    <select class="form-select adms_daman_acquisition_types_id"
-                        id="adms_daman_acquisition_types_id_visibled" name="adms_daman_acquisition_types_id_visibled"
-                        disabled>
-                        <option selected>Selecione a tipo</option>
+                    <select class="form-select adms_daman_acquisition_types_id" id="adms_daman_acquisition_types_id"
+                        name="adms_daman_acquisition_types_id" disabled>
+                        <option selected>Selecione o tipo</option>
                         <option value="1"
                             <?= isset($this->data['form']['adms_daman_acquisition_types_id']) && $this->data['form']['adms_daman_acquisition_types_id'] == 1 ? 'selected' : ''; ?>>
                             COMPRA</option>
@@ -155,24 +158,8 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-12" id="locationPeriod">
-                    <label for="rental_period" class="form-label">Período de Locação</label>
-
-                    <select class="form-select" id="rental_period" name="rental_period">
-                        <option selected value="">Selecione o período</option>
-                        <option value="1"
-                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 1 ? 'selected' : ''; ?>>
-                            DIÁRIA</option>
-                        <option value="7"
-                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 7 ? 'selected' : ''; ?>>
-                            7 DIAS</option>
-                        <option value="15"
-                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 15 ? 'selected' : ''; ?>>
-                            15 DIAS</option>
-                        <option value="30"
-                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 30 ? 'selected' : ''; ?>>
-                            30 DIAS</option>
-                    </select>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <input type="hidden" name="rental_period" value="<?= $this->data['form']['rental_period'] ?? '' ?>">
                 </div>
 
                 <div class="col-lg-6 col-md-12 col-sm-12">
@@ -186,6 +173,55 @@ use App\admsDaman\Helpers\CSRFHelper;
                     <textarea class="form-control" placeholder="Observação" name="observation" id="observation"
                         style="height: 100px"><?= $this->data['form']['observation'] ?? ''; ?></textarea>
                 </div>
+
+                <?php else : ?>
+
+                <?php // Envia os valores pelo POST sem permitir edição 
+                    ?>
+                <input type="hidden" name="adms_daman_project_id"
+                    value="<?= $this->data['form']['adms_daman_project_id'] ?? '' ?>">
+                <input type="hidden" name="adms_daman_category_id"
+                    value="<?= $this->data['form']['adms_daman_category_id'] ?? '' ?>">
+                <input type="hidden" name="adms_daman_acquisition_types_id"
+                    value="<?= $this->data['form']['adms_daman_acquisition_types_id'] ?? '' ?>">
+                <input type="hidden" name="service" value="<?= $this->data['form']['service'] ?? '' ?>">
+                <input type="hidden" name="observation" value="<?= $this->data['form']['observation'] ?? '' ?>">
+                <input type="hidden" name="rental_period" value="<?= $this->data['form']['rental_period'] ?? '' ?>">
+
+                <?php // Exibição visual para o comprador 
+                    ?>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label class="form-label">Obras</label>
+                    <input type="text" class="form-control"
+                        value="<?= htmlspecialchars($this->data['form']['project_name'] ?? '') ?>" disabled>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label class="form-label">Categoria do pedido</label>
+                    <input type="text" class="form-control"
+                        value="<?= htmlspecialchars($this->data['form']['category_name'] ?? '') ?>" disabled>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <label class="form-label">Tipo do pedido</label>
+                    <input type="text" class="form-control"
+                        value="<?= $this->data['form']['adms_daman_acquisition_types_id'] == 1 ? 'COMPRA' : 'LOCAÇÃO' ?>"
+                        disabled>
+                </div>
+
+                <div class="col-lg-6 col-md-12 col-sm-12">
+                    <label class="form-label">Descrição do serviço</label>
+                    <input type="text" class="form-control"
+                        value="<?= htmlspecialchars($this->data['form']['service'] ?? '') ?>" disabled>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Observação</label>
+                    <textarea class="form-control" disabled
+                        style="height: 100px"><?= htmlspecialchars($this->data['form']['observation'] ?? '') ?></textarea>
+                </div>
+
+                <?php endif; ?>
 
                 <hr>
 
@@ -224,11 +260,27 @@ use App\admsDaman\Helpers\CSRFHelper;
                                 value="<?= $item['description'] ?? '' ?>">
                         </div>
 
+                        <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se não é comprador 
+                                    ?>
                         <div class="col-lg-1">
                             <?php if ($index === 0): ?><label class="fw-bold">Qtd</label><?php endif; ?>
                             <input type="text" class="form-control" name="items[<?= $index ?>][quantity]"
-                                value="<?= $item['quantity'] ?? '' ?>" readonly>
+                                value="<?= $item['quantity'] ?? '' ?>">
                         </div>
+                        <?php else : ?>
+
+                        <?php // Envia os valores pelo POST sem permitir edição 
+                                        ?>
+                        <input type="hidden" name="items[<?= $index ?>][quantity]"
+                            value="<?= $item['quantity'] ?? '' ?>">
+
+                        <?php // Exibição visual para o comprador 
+                                        ?>
+                        <div class="col-lg-1">
+                            <?php if ($index === 0): ?><label class="fw-bold">Qtd</label><?php endif; ?>
+                            <input type="text" class="form-control" value="<?= $item['quantity'] ?? '' ?>" disabled>
+                        </div>
+                        <?php endif; ?>
 
                         <div class="col-lg-1">
                             <?php if ($index === 0): ?><label class="fw-bold">Un</label><?php endif; ?>
@@ -260,11 +312,30 @@ use App\admsDaman\Helpers\CSRFHelper;
                                 value="<?= $item['returned_quantity'] ?? '';  ?>" placeholder="Qtd Locada">
                         </div>
 
+                        <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 5) : // Verifica se não é solicitante de compra 
+                                    ?>
                         <div class="col-lg-1">
                             <?php if ($index === 0): ?><label class="fw-bold">Preço</label><?php endif; ?>
                             <input type="text" class="form-control" name="items[<?= $index ?>][unit_price]"
                                 value="<?= $item['unit_price'] ?? '' ?>">
                         </div>
+
+                        <?php else : ?>
+
+                        <?php // Envia os dados do tipo hidden
+                                        ?>
+                        <input type="hidden" class="form-control" name="items[<?= $index ?>][unit_price]"
+                            value="<?= $item['unit_price'] ?? '' ?>">
+
+                        <?php // Exibição visual para o solicitante de compra 
+                                        ?>
+                        <div class="col-lg-1">
+                            <?php if ($index === 0): ?><label class="fw-bold">Preço</label><?php endif; ?>
+                            <input type="text" class="form-control" value="<?= $item['unit_price'] ?? '' ?>" disabled>
+                        </div>
+
+
+                        <?php endif; ?>
 
                         <div class="col-lg-2">
                             <?php if ($index === 0): ?><label class="fw-bold">Status</label><?php endif; ?>

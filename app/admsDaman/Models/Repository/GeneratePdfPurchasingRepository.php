@@ -21,7 +21,7 @@ class GeneratePdfPurchasingRepository extends DbConnection
 
         try {
             $sql = 'SELECT adpu.id, adpu.expected_receipt_date, adpu.service, adpu.delivery_address, adpu.delivery_value, adpu.discount, adpu.created_at, adpu.updated_at,
-                 adp.name AS project_name,
+                 adp.id AS project_id, adp.name AS project_name,
                  ads.legal_name,
                  ads.cnpj,
                  ads.contact_name,

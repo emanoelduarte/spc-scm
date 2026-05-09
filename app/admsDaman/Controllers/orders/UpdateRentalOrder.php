@@ -11,6 +11,7 @@ use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class UpdateRentalOrder
@@ -87,6 +88,10 @@ class UpdateRentalOrder
         // Instanciar o repositório para preencher os selects.
         $getMeasurementUnits = new OrdersRepository();
         $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
+
+        // Solicitar do repositório de níveis de acesso do usuário os níveis do usuário logado para configurar o conteúdo que ele tem acesso para manipular nas edições do pedido
+        $userAccessLevel = new UsersAccessLevelsRepository();
+        $this->data['userAccessLevelsArray'] = $userAccessLevel->getUsersAccessLevels($_SESSION['user_id']);
 
         // Configurar os elementos da página
         $pageElements = [
