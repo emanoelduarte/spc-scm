@@ -131,14 +131,14 @@ class AddAdmsDamanCategories extends AbstractSeed
             ];
         }
 
-        ## 10 BOBILIÁRIO
+        ## 10 MOBILIÁRIO
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'BOBILIÁRIO'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'MOBILIÁRIO'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
             $data[] = [
-                'name' => 'BOBILIÁRIO',
+                'name' => 'MOBILIÁRIO',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

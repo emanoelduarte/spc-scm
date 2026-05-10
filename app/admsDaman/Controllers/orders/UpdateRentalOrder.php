@@ -11,6 +11,7 @@ use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
+use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -40,8 +41,9 @@ class UpdateRentalOrder
             CSRFHelper::validateCSRFToken('form_update_order', $this->data['form']['csrf_token'])
         ) {
             // Editar a pedido
-            $this->editOrder();
             // var_dump($this->data['form']);
+            // exit;
+            $this->editOrder();
         } else {
             // Recuperar o registro da pedido
             $viewOrder = new OrdersRepository();
@@ -88,6 +90,10 @@ class UpdateRentalOrder
         // Instanciar o repositório para preencher os selects.
         $getMeasurementUnits = new OrdersRepository();
         $this->data['getAllMeasurementUnitsSelect'] = $getMeasurementUnits->getAllMeasurementUnitsSelect();
+
+        // Instanciar o repositório para preencher os selects.
+        $getSupplierTypeSelect = new SuppliersRepository();
+        $this->data['getSupplierTypeSelect'] = $getSupplierTypeSelect->getSupplierTypeSelect();
 
         // Solicitar do repositório de níveis de acesso do usuário os níveis do usuário logado para configurar o conteúdo que ele tem acesso para manipular nas edições do pedido
         $userAccessLevel = new UsersAccessLevelsRepository();

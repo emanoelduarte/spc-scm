@@ -98,9 +98,13 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
 
                 <?php endif; ?>
 
-                <?php if (in_array("GeneratePurchasing", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
-                        class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                <?php if ($this->data['order']['oder_type_id'] != 2) : ?>
+
+                    <?php if (in_array("GeneratePurchasing", $this->data['buttonPermissions'])): ?>
+                        <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
+                            class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                    <?php endif; ?>
+
                 <?php endif; ?>
 
                 <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])) : ?>
@@ -155,9 +159,9 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
 
                         <?php if ($order_name_type == 'LOCAÇÃO'): ?>
 
-                            <p><strong>Locador:</strong> <?= $rental_contract ?></p>
+                            <p><strong>Locador:</strong> <?= $supplier_name ?></p>
                             <p><strong>Contrato:</strong> <?= $rental_contract ?></p>
-                            <p><strong>Periodo:</strong> <?= $rental_period ?></p>
+                            <p><strong>Periodo:</strong> <?= $rental_period ?> Dias</p>
 
                         <?php endif; ?>
 
@@ -338,29 +342,33 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                                 </span>
                             </div>
 
-                            <!-- Conteúdo -->
-                            <div class="flex-grow-1">
+                            <div class="flex-grow-1 card shadow-sm border-0">
+                                <div class="card-body p-3">
 
-                                <div class="card shadow-sm border-0">
-                                    <div class="card-body p-3">
+                                    <div class="d-flex align-items-start gap-3">
 
-                                        <div class="d-flex justify-content-between">
-                                            <strong><?= $comment['title'] ?></strong>
-                                            <?php
-                                            $formatedDate = date('d/m/Y H:i', strtotime($comment['created_at']))
-                                            ?>
-                                            <small class="text-muted"><?= $formatedDate ?></small>
+                                        <!-- Avatar -->
+                                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width: 36px; height: 36px; font-size: 1rem; font-weight: 500; color: #0d6efd;">
+                                            <?= strtoupper(substr($_SESSION['user_name'] ?? '', 0, 1)) . strtoupper(substr(strrchr($_SESSION['user_name'] ?? '', ' '), 1, 1)) ?>
                                         </div>
 
-                                        <p class="mb-1 mt-2"><?= $comment['message'] ?></p>
+                                        <!-- Conteúdo -->
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between">
+                                                <strong><?= $_SESSION['user_name'] ?></strong>
+                                                <small
+                                                    class="text-muted"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></small>
+                                            </div>
 
-                                        <small class="text-muted">
-                                            por <?= $comment['user'] ?>
-                                        </small>
+                                            <p class="mb-1 mt-2"><?= $comment['message'] ?></p>
+
+                                            <!-- <small class="text-muted">por <?= $comment['user'] ?></small> -->
+                                        </div>
 
                                     </div>
-                                </div>
 
+                                </div>
                             </div>
 
                         </div>

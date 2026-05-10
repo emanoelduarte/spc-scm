@@ -143,15 +143,15 @@ class OrdersRepository extends DbConnection
     {
         try {
             // Consultar pedido e itens de compra
-            $order = 'SELECT ado.id, ado.adms_daman_acquisition_types_id, ado.adms_daman_category_id, ado.adms_daman_user_id, 
-                ado.adms_daman_project_id, 
-                ado.service, ado.expected_receipt_date, ado.observation, ado.adms_daman_acquisition_status_id, ado.status_date, ado.created_at, ado.updated_at, ado.rental_contract, ado.rental_period,
+            $order = 'SELECT ado.id, ado.adms_daman_supplier_id, ado.adms_daman_acquisition_types_id, ado.adms_daman_category_id, ado.adms_daman_user_id, 
+                ado.adms_daman_project_id, ado.service, ado.expected_receipt_date, ado.observation, ado.adms_daman_acquisition_status_id, ado.status_date, ado.created_at, ado.updated_at, ado.rental_contract, ado.rental_period,
 
-                adot.name AS order_name_type,
+                adot.id AS oder_type_id, adot.name AS order_name_type,
                 adc.name AS category_name,
                 adu.name AS usr_name,
                 adp.name AS project_name, adp.address AS project_adrress, adp.id AS order_project_id,
                 ados.id AS order_status_id,
+                ads.trade_name AS supplier_name,
                 ados.name AS order_status
 
                 FROM adms_daman_orders AS ado
@@ -159,6 +159,7 @@ class OrdersRepository extends DbConnection
                 INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
                 INNER JOIN adms_daman_users AS adu ON adu.id=ado.adms_daman_user_id
                 INNER JOIN adms_daman_projects AS adp ON adp.id=ado.adms_daman_project_id
+                LEFT JOIN adms_daman_suppliers AS ads ON ads.id = ado.adms_daman_supplier_id
                 INNER JOIN adms_daman_acquisition_status AS ados ON ados.id=ado.adms_daman_acquisition_status_id
                 WHERE ado.id = :id';
 
@@ -169,8 +170,8 @@ class OrdersRepository extends DbConnection
 
             return $stmt_order->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $err) {
-            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $orderId]);
-            die("Pedido não encontrado " . $err->getMessage());
+            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $orderId, 'error' => $err->getMessage()]);
+            die("Pedido não encontrado" . $err->getMessage());
         }
         return false;
     }
@@ -339,14 +340,15 @@ class OrdersRepository extends DbConnection
      */
     public function updateOrder(array $data): array|bool
     {
+
         try {
 
             // QUERY para atualizar PEDIDO
             $sql = 'UPDATE adms_daman_orders SET adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
 
-            // Incluir campo de periodo de locação caso seja do tipo locação
+            // Incluir campo de periodo de locação e id do fornecedor caso seja do tipo locação
             if ($data['adms_daman_acquisition_types_id'] == 2) {
-                $sql .= ', rental_period = :rental_period, adms_daman_acquisition_types_id = :adms_daman_acquisition_types_id';
+                $sql .= ', adms_daman_supplier_id = :adms_daman_supplier_id, rental_period = :rental_period, rental_contract = :rental_contract, adms_daman_acquisition_types_id = :adms_daman_acquisition_types_id';
             } else {
                 $sql .= ', adms_daman_acquisition_types_id = :adms_daman_acquisition_types_id';
             }
@@ -365,9 +367,11 @@ class OrdersRepository extends DbConnection
             $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
             $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
 
-            // Substituir link campo de periodo de locação caso seja do tipo locação
+            // Substituir link campo de periodo de locação e id do fornecedor caso seja do tipo locação
             if ($data['adms_daman_acquisition_types_id'] == 2) {
+                $stmt->bindValue(':adms_daman_supplier_id', $data['adms_daman_supplier_id'], PDO::PARAM_INT);
                 $stmt->bindValue(':rental_period', $data['rental_period'], PDO::PARAM_INT);
+                $stmt->bindValue(':rental_contract', $data['rental_contract']);
                 $stmt->bindValue(':adms_daman_acquisition_types_id', $data['adms_daman_acquisition_types_id'], PDO::PARAM_INT);
             } else {
                 $stmt->bindValue(':adms_daman_acquisition_types_id', $data['adms_daman_acquisition_types_id'], PDO::PARAM_INT);

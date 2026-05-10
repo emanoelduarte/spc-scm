@@ -28,8 +28,8 @@ use App\admsDaman\Helpers\CSRFHelper;
 
             <span class="ms-auto d-sm-flex flex-row">
                 <?php if (in_array("ListOrders", $this->data['buttonPermissions'])): ?>
-                    <a href="<?php echo $_ENV['URL_ADM']; ?>list-orders" class="btn btn-info btn-sm me-1 mb-1"><i
-                            class="fa-solid fa-list"></i> Listar</a>
+                <a href="<?php echo $_ENV['URL_ADM']; ?>list-orders" class="btn btn-info btn-sm me-1 mb-1"><i
+                        class="fa-solid fa-list"></i> Listar</a>
                 <?php endif; ?>
             </span>
 
@@ -50,11 +50,11 @@ use App\admsDaman\Helpers\CSRFHelper;
                         value="<?= $this->data['form']['expected_receipt_date'] ?? ''; ?>" placeholder="dd/mm/yyyy">
 
                     <script>
-                        flatpickr("#expected_receipt_date", {
-                            dateFormat: "d/m/Y",
-                            locale: "pt", // Para português
-                            minDate: new Date().fp_incr(3) // hoje + 3 dias
-                        });
+                    flatpickr("#expected_receipt_date", {
+                        dateFormat: "d/m/Y",
+                        locale: "pt", // Para português
+                        minDate: new Date().fp_incr(3) // hoje + 3 dias
+                    });
                     </script>
                 </div>
 
@@ -144,9 +144,9 @@ use App\admsDaman\Helpers\CSRFHelper;
                         <option value="15"
                             <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 15 ? 'selected' : ''; ?>>
                             15 DIAS</option>
-                        <option value="30"
-                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 30 ? 'selected' : ''; ?>>
-                            30 DIAS</option>
+                        <option value="28"
+                            <?= isset($this->data['form']['rental_period']) && $this->data['form']['rental_period'] == 28 ? 'selected' : ''; ?>>
+                            28 DIAS</option>
                     </select>
                 </div>
 
@@ -173,26 +173,26 @@ use App\admsDaman\Helpers\CSRFHelper;
                         foreach ($items as $index => $item):
                     ?>
 
-                            <div class="row g-1 item-group mb-2 mt-n1">
+                    <div class="row g-1 item-group mb-2 mt-n1">
 
-                                <div class="col-lg-6 col-md-6 col-sm-12">
-                                    <input type="text" class="form-control" name="items[<?= $index ?>][description]"
-                                        value="<?= $item['description'] ?? ''; ?>" placeholder="Descrição completa...">
-                                </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <input type="text" class="form-control" name="items[<?= $index ?>][description]"
+                                value="<?= $item['description'] ?? ''; ?>" placeholder="Descrição completa...">
+                        </div>
 
-                                <div class="col-lg-3 col-md-3 col-sm-12">
-                                    <input type="text" class="form-control" name="items[<?= $index ?>][quantity]"
-                                        value="<?= $item['quantity'] ?? ''; ?>" placeholder="Qtd">
-                                </div>
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <input type="text" class="form-control" name="items[<?= $index ?>][quantity]"
+                                value="<?= $item['quantity'] ?? ''; ?>" placeholder="Qtd">
+                        </div>
 
-                                <div class="col-lg-3 col-md-3 col-sm-12">
-                                    <div class="d-flex">
+                        <div class="col-lg-3 col-md-3 col-sm-12">
+                            <div class="d-flex">
 
-                                        <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select"
-                                            id="adms_daman_measurement_units_id">
-                                            <option value="" selected>Selecione</option>
+                                <select name="items[<?= $index ?>][adms_daman_measurement_units_id]" class="form-select"
+                                    id="adms_daman_measurement_units_id">
+                                    <option value="" selected>Selecione</option>
 
-                                            <?php
+                                    <?php
                                             // Verificar se existe Status
                                             if ($this->data['getAllMeasurementUnitsSelect'] ?? false) {
 
@@ -211,43 +211,43 @@ use App\admsDaman\Helpers\CSRFHelper;
                                                 }
                                             }
                                             ?>
-                                        </select>
-                                        <?php  // Verifica pelo indíce se existe mais de uma linha de item para aplicar o botão de remover
+                                </select>
+                                <?php  // Verifica pelo indíce se existe mais de uma linha de item para aplicar o botão de remover
                                         if ($index == 0) : ?>
-                                            <button type="button" class="btn btn-danger btn-remove d-none">-</button>
-                                        <?php else : ?>
-                                            <button type="button" class="btn btn-danger btn-remove">-</button>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-
+                                <button type="button" class="btn btn-danger btn-remove d-none">-</button>
+                                <?php else : ?>
+                                <button type="button" class="btn btn-danger btn-remove">-</button>
+                                <?php endif; ?>
                             </div>
+                        </div>
 
-                        <?php
+                    </div>
+
+                    <?php
                         endforeach;
                     else:
                         ?>
 
-                        <!-- MOSTRA UM CAMPO VAZIO INICIAL -->
-                        <div class="row g-1 item-group mb-2 mt-n1">
+                    <!-- MOSTRA UM CAMPO VAZIO INICIAL -->
+                    <div class="row g-1 item-group mb-2 mt-n1">
 
-                            <div class="col-lg-6">
-                                <input type="text" name="items[0][description]" class="form-control"
-                                    placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
-                            </div>
+                        <div class="col-lg-6">
+                            <input type="text" name="items[0][description]" class="form-control"
+                                placeholder="Descrição completa: Marca, modelo e referências, evitando compras erradas.">
+                        </div>
 
-                            <div class="col-lg-3">
-                                <input type="text" name="items[0][quantity]" class="form-control" placeholder="Qtd">
-                            </div>
+                        <div class="col-lg-3">
+                            <input type="text" name="items[0][quantity]" class="form-control" placeholder="Qtd">
+                        </div>
 
-                            <div class="col-lg-3">
-                                <div class="d-flex">
+                        <div class="col-lg-3">
+                            <div class="d-flex">
 
-                                    <select name="items[0][adms_daman_measurement_units_id]" class="form-select"
-                                        id="adms_daman_measurement_units_id_mudado">
-                                        <option value="" selected>Selecione</option>
+                                <select name="items[0][adms_daman_measurement_units_id]" class="form-select"
+                                    id="adms_daman_measurement_units_id_mudado">
+                                    <option value="" selected>Selecione</option>
 
-                                        <?php
+                                    <?php
                                         // Verificar se existe Status
                                         if ($this->data['getAllMeasurementUnitsSelect'] ?? false) {
 
@@ -266,12 +266,12 @@ use App\admsDaman\Helpers\CSRFHelper;
                                             }
                                         }
                                         ?>
-                                    </select>
-                                    <!-- <button type="button" class="btn btn-danger btn-remove">-</button> -->
-                                </div>
+                                </select>
+                                <!-- <button type="button" class="btn btn-danger btn-remove">-</button> -->
                             </div>
-
                         </div>
+
+                    </div>
 
                     <?php endif; ?>
 

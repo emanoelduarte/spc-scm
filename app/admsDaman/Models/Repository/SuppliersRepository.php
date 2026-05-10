@@ -283,4 +283,34 @@ class SuppliersRepository extends DbConnection
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Recuperar apenas o fornecedor do tipo 2 ou seja do tipo locação para preencher os selects dinamicamente
+     * 
+     * @return array|bool Fornecedor recuperado do banco de dados
+     */
+    public function getSupplierTypeSelect(): array|bool
+    {
+        try {
+            $sql = 'SELECT ads.id, ads.trade_name
+            FROM adms_daman_suppliers AS ads
+            INNER JOIN adms_daman_suppliers_types AS adst ON adst.id = ads.adms_daman_suppliers_types_id
+            WHERE adst.id = :adms_daman_suppliers_types_id';
+
+            // Preparar a Query
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substiruir os links pelos valores 
+            $stmt->bindValue(':adms_daman_suppliers_types_id', 2, PDO::PARAM_INT);
+
+            // Executar a Query
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
+            GenerateLog::generateLog("error", "Fornecedor não encontrado", []);
+            die("Fornecedor não encontrado " . $err->getMessage());
+        }
+        return false;
+    }
 }
