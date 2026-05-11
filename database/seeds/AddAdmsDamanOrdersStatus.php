@@ -26,6 +26,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'ANALISE',
+                'color' => '#9E9E9E',
+                'icon' => 'fa-magnifying-glass',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -38,6 +40,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'ORÇAMENTO',
+                'color' => '#1D9E75',
+                'icon' => 'fa-file-invoice-dollar',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -50,6 +54,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'COMPRADO',
+                'color' => '#185FA5',
+                'icon' => 'fa-cart-shopping',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -62,6 +68,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'COMPRA PARCIAL',
+                'color' => '#BA7517',
+                'icon' => 'fa-box-open',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -74,6 +82,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'ENTREGE',
+                'color' => '#2196F3',
+                'icon' => 'fa-truck',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -86,6 +96,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'ENTREGA PARCIAL',
+                'color' => '#FF5722',
+                'icon' => 'fa-truck-loading',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -98,6 +110,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'LOCADO',
+                'color' => '#185FA5',
+                'icon' => 'fa-handshake',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -110,6 +124,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'DEVOLVIDO',
+                'color' => '#3B6D11',
+                'icon' => 'fa-rotate-left',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -122,6 +138,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'DEV. PARCIAL',
+                'color' => '#BA7517',
+                'icon' => 'fa-arrow-rotate-left',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -134,6 +152,8 @@ class AddAdmsDamanOrdersStatus extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'CANCELADO',
+                'color' => '#A32D2D',
+                'icon' => 'fa-xmark',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

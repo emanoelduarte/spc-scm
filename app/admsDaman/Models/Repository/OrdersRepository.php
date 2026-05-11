@@ -615,4 +615,28 @@ class OrdersRepository extends DbConnection
         // Ler os registros e retornar 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Método exlcusivo para buscar quais obras tem pedido em análise e rankear a obra com mais pedidos em análise para para a que tem menos pedidos nesse status.
+     */
+    public function rankProjectsStatusAnalisys(): array
+    {
+       $sql = "SELECT 
+            adp.id,
+            adp.name AS project_name,
+            COUNT(ado.id) AS total
+        FROM adms_daman_orders AS ado
+        INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
+        WHERE ado.adms_daman_acquisition_status_id = 1
+        GROUP BY adp.id, adp.name
+        ORDER BY total DESC";
+
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        $projectsRanked = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Aqui você pode usar a variável $projectsRanked para exibir ou processar os dados conforme necessário
+        return $projectsRanked;
+    }
 }

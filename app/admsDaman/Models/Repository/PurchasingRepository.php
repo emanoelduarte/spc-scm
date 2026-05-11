@@ -445,4 +445,61 @@ class PurchasingRepository extends DbConnection
         // Ler os registros e retornar 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Método para recuperar as 5 últimas compras realizadas durante a semana
+     * @return array|bool Lista de compras recuperados do banco de dados
+     */
+    public function getLastPurchasingsWeek(): array|bool
+    {
+        $sql = "SELECT 
+                adpu.id,
+                adpu.created_at,
+                adpu.service,
+
+                SUM(adpi.purchased_quantity * adpi.unit_price) AS subtotal,
+
+                COALESCE(adpu.discount, 0) AS discount,
+                COALESCE(adpu.delivery_value, 0) AS delivery_value,
+
+                (
+                    SUM(adpi.purchased_quantity * adpi.unit_price)
+                    + COALESCE(adpu.delivery_value, 0)
+                    - COALESCE(adpu.discount, 0)
+                ) AS total_final,
+
+                adp.name AS project_name,
+                ads.legal_name AS supplier_name
+
+            FROM adms_daman_purchasings AS adpu
+
+            INNER JOIN adms_daman_projects AS adp 
+                ON adp.id = adpu.adms_daman_project_id
+
+            INNER JOIN adms_daman_suppliers AS ads 
+                ON ads.id = adpu.adms_daman_supplier_id
+
+            INNER JOIN adms_daman_purchasing_items AS adpi 
+                ON adpi.adms_daman_purchasing_id = adpu.id
+
+            WHERE 
+                adpu.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                AND adpu.adms_daman_acquisition_purchasing_status_id = 1
+
+            GROUP BY 
+                adpu.id,
+                adpu.created_at,
+                adpu.service,
+                adp.name,
+                ads.legal_name
+
+            ORDER BY adpu.created_at DESC
+
+            LIMIT 5";
+
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

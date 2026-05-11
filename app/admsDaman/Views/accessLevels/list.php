@@ -64,7 +64,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
                             <tr>
                                 <td><?= $id ?></td>
                                 <td><?= $name ?></td>
-                                <td><?= $order_levels ?></td>
+                                <td class="d-none d-md-table-cell"><?= $order_levels ?></td>
 
                                 <td class="text-center">
 

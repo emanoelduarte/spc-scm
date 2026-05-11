@@ -20,7 +20,8 @@ final class AdmsDamanAcquisitionStatus extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function up() {
+    public function up()
+    {
         // Acessa o if quando não existir a tabela no banco de dados
         // Verificar se a tabela 'adms_daman_acquisition_status' não existe no banco de dados
         if (!$this->hasTable('adms_daman_acquisition_status')) {
@@ -29,6 +30,8 @@ final class AdmsDamanAcquisitionStatus extends AbstractMigration
 
             //Define as colunas da tabela
             $table->addColumn('name', 'string', ['null' => false, 'comment' => '(Análise, Comprado, Entrege e etc.)'])
+                ->addColumn('color', 'string', ['limit' => 20, 'null' => false, 'default' => 'primary', 'comment' => 'Cor do status (ex: primary, success)'])
+                ->addColumn('icon', 'string', ['limit' => 50, 'null' => false, 'default' => 'fa-circle', 'comment' => 'Ícone do status (ex: fa-check)'])
                 ->addColumn('created_at', 'timestamp')
                 ->addColumn('updated_at', 'timestamp')
                 ->addIndex(['name'], ['unique' => true, 'name' => 'idx_unique_name']) // Adiciona o índice único com nome específico
@@ -39,7 +42,7 @@ final class AdmsDamanAcquisitionStatus extends AbstractMigration
     /**
      * Metodo down() para reverter a migração (caso necessário)
      */
-    public function down():void
+    public function down(): void
     {
         // Apagar a tabela adms_daman_acquisition_status
         $this->table('adms_daman_acquisition_status')->drop()->save();

@@ -40,7 +40,7 @@ class StatusRepository extends DbConnection
     }
 
     /**
-     * Recuperar uma Status específico
+     * Recuperar todos os Status para preencher selects
      * 
      * @return array|bool Status recuperado do banco de dados
      */
@@ -59,5 +59,31 @@ class StatusRepository extends DbConnection
 
         // Ler os registros e retornar 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Método para recuperar e contar a quantidade de pedido com um status especifico a fim de exibir a quantidade em um card no dasboard
+     */
+    public function countStatus(): array|bool
+    {
+        try {
+            $sql = "SELECT 
+                        adas.id,
+                        adas.name,
+                        adas.color,
+                        adas.icon,
+                        COUNT(ado.id) AS total
+                    FROM adms_daman_acquisition_status AS adas
+                    LEFT JOIN adms_daman_orders AS ado ON ado.adms_daman_acquisition_status_id = adas.id
+                    GROUP BY adas.id, adas.name
+                    ORDER BY adas.id ASC";
+
+            $stmt = $this->getConnection()->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            GenerateLog::generateLog("error", "Erro ao contar status.", ['error' => $e->getMessage()]);
+            return false;
+        }
     }
 }

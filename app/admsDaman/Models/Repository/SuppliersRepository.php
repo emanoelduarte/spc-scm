@@ -253,7 +253,7 @@ class SuppliersRepository extends DbConnection
 
         $sql = 'SELECT id, legal_name, cnpj, contact_name, phone
         FROM adms_daman_suppliers
-        WHERE supplier_status = :supplier_status
+        WHERE supplier_status = :supplier_status AND adms_daman_suppliers_types_id = :adms_daman_suppliers_types_id
         ORDER BY legal_name ASC';
 
         // Preparar a query
@@ -261,6 +261,7 @@ class SuppliersRepository extends DbConnection
 
         // Substituir link pelo valores
         $stmt->bindValue(':supplier_status', 1, PDO::PARAM_INT);
+        $stmt->bindValue(':adms_daman_suppliers_types_id', 1, PDO::PARAM_INT);
 
         // Executar a Query
         $stmt->execute();
