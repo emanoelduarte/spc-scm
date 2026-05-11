@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Phinx\Migration\AbstractMigration;
 
-final class AdmsDamanAddress extends AbstractMigration
+final class AdmsDamanAddresses extends AbstractMigration
 {
     /**
      * Change Method.
@@ -37,38 +37,10 @@ final class AdmsDamanAddress extends AbstractMigration
                 ->addColumn('updated_at', 'datetime', ['null' => true])
                 ->create();
         }
-
-        if (!$this->hasTable('adms_daman_user_addresses')) {
-            // Define o nome da tabela
-            $table = $this->table('adms_daman_user_addresses');
-
-            // Define as colunas da tabela
-            $table->addColumn('adms_daman_user_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('adms_daman_address_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('created_at', 'datetime', ['null' => true])
-                ->addForeignKey('adms_daman_user_id', 'adms_daman_users', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-                ->addForeignKey('adms_daman_address_id', 'adms_daman_addresses', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-                ->create();
-        }
-
-        if (!$this->hasTable('adms_daman_supplier_addresses')) {
-            // Define o nome da tabela
-            $table = $this->table('adms_daman_supplier_addresses');
-
-            // Define as colunas da tabela
-            $table->addColumn('adms_daman_supplier_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('adms_daman_address_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('created_at', 'datetime', ['null' => true])
-                ->addForeignKey('adms_daman_supplier_id', 'adms_daman_suppliers', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-                ->addForeignKey('adms_daman_address_id', 'adms_daman_addresses', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
-                ->create();
-        }
     }
 
     public function down(): void
     {
-        $this->table('adms_daman_supplier_addresses')->drop()->save();
-        $this->table('adms_daman_user_addresses')->drop()->save();
         $this->table('adms_daman_addresses')->drop()->save();
     }
 }
