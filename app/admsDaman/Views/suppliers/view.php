@@ -86,6 +86,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_supplier');
                     <dd class="col-sm-9">
                         <?php echo $email ? $email : "Email não cadastrado"; ?>
                     </dd>
+                    <dt class="col-sm-3">Formas de Pagamento Aceitas: </dt>
+                    <dd class="col-sm-9"> <?= $accepted_payments ?></dd>
                     <dt class="col-sm-3">Atividade do Fornecedor: </dt>
                     <dd class="col-sm-9"><?= $supplier_type ?></dd>
                     <dt class="col-sm-3">Status: </dt>

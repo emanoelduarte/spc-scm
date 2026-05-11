@@ -150,7 +150,7 @@
                                                 <!-- DIREITA -->
                                                 <div class="text-end">
 
-                                                    <span class="badge text-success text-dark rounded-pill px-3 py-2" style="background-color: #1D9E7522;">
+                                                    <span class="badge text- text-dark rounded-pill px-3 py-2" style="background-color: #1D9E7522;">
                                                         <div class="fw-semibold text-dark">
                                                             <?= htmlspecialchars('R$ ' . number_format($purchased['total_final'], 2, ',', '.')) ?>
                                                         </div>

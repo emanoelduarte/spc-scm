@@ -447,7 +447,7 @@ class PurchasingRepository extends DbConnection
     }
 
     /**
-     * Método para recuperar as 5 últimas compras realizadas durante a semana
+     * Método para recuperar as 5 últimas compras realizadas durante a semana, busca na tabela de itens pelos valores unitários e quantidades compradas para calcular o valor total da compra, e se houver valor de entrega e desconto, subtrai ou soma ao valor total da compra, retornando o valor final da compra.
      * @return array|bool Lista de compras recuperados do banco de dados
      */
     public function getLastPurchasingsWeek(): array|bool

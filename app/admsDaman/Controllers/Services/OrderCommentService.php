@@ -335,7 +335,8 @@ class OrderCommentService
 
             return "Alterou {$field} de  {$oldValue} para {$newValue}";
         } else {
-            return "Alterou {$field} de {$c['old_value']} para {$c['new_value']}";
+            $qtyOld = $c['old_value'] ?? 0;
+            return "Alterou {$field} de {$qtyOld} para {$c['new_value']}";
         }
     }
 

@@ -224,12 +224,120 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
 
         ## 18 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 1X'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
             $data[] = [
-                'name' => 'CARTÃO',
+                'name' => 'CARTÃO 1X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 2X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 2X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 3X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 3X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 4X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 4X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 5X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 5X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 6X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 6X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 7X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 7X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 8X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 8X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 9X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 9X',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 18 CARTÃO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 10X'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'CARTÃO 10X',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

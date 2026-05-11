@@ -84,7 +84,7 @@ class SuppliersRepository extends DbConnection
     public function getSupplier(int $id): array|bool
     {
         try {
-            $sql = 'SELECT ads.id, ads.legal_name, ads.trade_name, ads.cnpj, ads.contact_name, ads.phone, ads.email, ads.adms_daman_suppliers_types_id, ads.supplier_status, ads.created_at, ads.updated_at,
+            $sql = 'SELECT ads.id, ads.legal_name, ads.trade_name, ads.cnpj, ads.contact_name, ads.phone, ads.email, ads.adms_daman_suppliers_types_id, ads.accepted_payments, ads.supplier_status, ads.created_at, ads.updated_at,
             adst.name AS supplier_type
             FROM adms_daman_suppliers AS ads
             INNER JOIN adms_daman_suppliers_types AS adst ON adst.id = ads.adms_daman_suppliers_types_id
