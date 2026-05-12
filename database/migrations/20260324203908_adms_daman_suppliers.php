@@ -22,6 +22,9 @@ final class AdmsDamanSuppliers extends AbstractMigration
                 ->addColumn('contact_name', 'string', ['null' => false, 'comment' => 'Contato (nome da pessoa)'])
                 ->addColumn('phone', 'text', ['null' => false])
                 
+                ->addColumn('adms_daman_supplier_addresses_id', 'integer', ['null' => false, 'signed' => false])
+                ->addForeignKey('adms_daman_supplier_addresses_id', 'adms_daman_supplier_addresses', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+
                 ->addColumn('adms_daman_suppliers_types_id', 'integer', ['null' => false, 'signed' => false])
                 ->addForeignKey('adms_daman_suppliers_types_id', 'adms_daman_suppliers_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
