@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/image/icon/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/image/icon/favicon.ico"
+        type="image/x-icon">
 
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/sbadmin.css">
 
@@ -30,7 +31,7 @@
 </head>
 
 <body class="sb-nav-fixed">
-    
+
     <?php include 'app/admsDaman/Views/partials/loadingOverlay.php' ?>
 
     <?php include 'app/admsDaman/Views/partials/navbar.php' ?>
@@ -63,7 +64,7 @@
     </div>
 
     <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/sbadmin.js"></script>
-    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min"></script>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/bootstrap.bundle.min.js"></script>
 
     <?php // Inclui o sweetalert2 para botões de alerda de uma cdn 
     ?>
@@ -74,4 +75,5 @@
     <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/script_admin.js"></script>
 
 </body>
+
 </html>

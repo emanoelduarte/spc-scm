@@ -29,17 +29,21 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <?php  // Formulário para buscar pedido por item 
             ?>
             <form action="" method="POST">
-                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+                <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center">
 
-                    <input type="text" class="form-control w-50 p-2" name="description"
+                    <input type="text" class="form-control flex-grow-1" name="description"
                         value="<?= ($this->data['search']['description'] ?? '') ?>" placeholder="Pesquise por item">
-                    <button type="submit" class="btn btn-success h-100 ms-1"> <i class="fa-solid fa-magnifying-glass"></i>
-                        Buscar
-                    </button>
 
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-secondary h-100 ms-1">
-                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
-                    </a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success text-nowrap flex-grow-1 flex-sm-grow-0">
+                            <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                        </button>
+
+                        <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>"
+                            class="btn btn-secondary text-nowrap flex-grow-1 flex-sm-grow-0">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+                        </a>
+                    </div>
 
                 </div>
             </form>
@@ -58,8 +62,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <span>Listar</span>
             <span class="ms-auto">
                 <?php if (in_array("CreateOrder", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
-                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
+                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
                 <?php endif; ?>
             </span>
         </div>
@@ -71,19 +75,19 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             if ($this->data['orders'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Pedido</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col" class="d-none d-md-table-cell">Status</th>
-                            <th scope="col" class="d-none d-md-table-cell">Tipo</th>
-                            <th scope="col" class="d-none d-md-table-cell">Data do Pedido</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Pedido</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col" class="d-none d-md-table-cell">Status</th>
+                        <th scope="col" class="d-none d-md-table-cell">Tipo</th>
+                        <th scope="col" class="d-none d-md-table-cell">Data do Pedido</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
                         // Percorrer o array de Pedidos
                         foreach ($this->data['orders'] as $order) {
                             extract($order);
@@ -91,7 +95,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             $created = ($created_at ? date('d/m/Y', strtotime($created_at)) : "");
                         ?>
 
-                            <?php
+                    <?php
                             // Verificar o Status e aplicar a cor na borda do pedido
                             switch ($status_id) {
                                 case 1:
@@ -129,61 +133,61 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                             }
                             ?>
 
-                            <tr class="<?= $highlightClass ?>">
-                                <td><?= $pedido_id; ?></td>
-                                <td><?= $project_name; ?></td>
-                                <td><?= $status_name; ?></td>
-                                <td><?= $name_tape; ?></td>
+                    <tr class="<?= $highlightClass ?>">
+                        <td><?= $pedido_id; ?></td>
+                        <td><?= $project_name; ?></td>
+                        <td><?= $status_name; ?></td>
+                        <td><?= $name_tape; ?></td>
 
-                                <td class="d-none d-md-table-cell"><?= $created; ?></td>
-                                <td class="text-center">
-                                    <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
-                                    <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . $pedido_id; ?>"
-                                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                                    <?php endif; ?>
+                        <td class="d-none d-md-table-cell"><?= $created; ?></td>
+                        <td class="text-center">
+                            <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . $pedido_id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <?php endif; ?>
 
-                                    <?php if (($order) and ($order['adms_daman_acquisition_types_id'] == 1)): ?>
+                            <?php if (($order) and ($order['adms_daman_acquisition_types_id'] == 1)): ?>
 
-                                        <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
-                                            <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>"
-                                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                                Editar</a>
-                                        <?php endif; ?>
+                            <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . $pedido_id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
+                            <?php endif; ?>
 
-                                    <?php else: ?>
+                            <?php else: ?>
 
-                                        <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
-                                            <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>"
-                                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                                Editar</a>
+                            <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . $pedido_id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
 
-                                        <?php endif; ?>
-                                    <?php endif; ?>
+                            <?php endif; ?>
+                            <?php endif; ?>
 
 
-                                    <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])): ?>
-                                        <?php  // Formulário para envio dos dados para deletar Pedido 
+                            <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])): ?>
+                            <?php  // Formulário para envio dos dados para deletar Pedido 
                                         // 
                                         ?>
-                                        <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order"
-                                            method="POST" class="d-inline">
+                            <form id="formDelete<?= $pedido_id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-order"
+                                method="POST" class="d-inline">
 
-                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                            <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
+                                <input type="hidden" name="id" id="id" value="<?= $pedido_id ?? ''; ?>">
 
-                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                                onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i
-                                                    class="fa-solid fa-trash"></i> Apagar</button>
+                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $pedido_id ?>)"> <i
+                                        class="fa-solid fa-trash"></i> Apagar</button>
 
-                                        </form>
-                                    <?php endif; ?>
+                            </form>
+                            <?php endif; ?>
 
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação

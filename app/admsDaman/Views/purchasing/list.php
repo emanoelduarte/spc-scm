@@ -29,16 +29,22 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             <?php  // Formulário para buscar Obras 
             ?>
             <form action="" method="POST">
-                <div class="col-lg-12 col-md-12 col-sm-12 d-flex justify-content-center align-items-center">
+                <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center">
 
-                    <input type="text" class="form-control w-50 p-2" name="legal_name"
-                        value="<?= ($this->data['search']['legal_name'] ?? '') ?>" placeholder="Pesquise por Razão Social do fornecedor">
-                    <button type="submit" class="btn btn-success h-100 ms-1"><i class="fa-solid fa-magnifying-glass"></i>
-                        Buscar
-                    </button>
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-secondary h-100 ms-1">
-                        <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
-                    </a>
+                    <input type="text" class="form-control flex-grow-1" name="legal_name"
+                        value="<?= ($this->data['search']['legal_name'] ?? '') ?>"
+                        placeholder="Pesquise por Razão Social do fornecedor">
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success text-nowrap flex-grow-1 flex-sm-grow-0"><i
+                                class="fa-solid fa-magnifying-glass"></i>
+                            Buscar
+                        </button>
+                        <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>"
+                            class="btn btn-secondary text-nowrap flex-grow-1 flex-sm-grow-0">
+                            <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
+                        </a>
+                    </div>
                 </div>
             </form>
 
@@ -67,27 +73,27 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             if ($this->data['purchasings'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">N°. Compra</th>
-                            <th scope="col">N°. Pedido</th>
-                            <th scope="col" class="d-none d-md-table-cell">Comprador</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">N°. Compra</th>
+                        <th scope="col">N°. Pedido</th>
+                        <th scope="col" class="d-none d-md-table-cell">Comprador</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-                        <?php
+                    <?php
                         // Percorrer o array de compras
                         foreach ($this->data['purchasings'] as $purchasing) {
                             extract($purchasing);
                         ?>
 
-                            <?php
+                    <?php
                             // Verificar o Status e aplicar a cor na borda do pedido
                             switch ($purchasing_status_id) {
                                 case 1:
@@ -98,40 +104,40 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                     break;
                             }
                             ?>
-                            <tr class="<?= $highlightClass ?>">
-                                <td><?= $id ?></td>
-                                <td><?= $adms_daman_order_id ?></td>
-                                <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
-                                <td><?= $project_name ?></td>
-                                <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
-                                <td><?= $purchasing_status ?></td>
-                                <td class="text-center">
-                                    <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
-                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                                    <?php endif; ?>
+                    <tr class="<?= $highlightClass ?>">
+                        <td><?= $id ?></td>
+                        <td><?= $adms_daman_order_id ?></td>
+                        <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
+                        <td><?= $project_name ?></td>
+                        <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
+                        <td><?= $purchasing_status ?></td>
+                        <td class="text-center">
+                            <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <?php endif; ?>
 
-                                    <?php if (in_array("DeletePurchasing", $this->data['buttonPermissions'])): ?>
-                                        <?php  // Formulário para envio dos dados para deletar compra 
+                            <?php if (in_array("DeletePurchasing", $this->data['buttonPermissions'])): ?>
+                            <?php  // Formulário para envio dos dados para deletar compra 
                                         ?>
-                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
-                                            method="POST" class="d-inline">
+                            <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
+                                method="POST" class="d-inline">
 
-                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                                onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
-                                                Apagar</button>
-                                        </form>
-                                    <?php endif; ?>
+                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                    Apagar</button>
+                            </form>
+                            <?php endif; ?>
 
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação
@@ -196,7 +202,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
         <div class="mb-2">
             <label class="fw-bold">Status</label>
 
-            <select name="adms_daman_acquisition_purchasing_status_id" class="form-select" id="adms_daman_acquisition_purchasing_status_id">
+            <select name="adms_daman_acquisition_purchasing_status_id" class="form-select"
+                id="adms_daman_acquisition_purchasing_status_id">
                 <option value="" selected>Selecione</option>
 
                 <?php

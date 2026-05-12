@@ -48,6 +48,14 @@ function showLoading() {
 
 }
 
+function showLoadingPdf() {
+    document.getElementById('loadingOverlay').classList.remove('d-none');
+
+    setTimeout(function () {
+        document.getElementById('loadingOverlay').classList.add('d-none');
+    }, 2000);
+}
+
 const div = document.querySelector('.adms_daman_acquisition_types_id');
 const selectField = document.getElementById('locationPeriod');
 
