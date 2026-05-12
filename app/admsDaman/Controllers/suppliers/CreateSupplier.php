@@ -2,9 +2,11 @@
 
 namespace App\admsDaman\Controllers\suppliers;
 
+use App\admsDaman\Controllers\Services\CreateSupplierService;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationSupplierService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\AddressesRepository;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -46,17 +48,21 @@ class CreateSupplier
             return;
         }
 
-        // Instanciar o Repository para cadastrar o fornecedor
+        // // Instanciar o Repository para cadastrar o fornecedor
         $supplierCreate = new SuppliersRepository();
-        $result = $supplierCreate->createSupplier($this->data['form']);
+        $supplierId = $supplierCreate->createSupplier($this->data['form']);
+
+        // Salvar endereço vinculado ao fornecedor
+        $addressRepository = new AddressesRepository();
+        $supplierAdress = $addressRepository->createAddress($this->data['form'], $supplierId, 'supplier');
 
         // Acesso o IF se o repository retornou true
-        if ($result) {
+        if ($supplierId && $supplierAdress) {
             // Criar a mensagem de sucesso ao cadastrar
             $_SESSION['success'] = "Fornecedor cadastrado com sucesso!";
 
             // Redirecionar o usuário para a página de visualizar usuário
-            header("Location: {$_ENV['URL_ADM']}view-supplier/$result");
+            header("Location: {$_ENV['URL_ADM']}view-supplier/$supplierId");
 
             return;
         } else {

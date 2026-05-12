@@ -42,10 +42,16 @@ class ValidationSupplierService
             'cnpj' => 'required',
             'contact_name' => 'required',
             'phone' => 'required',
+            'street' => 'required',
+            'number' => 'required',
+            'neighborhood' => 'required',
+            'zip_code' => 'required',
+            'city' => 'required',
+            'state' => 'required',
             'adms_daman_suppliers_types_id' => 'required|integer',
         ];
 
-        if(!isset($data['id'])){
+        if (!isset($data['id'])) {
             $rules['cnpj'] = 'required|uniqueInColumns:adms_daman_suppliers,cnpj';
         } else {
             // Para edição, adicionar a validação de id e ignorar o próprio cnpj na verificação de cnpj
@@ -53,7 +59,7 @@ class ValidationSupplierService
             $rules['supplier_status'] = 'required|integer';
             $rules['cnpj'] = 'required|uniqueInColumns:adms_daman_suppliers,cnpj,' . $data['id'];
         }
-        
+
         // Definir mensagens personalizadas
         $messages = [
             'id:required'                                    => 'Dados inválidos.',
@@ -66,6 +72,12 @@ class ValidationSupplierService
             'cnpj:uniqueInColumns'                           => 'Já existe um fornecedor cadastrado com esse CNPJ informado.',
             'contact_name:required'                          => 'O campo contato é obrigatório.',
             'phone:required'                                 => 'O campo telefone é obrigatório.',
+            'street:required'                                => 'O campo logradouro é obrigatório.',
+            'number:required'                                => 'O campo número é obrigatório.',
+            'neighborhood:required'                          => 'O campo bairro é obrigatório.',
+            'zip_code:required'                              => 'O campo CEP é obrigatório.',
+            'city:required'                                  => 'O campo cidade é obrigatório.',
+            'state:required'                                 => 'O campo estado é obrigatório.',
             'adms_daman_suppliers_types_id:required'         => 'Dados inválidos.',
             'adms_daman_suppliers_types_id:integer'          => 'Dados inválidos.',
         ];

@@ -126,8 +126,6 @@ class SuppliersRepository extends DbConnection
             // Preparar a query para inserir os dados no banco de dados
             $stmt = $this->getConnection()->prepare($sql);
 
-
-
             // Substituir os links pelos valores passados no array
             $stmt->bindValue(':legal_name', strtoupper($data['legal_name']), PDO::PARAM_STR);
             $stmt->bindValue(':trade_name', strtoupper($data['trade_name']), PDO::PARAM_STR);

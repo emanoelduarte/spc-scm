@@ -9,7 +9,8 @@ use Phinx\Migration\AbstractMigration;
  */
 final class AdmsDamanSuppliers extends AbstractMigration
 {
-    public function up() {
+    public function up()
+    {
         // Acessa o if quando não existir a tabela no banco de dados
         if (!$this->hasTable('adms_daman_suppliers')) {
             // Define o nome da tabela
@@ -21,15 +22,12 @@ final class AdmsDamanSuppliers extends AbstractMigration
                 ->addColumn('cnpj', 'string', ['null' => false, 'comment' => 'Registro de Pesso jurídica'])
                 ->addColumn('contact_name', 'string', ['null' => false, 'comment' => 'Contato (nome da pessoa)'])
                 ->addColumn('phone', 'text', ['null' => false])
-                
-                ->addColumn('adms_daman_supplier_addresses_id', 'integer', ['null' => false, 'signed' => false])
-                ->addForeignKey('adms_daman_supplier_addresses_id', 'adms_daman_supplier_addresses', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
                 ->addColumn('adms_daman_suppliers_types_id', 'integer', ['null' => false, 'signed' => false])
                 ->addForeignKey('adms_daman_suppliers_types_id', 'adms_daman_suppliers_types', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
                 ->addColumn('accepted_payments', 'text', ['null' => false])
-                
+
                 ->addColumn('supplier_status', 'boolean', ['null' => false, 'default' => 1])
                 ->addColumn('created_at', 'timestamp')
                 ->addColumn('updated_at', 'timestamp')
@@ -40,7 +38,7 @@ final class AdmsDamanSuppliers extends AbstractMigration
     /**
      * Metodo down() para reverter a migração (caso necessário)
      */
-    public function down():void
+    public function down(): void
     {
         // Apagar a tabela adms_users
         $this->table('adms_daman_suppliers')->drop()->save();

@@ -21,29 +21,13 @@ class AddAdmsDamanSupplierAddressesSeeder extends AbstractSeed
 
         // Se o usuário não existir, adiciona seus dados ao array $data
 
-        $data[] = [
-            'adms_daman_supplier_id' => 5,
-            'adms_daman_address_id' => 5,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_supplier_id' => 6,
-            'adms_daman_address_id' => 6,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_supplier_id' => 7,
-            'adms_daman_address_id' => 7,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_supplier_id' => 8,
-            'adms_daman_address_id' => 8,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
+        for ($i = 1; $i <= 47; $i++) {
+            $data[] = [
+                'adms_daman_supplier_id' => $i,
+                'adms_daman_address_id' => $i,
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
 
         // Indicar em qual tabela deve adicionar/salvar o registro
         $adms_daman_supplier_addresses = $this->table('adms_daman_supplier_addresses');

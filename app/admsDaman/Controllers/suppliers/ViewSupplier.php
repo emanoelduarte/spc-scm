@@ -4,6 +4,7 @@ namespace App\admsDaman\Controllers\suppliers;
 
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\SuppliersAddressesRepository;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -54,6 +55,10 @@ class ViewSupplier
 
             return;
         }
+
+        // Instanciar o Repository para recuperar os registros do banco de dados
+        $supplierAddresses = new SuppliersAddressesRepository();
+        $this->data['supplierAddresses'] = $supplierAddresses->getAddressesSupplier((int) $id);
 
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Fornecedor", ['id' => (int) $id]);

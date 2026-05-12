@@ -25,10 +25,12 @@ final class AdmsDamanSupplierAddresses extends AbstractMigration
 
             // Define as colunas da tabela
             $table->addColumn('adms_daman_supplier_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('adms_daman_address_id', 'integer', ['null' => false, 'signed' => false])
-                ->addColumn('created_at', 'datetime', ['null' => true])
                 ->addForeignKey('adms_daman_supplier_id', 'adms_daman_suppliers', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+
+                ->addColumn('adms_daman_address_id', 'integer', ['null' => false, 'signed' => false])
                 ->addForeignKey('adms_daman_address_id', 'adms_daman_addresses', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
+
+                ->addColumn('created_at', 'datetime', ['null' => true])
                 ->create();
         }
     }

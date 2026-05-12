@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\admsDaman\Helpers\GenerateLog;
 use Phinx\Seed\AbstractSeed;
 
 class AddAdmsDamanUserAddressesSeeder extends AbstractSeed
@@ -20,30 +21,16 @@ class AddAdmsDamanUserAddressesSeeder extends AbstractSeed
         $data = [];
 
         // Se o usuário não existir, adiciona seus dados ao array $data
+        $contIdUser = 0;
+        for ($i = 48; $i <= 51; $i++) {
+            $contIdUser++;
 
-        $data[] = [
-            'adms_daman_user_id' => 1,
-            'adms_daman_address_id' => 1,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_user_id' => 2,
-            'adms_daman_address_id' => 2,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_user_id' => 3,
-            'adms_daman_address_id' => 3,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
-
-        $data[] = [
-            'adms_daman_user_id' => 4,
-            'adms_daman_address_id' => 4,
-            'created_at' => date("Y-m-d H:i:s"),
-        ];
+            $data[] = [
+                'adms_daman_user_id' => $contIdUser,
+                'adms_daman_address_id' => $i,
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
 
         // Indicar em qual tabela deve adicionar/salvar o registro
         $adms_daman_user_addresses = $this->table('adms_daman_user_addresses');

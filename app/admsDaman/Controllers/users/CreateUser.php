@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\users;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserRakitService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\AddressesRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -47,15 +48,19 @@ class CreateUser
 
         // Instanciar o Repository para cadastrar o Usuário
         $userCreate = new UsersRepository();
-        $result = $userCreate->createUser($this->data['form']);
+        $userId = $userCreate->createUser($this->data['form']);
+
+        // Salvar endereço vinculado ao usuário Quando necessário
+        // $addressRepository = new AddressesRepository();
+        // $userAddress = $addressRepository->createAddress($this->data['form'], $userId, 'user');
 
         // Acesso o IF se o repository retornou true
-        if ($result) {
+        if ($userId) {
             // Criar a mensagem de sucesso ao cadastrar
             $_SESSION['success'] = "Usuário cadastrado com sucesso!";
 
             // Redirecionar o usuário para a página de visualizar usuário
-            header("Location: {$_ENV['URL_ADM']}view-user/$result");
+            header("Location: {$_ENV['URL_ADM']}view-user/$userId");
 
             return;
         } else {
