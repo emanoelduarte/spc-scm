@@ -81,7 +81,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                         <th scope="col" class="d-none d-md-table-cell">Comprador</th>
                         <th scope="col">Obra</th>
                         <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
-                        <th scope="col">Status</th>
+                        <th scope="col" class="d-none d-md-table-cell">Status</th>
                         <th scope="col" class="text-center">Ações</th>
                     </tr>
                 </thead>
@@ -110,7 +110,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                         <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
                         <td><?= $project_name ?></td>
                         <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
-                        <td><?= $purchasing_status ?></td>
+                        <td class="d-none d-md-table-cell"><?= $purchasing_status ?></td>
                         <td class="text-center">
                             <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
                             <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"

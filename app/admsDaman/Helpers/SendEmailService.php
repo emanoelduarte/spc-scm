@@ -28,7 +28,7 @@ class SendEmailService
 
         // Cnfiguração e definição do recipiente 
         //Recipients
-        $mail->setFrom($_ENV['EMAIL_ADM'], $_ENV['EMAIL_ADM']);
+        $mail->setFrom($_ENV['EMAIL_RECOVERY'], $_ENV['EMAIL_RECOVERY']);
         $mail->addAddress($email, $name);     // Adicionar um destinatário
 
         // Conteúdo

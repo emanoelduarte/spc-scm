@@ -267,6 +267,8 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                                 </td>
                                 <td>
 
+                                <?php if (in_array("DeleteItem", $this->data['buttonPermissions'])): ?>
+
                                     <?php  // Formulário para envio dos dados para deletar Item do pedido 
                                     ?>
                                     <form id="formDelete<?= $item['item_id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-item"
@@ -283,6 +285,8 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                                                 class="fa-solid fa-trash"></i> Excluir</button>
 
                                     </form>
+
+                                    <?php endif; ?>
 
                                 </td>
                             </tr>

@@ -136,8 +136,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
                     <tr class="<?= $highlightClass ?>">
                         <td><?= $pedido_id; ?></td>
                         <td><?= $project_name; ?></td>
-                        <td><?= $status_name; ?></td>
-                        <td><?= $name_tape; ?></td>
+                        <td class="d-none d-md-table-cell"><?= $status_name; ?></td>
+                        <td class="d-none d-md-table-cell"><?= $name_tape; ?></td>
 
                         <td class="d-none d-md-table-cell"><?= $created; ?></td>
                         <td class="text-center">

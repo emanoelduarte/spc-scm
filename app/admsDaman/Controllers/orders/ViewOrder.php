@@ -86,7 +86,7 @@ class ViewOrder
         $pageElements = [
             'title_head' => "Visualizar Pedido",
             'menu' => "list-orders",
-            'buttonPermissions' => ["ListOrders", "UpdateOrder", "UpdateRentalOrder", "GeneratePurchasing", "DeleteOrder",],
+            'buttonPermissions' => ["ListOrders", "UpdateOrder", "UpdateRentalOrder", "DeleteItem", "GeneratePurchasing", "DeleteOrder",],
         ];
 
         $pageLayoutService = new PageLayoutService();

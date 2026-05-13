@@ -5,7 +5,10 @@ APP_TIMEZONE=America/Sao_Paulo
 APP_LOCALE=pt-BR
 
 # Email do administrador
-EMAIL_ADM=emanoel@damanarqeng.com.br
+EMAIL_ADM=
+
+# Email de recuperação de senha
+EMAIL_RECOVERY=
 
 #URL do projeto
 URL_ADM=http://localhost/spcscm/
@@ -16,15 +19,22 @@ APP_ENV=development
 APP_DEBUG=true
 
 # Credenciais do banco de dados
-DB_HOST=localhost
-DB_USER=root
+DB_HOST=
+DB_USER=
 DB_PASS=
-DB_NAME=spcdaman
-DB_PORT=3306
+DB_NAME=
+DB_PORT=
+
+# # credenciais do servidor de e-mail
+# MAIL_HOST=sandbox.smtp.mailtrap.io
+# MAIL_USERNAME=ba916d47f0541e
+# MAIL_PASSWORD=42a14865c8fdb4
+# MAIL_PORT=587
+# MAIL_ENCRYPTION=PHPMailer::ENCRYPTION_STARTTLS
 
 # credenciais do servidor de e-mail
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_USERNAME=ba916d47f0541e
-MAIL_PASSWORD=42a14865c8fdb4
-MAIL_PORT=587
-MAIL_ENCRYPTION=PHPMailer::ENCRYPTION_STARTTLS
+MAIL_HOST=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_PORT=
+MAIL_ENCRYPTION=
