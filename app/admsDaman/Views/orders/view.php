@@ -354,13 +354,13 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                                         <!-- Avatar -->
                                         <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
                                             style="width: 36px; height: 36px; font-size: 1rem; font-weight: 500; color: #0d6efd;">
-                                            <?= strtoupper(substr($_SESSION['user_name'] ?? '', 0, 1)) . strtoupper(substr(strrchr($_SESSION['user_name'] ?? '', ' '), 1, 1)) ?>
+                                            <?= strtoupper(substr($comment['user_name'] ?? '', 0, 1)) . strtoupper(substr(strrchr($comment['user_name'] ?? '', ' '), 1, 1)) ?>
                                         </div>
 
                                         <!-- Conteúdo -->
                                         <div class="flex-grow-1">
                                             <div class="d-flex justify-content-between">
-                                                <strong><?= $_SESSION['user_name'] ?></strong>
+                                                <strong><?= $comment['user_name'] ?></strong>
                                                 <small
                                                     class="text-muted"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></small>
                                             </div>

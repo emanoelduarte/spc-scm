@@ -130,6 +130,8 @@ class OrderCommentService
         $fieldsToCheck = [
             'quantity' => 'quantity',
             'purchased_quantity' => 'purchased_quantity',
+            'rented_quantity' => 'rented_quantity',
+            'returned_quantity' => 'returned_quantity',
             'unit_price' => 'unit_price',
             'description' => 'description',
         ];
@@ -151,6 +153,8 @@ class OrderCommentService
                         'description' => $item['description'] ?? null,
                         'quantity' => $item['quantity'] ?? null,
                         'purchased_quantity' => $item['purchased_quantity'] ?? null,
+                        'rented_quantity' => $item['rented_quantity'] ?? null,
+                        'returned_quantity' => $item['returned_quantity'] ?? null,
                         'unit_price' => $item['unit_price'] ?? null,
                     ]),
                     'comment' => null,
@@ -243,7 +247,7 @@ class OrderCommentService
                 'icon' => 'bi-chat',
                 'color' => 'secondary',
                 'created_at' => $comment['created_at'],
-                'user' => $comment['user_name'] ?? 'Sistema'
+                'user_name' => $comment['user_name'] ?? 'Sistema'
             ];
 
             switch ($comment['action']) {
@@ -325,6 +329,8 @@ class OrderCommentService
             'purchased_quantity' => 'quantidade comprada',
             'unit_price' => 'valor unitário',
             'description' => 'descrição',
+            'rented_quantity' => 'quantidade locada',
+            'returned_quantity' => 'quantidade devolvida'
         ];
 
         $field = $fieldNames[$c['field']] ?? $c['field'];

@@ -2,12 +2,14 @@
 
 namespace App\admsDaman\Controllers\orders;
 
+use App\admsDaman\Controllers\Services\OrderCommentService;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderItemnsService;
 use App\admsDaman\Controllers\Services\Validation\ValidationOrderService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\CategoriesRepository;
+use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
@@ -153,6 +155,34 @@ class UpdateRentalOrder
             $this->viewUpdateOrder();
 
             return;
+        }
+
+        // Chamar serviço de comentários automáticos
+        $commentService = new OrderCommentService();
+        $changesArray = $commentService->logBatch($this->data['form']);
+
+        // Instanciar o OrdersRepository para chamar o método que faz a edição do pedido
+        $orderUpdate = new OrdersRepository();
+        $result = $orderUpdate->updateOrder($this->data['form']);
+
+        $newItemsMap = $result['newItemsMap'] ?? [];
+
+        foreach ($changesArray as &$change) {
+
+            if (
+                $change['action'] === 'add_item' &&
+                !empty($change['temp_id']) &&
+                isset($newItemsMap[$change['temp_id']])
+            ) {
+                $change['item_id'] = $newItemsMap[$change['temp_id']];
+            }
+        }
+        unset($change);
+
+        // Verificar se o retorno teve dados ou foi array vazio
+        if (!empty($changesArray)) {
+            $orderComments = new OrderCommentsRepository();
+            $orderComments->insertMultipleComments($changesArray);
         }
 
         // Instanciar o OrdersRepository para chamar o método que faz a edição do pedido

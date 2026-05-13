@@ -340,7 +340,7 @@ class OrdersRepository extends DbConnection
      */
     public function updateOrder(array $data): array|bool
     {
-
+        
         try {
 
             // QUERY para atualizar PEDIDO
