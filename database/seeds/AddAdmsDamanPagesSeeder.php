@@ -111,6 +111,12 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             // Pdfs
             ['name' => 'Gerar PDF Compra', 'controller' => 'GeneratePdfPurchasing', 'controller_url' => 'generate-pdf-purchasing', 'directory' => 'pdfs', 'obs' => 'Página para gerar PDF de Compras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 15],
 
+            // Páginas Estoque
+            ['name' => 'Criar Item de Material de Estoque', 'controller' => 'CreateMaterialStock', 'controller_url' => 'create-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para cadastrar novo item no estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
+            ['name' => 'Criar Movimentação de Material do Estoque', 'controller' => 'CreateStockMovement', 'controller_url' => 'create-stock-movement', 'directory' => 'materialstock', 'obs' => 'Página para cadastrar nova movimentação no estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
+            ['name' => 'Listar Materiais do Estoque', 'controller' => 'ListMaterialStock', 'controller_url' => 'list-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para listar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
+            ['name' => 'Editar Materiais do Estoque', 'controller' => 'UpdateMaterialStock', 'controller_url' => 'update-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para editar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
+            ['name' => 'Visualizar Materiais do Estoque', 'controller' => 'ViewMaterialStock', 'controller_url' => 'view-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para visualizar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar

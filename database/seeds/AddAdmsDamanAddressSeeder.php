@@ -535,25 +535,35 @@ class AddAdmsDamanAddressSeeder extends AbstractSeed
             ],
         ];
 
-        // Percorrer o array com dados que devem ser validados antes de cadastrar
         foreach ($addresses as $address) {
 
-            $data[] = [
-                'zip_code' => $address['zip_code'],
-                'street' => $address['street'],
-                'number' => $address['number'],
-                'complement' => $address['complement'],
-                'neighborhood' => $address['neighborhood'],
-                'city' => $address['city'],
-                'state' => $address['state'],
-                'created_at' => $address['created_at'],
-            ];
+            $zip        = $this->getAdapter()->getConnection()->quote($address['zip_code']);
+            $number     = $this->getAdapter()->getConnection()->quote($address['number'] ?? '');
+            $complement = $this->getAdapter()->getConnection()->quote($address['complement'] ?? '');
+
+            $rows = $this->fetchAll(
+                "SELECT id FROM adms_daman_addresses 
+                    WHERE zip_code = $zip
+                    AND COALESCE(number, '')     = COALESCE($number, '')
+                    AND COALESCE(complement, '') = COALESCE($complement, '')"
+            );
+
+            if (empty($rows)) {
+                $data[] = [
+                    'zip_code'     => $address['zip_code'],
+                    'street'       => $address['street'],
+                    'number'       => $address['number'],
+                    'complement'   => $address['complement'],
+                    'neighborhood' => $address['neighborhood'],
+                    'city'         => $address['city'],
+                    'state'        => $address['state'],
+                    'created_at'   => $address['created_at'],
+                ];
+            }
         }
 
-        // Obtém a tabela 'adms_daman_addresses' para inserir os registros
-        $adms_daman_addresses = $this->table('adms_daman_addresses');
-
-        // Insere os registros na tabela
-        $adms_daman_addresses->insert($data)->save();
+        if (!empty($data)) {
+            $this->table('adms_daman_addresses')->insert($data)->save();
+        }
     }
 }

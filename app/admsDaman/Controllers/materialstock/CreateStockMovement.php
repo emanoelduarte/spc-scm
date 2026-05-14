@@ -1,0 +1,113 @@
+<?php
+
+namespace App\admsDaman\Controllers\materialstock;
+
+use App\admsDaman\Controllers\Services\Validation\ValidationMaterialStockService;
+use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\MaterialStockMovementRepository;
+use App\admsDaman\Models\Repository\MaterialStockRepository;
+
+class CreateStockMovement
+{
+    /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
+    private array|string|null $data = null;
+
+    public function index(string|null $parameter): void
+    {
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+
+        // Acessa o IF se existir o CSRF e for válido o CSRF
+        if (!isset($this->data['form']['csrf_token']) and CSRFHelper::validateCSRFToken('form_stock_movement', $this->data['form']['csrf_token'])) {
+
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Material não encontrado", []);
+
+            // Criar a mensagem de erro
+            $_SESSION['error'] = "Material não encontrado!";
+
+            // Redirecionar o usuário para a página listar
+            header("Location: {$_ENV['URL_ADM']}list-material-stock");
+
+            return;
+        }
+
+        // Instanciar o Repository para recuperar o registro do banco de dados
+        $movimentMaterial = new MaterialStockRepository();
+        $this->data['movimentMaterial'] = $movimentMaterial->getUniqueMaterial((int) $this->data['form']['stock_id']);
+
+
+        // Verificar se encontrou o registro no banco de dados
+        if (!$this->data['movimentMaterial']) {
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Material não encontrado", ['id' => (int) $this->data['form']['stock_id']]);
+
+            // Criar a mensagem de erro
+            $_SESSION['error'] = "Material não encontrado!";
+
+            // Redirecionar o usuário para a página listar
+            header("Location: {$_ENV['URL_ADM']}list-material-stock");
+
+            return;
+        }
+
+        // Instaciar a classe que valida os dados do formulário de itens do pedido com Rakit
+        $validationItemns = new ValidationMaterialStockService();
+        $this->data['errors'] = $validationItemns->validate($this->data['form']);
+
+        // Acessa o if quando existir algum campo com dados incorretos
+        if (!empty($this->data['errors'])) {
+
+            // Criar a mensagem de erro
+            $_SESSION['error'] = implode(', ', $this->data['errors']);
+
+            // Redirecionar o usuário para a página listar
+            header("Location: {$_ENV['URL_ADM']}list-material-stock");
+
+            return;
+        }
+
+        // Criar a movimentação
+        $movement = new MaterialStockMovementRepository();
+        $result   = $movement->createMovement($this->data['form']);
+
+        if ($result) {
+            $type = $this->data['form']['type'] === 'entrada' ? 'Entrada' : 'Saída';
+            $_SESSION['success'] = "{$type} registrada com sucesso!";
+            GenerateLog::generateLog("info", "Movimentação registrada.", [
+                'stock_id'   => $this->data['form']['stock_id'],
+                'type'       => $this->data['form']['type'],
+                'quantity'   => $this->data['form']['quantity'],
+                'user_id'    => $_SESSION['user_id']
+            ]);
+        } else {
+            $_SESSION['error'] = "Erro ao registrar movimentação. Tente novamente.";
+        }
+
+        header("Location: {$_ENV['URL_ADM']}list-material-stock");
+        return;
+    }
+
+    // private function validate(array $data): array
+    // {
+    //     $errors = [];
+
+    //     if (empty($data['stock_id'])) {
+    //         $errors[] = 'Item do estoque não identificado.';
+    //     }
+
+    //     if (empty($data['type']) || !in_array($data['type'], ['entrada', 'saida'])) {
+    //         $errors[] = 'Tipo de movimentação inválido.';
+    //     }
+
+    //     if (empty($data['quantity']) || (float) $data['quantity'] <= 0) {
+    //         $errors[] = 'A quantidade deve ser maior que zero.';
+    //     }
+
+    //     if (empty($data['project_id'])) {
+    //         $errors[] = 'A obra é obrigatória.';
+    //     }
+
+    //     return $errors;
+    // }
+}

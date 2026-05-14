@@ -180,38 +180,29 @@ overlay.addEventListener('click', () => {
     overlay.classList.remove('active');
 });
 
-// // Espera o DOM carregar (IMPORTANTE)
-// document.addEventListener('DOMContentLoaded', () => {
+// Preencher o Modal de Movimentação dinamicamente
+document.getElementById('modalMovement').addEventListener('show.bs.modal', function(event) {
+    const button   = event.relatedTarget;
+    const id       = button.getAttribute('data-id');
+    const name     = button.getAttribute('data-name');
+    const type     = button.getAttribute('data-type');
 
-//     // Pega o elemento
-//     const el = document.getElementById('units-data');
+    // Preenche os campos hidden e o título
+    document.getElementById('stockId').value       = id;
+    document.getElementById('movementType').value  = type;
+    document.getElementById('itemName').textContent = name;
 
-//     if (!el) {
-//         console.warn('Elemento #units-data não encontrado');
-//         return;
-//     }
+    // Muda o título e cor do botão conforme o tipo
+    if (type === 'entrada') {
+        document.getElementById('modalTitle').textContent = 'Registrar Entrada';
+        document.getElementById('modalBtn').className = 'btn btn-success';
+    } else {
+        document.getElementById('modalTitle').textContent = 'Registrar Saída';
+        document.getElementById('modalBtn').className = 'btn btn-danger';
+    }
+});
 
-//     const oldItems = el.dataset.oldItems
-//         ? JSON.parse(el.dataset.oldItems)
-//         : [];
-
-//     console.log(el); // agora NÃO pode ser null
-
-//     // Inicializa array
-//     let units = [];
-
-//     // Converte JSON → objeto JS
-//     if (el) {
-//         units = JSON.parse(el.dataset.units);
-//     }
-
-//     function createUnitOptions(selectedValue = null) {
-//         let options = `<option value="">Selecione</option>`;
-
-//         units.forEach(unit => {
-//             let selected = (unit.id == selectedValue) ? 'selected' : '';
-//             options += `<option value="${unit.id}" ${selected}>${unit.name}</option>`;
-//         });
-
-//         return options;
-//     }
+document.querySelector('[name="reason"]').addEventListener('change', function() {
+    const projectField = document.getElementById('projectDestinyField');
+    projectField.classList.toggle('d-none', this.value !== 'transferencia');
+});

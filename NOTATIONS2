@@ -1,0 +1,29 @@
+CRIAÇÕES - CONTROLLERS
+-> Diretório (materialstock)
+-> Controllers ('CreateMaterialStock','CreateStockMovement','ListMaterialStock','UpdateMaterialStock','ViewMaterialStock')
+
+MUDANÇAS - MENU
+-> ADICONADO O NOVO MENU DE ESTOQUE
+
+MUDANÇAS - SEEDS
+-> SEED DE GRUPOS DE PÁGINAS
+-> SEED DE ENDEREÇOS (PRINCIPAL MUDANÇA ADICIONANDO CONDIÇÃO PARA NÃO ADICIONAR O MESMO ENDEREÇO)
+-> SEED DE PAGINAS (ADICIONANDO AS PÁGINAS REFERENTE AO ESTOQUE)
+
+CRIAÇÕES - MIGRATIONS
+-> ADD_UNIQUE_CONTAINT_TO_ADMS_DAMAN_ADDRESSES (ADICIONAR INIDICE UNICO AS COLUNAS 'ZIP_COD', 'NUMBER', 'COMPLEMENT')
+
+-> CRIAÇÃO DA TABELA 'AdmsDamanMaterialStock' (Para adicionar os itens do estoque)
+
+-> CRIAÇÃO DA TABELA 'AdmsDamanMaterialStockMovement' (Para adicionar as movimentações feitas)
+
+-------------------------------
+
+CRIAÇÕES - SEEDS
+-> CRIAÇÃO DA SEED 'AddAdmsDamanMaterialStock' (Para popular a tabela de material estoque)
+-> CRIAÇÃO DA SEED 'AddAdmsDamanMaterialStockMovement' (Para popular a tabela de material estoque)
+
+-------------------------------
+
+CRIAÇÕES - REPOSITORY
+-> MaterialStockRepository

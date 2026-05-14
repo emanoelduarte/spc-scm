@@ -44,6 +44,14 @@
                 </a>
                 <?php endif; ?>
 
+                <!-- Verificar ainda as pemissões para incluir  -->
+                <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-material-stock')) ? 'active' : '' ?>"
+                    href="<?php echo $_ENV['URL_ADM'] ?>list-material-stock">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-warehouse"></i></div>
+                    Inventário
+                </a>
+                <!-- finalizar o teste de permissão -->
+
                 <?php if (in_array('ListSuppliers', $this->data['menuPermission'])) : ?>
                 <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-suppliers')) ? 'active' : '' ?>"
                     href="<?php echo $_ENV['URL_ADM'] ?>list-suppliers">
