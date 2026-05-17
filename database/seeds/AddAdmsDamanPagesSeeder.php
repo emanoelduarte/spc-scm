@@ -96,7 +96,7 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Visualizar Fornecedor', 'controller' => 'ViewSupplier', 'controller_url' => 'view-supplier', 'directory' => 'suppliers', 'obs' => 'Página para visualizar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Editar Fornecedor', 'controller' => 'UpdateSupplier', 'controller_url' => 'update-supplier', 'directory' => 'suppliers', 'obs' => 'Página para atualizar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
             ['name' => 'Apagar Fornecedor', 'controller' => 'DeleteSupplier', 'controller_url' => 'delete-supplier', 'directory' => 'suppliers', 'obs' => 'Página para apagar fornecedor', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 12],
-        
+
 
             // Páginas Compras
             ['name' => 'Gerar Compra', 'controller' => 'GeneratePurchasing', 'controller_url' => 'generate-purchasing', 'directory' => 'purchasing', 'obs' => 'Página para gerar compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 13],
@@ -117,6 +117,11 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Listar Materiais do Estoque', 'controller' => 'ListMaterialStock', 'controller_url' => 'list-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para listar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
             ['name' => 'Editar Materiais do Estoque', 'controller' => 'UpdateMaterialStock', 'controller_url' => 'update-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para editar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
             ['name' => 'Visualizar Materiais do Estoque', 'controller' => 'ViewMaterialStock', 'controller_url' => 'view-material-stock', 'directory' => 'materialstock', 'obs' => 'Página para visualizar itens do estoque', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 16],
+
+            // Conteúdos especificos por nível de acesso
+            ['name' => 'Conteúdo Solicitante de compra', 'controller' => 'PurchaseContent', 'controller_url' => 'purchase-content', 'directory' => 'content', 'obs' => 'Conteúdo exclusivo para solicitantes de compra e usuários com permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 17],
+
+            ['name' => 'Conteúdo Comprador', 'controller' => 'BuyerContent', 'controller_url' => 'buyer-content', 'directory' => 'content', 'obs' => 'Conteúdo exclusivo do comprador e de usuários com permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 17],
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar

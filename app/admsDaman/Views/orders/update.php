@@ -91,7 +91,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
                     </select>
                 </div>
 
-                <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se é comprador 
+                <?php if (in_array("PurchaseContent", $this->data['buttonPermissions'])): // Verifica se é solicitante de compra ou tem permissão de acessar
                 ?>
 
                 <div class="col-lg-3 col-md-6 col-sm-12">
@@ -256,8 +256,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
                                 value="<?= $item['description'] ?? '' ?>">
                         </div>
 
-                        <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se não é comprador 
+                        <?php if (in_array("PurchaseContent", $this->data['buttonPermissions'])): // Verifica se é solicitante de compra ou tem permissão de acessar
                                     ?>
+
                         <div class="col-lg-1">
                             <?php if ($index === 0): ?><label class="fw-bold">Qtd</label><?php endif; ?>
                             <input type="text" class="form-control" name="items[<?= $index ?>][quantity]"
@@ -290,7 +291,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
                             </select>
                         </div>
 
-                        <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 5) : // Verifica se não é solicitante de compra 
+                        <?php if (in_array("BuyerContent", $this->data['buttonPermissions'])): // Verifica se é comprador ou tem permissão de acessar
                                     ?>
                         <div class="col-lg-1">
                             <?php if ($index === 0): ?><label class="fw-bold">Comprado</label><?php endif; ?>

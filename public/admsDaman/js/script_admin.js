@@ -181,28 +181,46 @@ overlay.addEventListener('click', () => {
 });
 
 // Preencher o Modal de Movimentação dinamicamente
-document.getElementById('modalMovement').addEventListener('show.bs.modal', function(event) {
-    const button   = event.relatedTarget;
-    const id       = button.getAttribute('data-id');
-    const name     = button.getAttribute('data-name');
-    const type     = button.getAttribute('data-type');
+document.getElementById('modalMovement').addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const type = button.getAttribute('data-type');
+    const projectId = button.getAttribute('data-project');
 
-    // Preenche os campos hidden e o título
-    document.getElementById('stockId').value       = id;
-    document.getElementById('movementType').value  = type;
-    document.getElementById('itemName').textContent = name;
+    // Campos de reason e projeto destino
+    const reasonField = document.getElementById('reasonField');
+    const projectField = document.getElementById('projectField');
+    const projectFixed = document.getElementById('projectFixed');
 
-    // Muda o título e cor do botão conforme o tipo
-    if (type === 'entrada') {
+    console.log(projectField);
+
+    if (type === 'input') {
+        // Esconde select de obra e passa a obra do item fixo
+        reasonField.classList.add('d-none');
+        projectField.classList.add('d-none');
+        projectField.querySelector('select').removeAttribute('required');
+        projectFixed.value = projectId;
+        projectFixed.removeAttribute('disabled'); // garante que o hidden vai ser enviado
+
+        document.querySelector('[name="reason"]').removeAttribute('required');
         document.getElementById('modalTitle').textContent = 'Registrar Entrada';
         document.getElementById('modalBtn').className = 'btn btn-success';
+
     } else {
+        // Mostra select de obra para escolher destino
+        reasonField.classList.remove('d-none');
+        projectField.classList.remove('d-none');
+        projectField.querySelector('select').setAttribute('required', 'required');
+        projectField.querySelector('select').removeAttribute('disabled'); // habilita o select
+        projectFixed.setAttribute('disabled', 'disabled'); // desabilita o hidden para não ser enviado
+        projectFixed.value = '';
+
+        document.querySelector('[name="reason"]').setAttribute('required', 'required');
         document.getElementById('modalTitle').textContent = 'Registrar Saída';
         document.getElementById('modalBtn').className = 'btn btn-danger';
     }
-});
 
-document.querySelector('[name="reason"]').addEventListener('change', function() {
-    const projectField = document.getElementById('projectDestinyField');
-    projectField.classList.toggle('d-none', this.value !== 'transferencia');
+    // Preenche os campos hidden e o título
+    document.getElementById('stockId').value = button.getAttribute('data-id');
+    document.getElementById('movementType').value = type;
+    document.getElementById('itemName').textContent = button.getAttribute('data-name');
 });

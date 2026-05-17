@@ -105,7 +105,7 @@ class UpdateRentalOrder
         $pageElements = [
             'title_head' => "Editar Pedido",
             'menu' => "list-orders",
-            'buttonPermissions' => ["ListOrders", "ViewOrder"],
+            'buttonPermissions' => ["ListOrders", "ViewOrder", "PurchaseContent", "BuyerContent"],
         ];
 
         $pageLayoutService = new PageLayoutService();

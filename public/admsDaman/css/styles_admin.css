@@ -82,7 +82,7 @@
     width: 100%;
     height: 100%;
 
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: none;
     z-index: 998;
 }
@@ -97,7 +97,7 @@
 
     background: #fff;
     padding: 20px;
-    box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
 
     transition: right 0.3s ease;
     z-index: 999;
@@ -114,39 +114,47 @@
 
 /*Orders Highligts*/
 
-.highlight-analysis{
+.highlight-analysis {
     border-left: 10px solid var(--pd-analysis) !important;
 }
-.highlight-budget{
+
+.highlight-budget {
     border-left: 10px solid var(--pd-budget) !important;
 }
-.highlight-purchased{
+
+.highlight-purchased {
     border-left: 10px solid var(--pd-purchased) !important;
 }
-.highlight-partial-purchase{
+
+.highlight-partial-purchase {
     border-left: 10px solid var(--pd-partial-purchase) !important;
 }
-.highlight-delivered{
+
+.highlight-delivered {
     border-left: 10px solid var(--pd-delivered) !important;
 }
-.highlight-rented{
+
+.highlight-rented {
     border-left: 10px solid var(--pd-purchased) !important;
 }
-.highlight-returned{
+
+.highlight-returned {
     border-left: 10px solid var(--pd-delivered) !important;
 }
-.highlight-partial-return{
+
+.highlight-partial-return {
     border-left: 10px solid var(--pd-partial-purchase) !important;
 }
-.highlight-canceled{
+
+.highlight-canceled {
     border-left: 10px solid var(--pd-canceled) !important;
 }
 
-.highlight-purchasing-purchased{
+.highlight-purchasing-purchased {
     border-left: 10px solid var(--pd-delivered) !important;
 }
 
-.highlight-purchasing-canceled{
+.highlight-purchasing-canceled {
     border-left: 10px solid var(--pd-canceled) !important;
 }
 

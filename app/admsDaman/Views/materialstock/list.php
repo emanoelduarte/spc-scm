@@ -61,7 +61,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-
+                <a href="<?= $_ENV['URL_ADM'] . 'create-Material-Stock'; ?>" class="btn btn-success btn-sm"><i
+                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
             </span>
         </div>
 
@@ -73,53 +74,53 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
             if ($this->data['materialStock'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Nome</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col">Qtd</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col">Qtd</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-                        <?php
+                    <?php
                         // Percorrer o array de usuários
                         foreach ($this->data['materialStock'] as $material) {
                             extract($material);
                         ?>
-                            <tr>
-                                <td><?= $id ?></td>
-                                <td><?= $name ?></td>
-                                <td><?= $project_name ?></td>
-                                <td><?= $current_quantity ?></td>
-                                <td class="text-center">
-                                    Visualizar
-                                    <button class="btn btn-success btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalMovement"
-                                        data-id="<?= $id ?>"
-                                        data-name="<?= htmlspecialchars($name) ?>"
-                                        data-type="entrada">
-                                        Entrada
-                                    </button>
+                    <tr>
+                        <td><?= $id ?></td>
+                        <td><?= $name ?></td>
+                        <td><?= $project_name ?></td>
+                        <td><?= $current_quantity ?></td>
+                        <td class="text-center">
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <button class="btn btn-success btn-sm me-1 mb-1" data-bs-toggle="modal"
+                                data-project="<?= $adms_daman_project_id ?>" data-bs-target="#modalMovement"
+                                data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>" data-type="input">
+                                Entrada
+                            </button>
 
-                                    <button class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalMovement"
-                                        data-id="<?= $id ?>"
-                                        data-name="<?= htmlspecialchars($name) ?>"
-                                        data-type="saida">
-                                        Saída
-                                    </button>
-                                    Editar
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                            <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal"
+                                data-bs-target="#modalMovement" data-id="<?= $id ?>"
+                                data-name="<?= htmlspecialchars($name) ?>" data-type="output">
+                                Saída
+                            </button>
+
+
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-material-stock/' . $id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
+
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação
@@ -157,46 +158,45 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
 
                     <div class="mb-3">
                         <label class="form-label">Quantidade</label>
-                        <input type="number" name="quantity" class="form-control"
-                            min="0.01" step="0.01" required>
+                        <input type="number" name="quantity" class="form-control" min="0.01" step="0.01" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Obra</label>
+                    <div class="mb-3" id="projectField">
+                        <label class="form-label">Obra de destino</label>
                         <select name="adms_daman_project_id" class="form-select" required>
                             <option value="">Selecione</option>
                             <?php foreach ($this->data['getAllProjectsSelect'] as $project) : ?>
-                                <option value="<?= $project['id'] ?>">
-                                    <?= htmlspecialchars($project['name']) ?>
-                                </option>
+                            <option value="<?= $project['id'] ?>">
+                                <?= htmlspecialchars($project['name']) ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- Obra fixa para entrada -->
+                    <input type="hidden" name="adms_daman_project_id" id="projectFixed">
+
+                    <div class="mb-3 d-none" id="reasonField">
                         <label class="form-label">Motivo da saída</label>
-                        <select name="reason" class="form-select" required>
+                        <select name="reason" class="form-select">
                             <option value="">Selecione</option>
-                            <option value="consumo">Consumo na obra</option>
-                            <option value="transferencia">Transferência para outra obra</option>
-                            <option value="devolucao">Devolução ao fornecedor</option>
-                            <option value="descarte">Descarte</option>
+                            <option value="consumption">Consumo na obra</option>
+                            <option value="transfer">Transferência para outra obra</option>
+                            <option value="return">Devolução ao fornecedor</option>
+                            <option value="discard">Descarte</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Observação</label>
-                        <textarea name="observation" class="form-control"
-                            rows="2" placeholder="Opcional"></textarea>
+                        <textarea name="observation" class="form-control" rows="2" placeholder="Opcional"></textarea>
                     </div>
 
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary"
-                        id="modalBtn">Confirmar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="modalBtn">Confirmar</button>
                 </div>
 
             </form>
@@ -218,8 +218,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
         <div class="mb-2">
             <label class="mt-4 fw-bold">ID</label>
             <input type="text" class="form-control" id="id_number"
-                value="<?= ($this->data['search']['id_number'] ?? '') ?>" name="id_number"
-                placeholder="Número do item">
+                value="<?= ($this->data['search']['id_number'] ?? '') ?>" name="id_number" placeholder="Número do item">
         </div>
 
         <div class="mb-2">

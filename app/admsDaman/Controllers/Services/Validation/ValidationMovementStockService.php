@@ -5,14 +5,14 @@ namespace App\admsDaman\Controllers\Services\Validation;
 use Rakit\Validation\Validator;
 
 /**
- * Classe ValidationMaterialStockService
+ * Classe ValidationMovementStockService
  * 
  * Esta classe é responsável por validar os campos quantidade e obra para realizar a movimentação do estoque.
  * 
  * @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
  * @package App\admsDaman\Controllers\Services\Validation
  */
-class ValidationMaterialStockService
+class ValidationMovementStockService
 {
     /**
      * 
@@ -28,31 +28,21 @@ class ValidationMaterialStockService
         // Instaciar a classe de validação
         $validator = new Validator();
 
-        $validator->addValidator('uniqueComposite', new UniqueCompositeRule());
-
         // Definir as regras de validação
         $rules = [];
 
-        $rules['adms_daman_measurement_units_id'] = 'required|integer';
+        $rules['quantity'] = 'required';
         $rules['adms_daman_project_id'] = 'required|integer';
-        $rules['min_quantity'] = 'required';
 
-        if (!isset($data['id'])) {
-            $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . $data['name'] . ';' . $data['adms_daman_project_id'];
-            $rules['quantity'] = 'required';
-        } else {
-            $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . $data['name'] . ';' . $data['adms_daman_project_id'] . ',' . $data['id'];
+        if (isset($data['type']) && $data['type'] === 'output') {
+            $rules['reason'] = 'required';
         }
-
         // definir as regras de validação
         $messages = [
-            'name:uniqueComposite'                        => 'Já existe um item com este nome nesta obra.<br>Considere uma nova <strong>Entrada</strong> do item.',
-            'adms_daman_measurement_units_id:required'    => 'O campo unidade é obrigatório.',
-            'adms_daman_measurement_units_id:integer'     => 'Dados Inválidos.',
-            'adms_daman_project_id:required'              => 'O campo obra é obrigatório.',
-            'adms_daman_project_id:integer'               => 'Dados Inválidos.',
-            'quantity:required'                           => 'O campo quantidade é obrigatório.',
-            'min_quantity:required'                       => 'O campo quantidade mínima é obrigatório.',
+            'quantity:required'                 => 'O campo quantidade é Obrigatório.',
+            'adms_daman_project_id:required'    => 'O campo Obra é obrigatório.',
+            'adms_daman_project_id:integer'     => 'Dados Inválidos.',
+            'reason:required'                   => 'O motivo da saída é obrigatório.'
         ];
 
         // Criar o validador com os dados e regras fornecidas

@@ -89,7 +89,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se é comprador 
+                <?php if (in_array("PurchaseContent", $this->data['buttonPermissions'])): // Verifica se é solicitante de compra ou tem permissão de acessar
                 ?>
 
                     <div class="col-lg-3 col-md-6 col-sm-12">
@@ -290,7 +290,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                                             value="<?= $item['description'] ?? '' ?>">
                                     </div>
 
-                                    <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 4) : // Verifica se não é comprador 
+                                    <?php if (in_array("PurchaseContent", $this->data['buttonPermissions'])): // Verifica se é solicitante de compra ou tem permissão de acessar
                                     ?>
                                         <div class="col-lg-1">
                                             <?php if ($index === 0): ?><label class="fw-bold">Qtd</label><?php endif; ?>
@@ -342,7 +342,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                                             value="<?= $item['returned_quantity'] ?? '';  ?>" placeholder="Qtd Locada">
                                     </div>
 
-                                    <?php if ($this->data['userAccessLevelsArray'][0]['id'] != 5) : // Verifica se não é solicitante de compra 
+                                    <?php if (in_array("BuyerContent", $this->data['buttonPermissions'])): // Verifica se é comprador ou tem permissão de acessar
                                     ?>
                                         <div class="col-lg-1">
                                             <?php if ($index === 0): ?><label class="fw-bold">Preço</label><?php endif; ?>

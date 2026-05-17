@@ -19,7 +19,7 @@ class AddAdmsDamanUsersAccessLevels extends AbstractSeed
         // Variável para receber os dados para cadastro
         $data = [];
 
-        ## 1- DAVI - SUPER ADMINISTRADOR
+        ## 1- EMANOEL - SUPER ADMINISTRADOR
         // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
         $existingRecord = $this->query(
             'SELECT id 
@@ -38,7 +38,7 @@ class AddAdmsDamanUsersAccessLevels extends AbstractSeed
             ];
         }
 
-        ## 2- EMANOEL - ADMINISTRADOR
+        ## 2- DAVI - ADMINISTRADOR
         // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
         $existingRecord = $this->query(
             'SELECT id 
@@ -57,7 +57,7 @@ class AddAdmsDamanUsersAccessLevels extends AbstractSeed
             ];
         }
 
-        ## 3- EMANOEL - FINANCEIRO
+        ## 3- DAVI - FINANCEIRO
         // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
         $existingRecord = $this->query(
             'SELECT id 
@@ -90,26 +90,45 @@ class AddAdmsDamanUsersAccessLevels extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'adms_daman_user_id' => 3,
-                'adms_daman_access_level_id' => 4,
+                'adms_daman_access_level_id' => 5,
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
 
-        ## 5- INGRYD - SOLICITANTE DE COMPRA
+        ## 5 - INGRYD - ALMOXARIFE
         // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
         $existingRecord = $this->query(
             'SELECT id 
             FROM adms_daman_users_access_levels 
             WHERE adms_daman_user_id=:adms_daman_user_id
             AND adms_daman_access_level_id=:adms_daman_access_level_id',
-            [':adms_daman_user_id' => 4, 'adms_daman_access_level_id' => 5]
+            [':adms_daman_user_id' => 4, 'adms_daman_access_level_id' => 6]
         )->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
         if (!$existingRecord) {
             $data[] = [
                 'adms_daman_user_id' => 4,
-                'adms_daman_access_level_id' => 5,
+                'adms_daman_access_level_id' => 6,
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 7 - INGRYD - SOLICITANTE DE COMPRA
+        // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
+        $existingRecord = $this->query(
+            'SELECT id 
+            FROM adms_daman_users_access_levels 
+            WHERE adms_daman_user_id=:adms_daman_user_id
+            AND adms_daman_access_level_id=:adms_daman_access_level_id',
+            [':adms_daman_user_id' => 4, 'adms_daman_access_level_id' => 7]
+        )->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'adms_daman_user_id' => 4,
+                'adms_daman_access_level_id' => 7,
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

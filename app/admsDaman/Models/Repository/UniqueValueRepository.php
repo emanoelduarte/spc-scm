@@ -45,4 +45,35 @@ class UniqueValueRepository extends DbConnection
 
         return $stmt->fetchColumn() === 0;
     }
+
+    /**
+     * Verificar duas colunas (valores compostos fazendo a combinação para verificar se existe um item com o mesmo nome na obra)
+     */
+    public function getCompositeRecord(string $table, array $columns, array $values, $except = null): bool
+    {
+        $conditions = [];
+        foreach ($columns as $index => $column) {
+            $conditions[] = "`{$column}` = :value{$index}";
+        }
+
+        $sql = "SELECT COUNT(id) as count FROM `{$table}` WHERE " . implode(' AND ', $conditions);
+
+        if ($except !== null) {
+            $sql .= " AND `id` != :except";
+        }
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($values as $index => $value) {
+            $stmt->bindValue(":value{$index}", $value);
+        }
+
+        if ($except !== null) {
+            $stmt->bindValue(':except', $except, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetchColumn() === 0;
+    }
 }

@@ -60,6 +60,19 @@ class AddAdmsDamanAccessLevels extends AbstractSeed
             ];
         }
 
+        ## Encarregado de Obra
+        // Verificar se o nível de acesso com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_access_levels WHERE name=:name', ['name' => 'Encarregado de Obra'])->fetch();
+
+        // Se o nível de acesso não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Encarregado de Obra',
+                'order_levels' => '4',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
         ## Comprador
         // Verificar se o nível de acesso com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_access_levels WHERE name=:name', ['name' => 'Comprador'])->fetch();
@@ -68,7 +81,20 @@ class AddAdmsDamanAccessLevels extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'Comprador',
-                'order_levels' => '4',
+                'order_levels' => '5',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## Almoxarife
+        // Verificar se o nível de acesso com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_access_levels WHERE name=:name', ['name' => 'Almoxarife'])->fetch();
+
+        // Se o nível de acesso não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Almoxarife',
+                'order_levels' => '6',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }
@@ -81,7 +107,7 @@ class AddAdmsDamanAccessLevels extends AbstractSeed
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'Solicitante de Compra',
-                'order_levels' => '5',
+                'order_levels' => '7',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

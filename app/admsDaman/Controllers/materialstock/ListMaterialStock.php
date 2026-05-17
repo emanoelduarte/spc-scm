@@ -26,10 +26,10 @@ class ListMaterialStock
 
         // Capturanto todos os itens
         $this->data['materialStock'] = $listMaterial->getAllMaterialStock(
-            (int) $page, 
+            (int) $page,
             (int) $this->limitResult,
             $this->data['search']
-            );
+        );
 
         $this->data['pagination'] = PaginationService::generatePagination(
             (int) $listMaterial->getAmountMaterials(),
@@ -46,7 +46,7 @@ class ListMaterialStock
         $pageElements = [
             'title_head' => "Listar Material do Estoque",
             'menu' => "list-material-stock",
-            'buttonPermissions' => ["CreateMaterialStock", "CreateStockMovement", "UpdateMaterialStock", "ViewMaterialStock", "UpdateMaterialStock"],
+            'buttonPermissions' => ["CreateMaterialStock", "CreateStockMovement", "ViewMaterialStock", "UpdateMaterialStock"],
         ];
 
         $pageLayoutService = new PageLayoutService();
@@ -57,4 +57,3 @@ class ListMaterialStock
         $loadView->loadView();
     }
 }
-?>

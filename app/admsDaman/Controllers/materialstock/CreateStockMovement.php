@@ -2,7 +2,7 @@
 
 namespace App\admsDaman\Controllers\materialstock;
 
-use App\admsDaman\Controllers\Services\Validation\ValidationMaterialStockService;
+use App\admsDaman\Controllers\Services\Validation\ValidationMovementStockService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\MaterialStockMovementRepository;
@@ -13,7 +13,7 @@ class CreateStockMovement
     /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
 
-    public function index(string|null $parameter): void
+    public function index(): void
     {
         $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
@@ -43,7 +43,7 @@ class CreateStockMovement
             GenerateLog::generateLog("error", "Material não encontrado", ['id' => (int) $this->data['form']['stock_id']]);
 
             // Criar a mensagem de erro
-            $_SESSION['error'] = "Material não encontrado!";
+            $_SESSION['error'] = "Material não encontrado! 2";
 
             // Redirecionar o usuário para a página listar
             header("Location: {$_ENV['URL_ADM']}list-material-stock");
@@ -52,7 +52,7 @@ class CreateStockMovement
         }
 
         // Instaciar a classe que valida os dados do formulário de itens do pedido com Rakit
-        $validationItemns = new ValidationMaterialStockService();
+        $validationItemns = new ValidationMovementStockService();
         $this->data['errors'] = $validationItemns->validate($this->data['form']);
 
         // Acessa o if quando existir algum campo com dados incorretos
@@ -72,7 +72,7 @@ class CreateStockMovement
         $result   = $movement->createMovement($this->data['form']);
 
         if ($result) {
-            $type = $this->data['form']['type'] === 'entrada' ? 'Entrada' : 'Saída';
+            $type = $this->data['form']['type'] === 'input' ? 'Entrada' : 'Saída';
             $_SESSION['success'] = "{$type} registrada com sucesso!";
             GenerateLog::generateLog("info", "Movimentação registrada.", [
                 'stock_id'   => $this->data['form']['stock_id'],
@@ -87,27 +87,4 @@ class CreateStockMovement
         header("Location: {$_ENV['URL_ADM']}list-material-stock");
         return;
     }
-
-    // private function validate(array $data): array
-    // {
-    //     $errors = [];
-
-    //     if (empty($data['stock_id'])) {
-    //         $errors[] = 'Item do estoque não identificado.';
-    //     }
-
-    //     if (empty($data['type']) || !in_array($data['type'], ['entrada', 'saida'])) {
-    //         $errors[] = 'Tipo de movimentação inválido.';
-    //     }
-
-    //     if (empty($data['quantity']) || (float) $data['quantity'] <= 0) {
-    //         $errors[] = 'A quantidade deve ser maior que zero.';
-    //     }
-
-    //     if (empty($data['project_id'])) {
-    //         $errors[] = 'A obra é obrigatória.';
-    //     }
-
-    //     return $errors;
-    // }
 }
