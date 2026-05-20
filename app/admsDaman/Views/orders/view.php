@@ -72,56 +72,56 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
             <span class="ms-sm-auto d-sm-flex flex-row">
 
                 <?php if (in_array("ListOrders", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                            class="fa-solid fa-list"></i> Listar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                        class="fa-solid fa-list"></i> Listar</a>
                 <?php endif; ?>
 
                 <?php if (in_array("ViewOrder", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . ($this->data['order']['id'] ?? ''); ?>"
-                        class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'view-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                    class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
                 <?php endif; ?>
 
 
                 <?php if (isset($this->data['order']) and ($this->data['order']['adms_daman_acquisition_types_id'] == 1)): ?>
 
-                    <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
-                        <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>"
-                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
-                    <?php endif; ?>
+                <?php if (in_array("UpdateOrder", $this->data['buttonPermissions'])): ?>
+                <a href="<?= $_ENV['URL_ADM'] . 'update-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-solid fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
                 <?php else: ?>
 
-                    <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
-                        <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>"
-                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
-                    <?php endif; ?>
+                <?php if (in_array("UpdateRentalOrder", $this->data['buttonPermissions'])): ?>
+                <a href="<?= $_ENV['URL_ADM'] . 'update-rental-order/' . ($this->data['order']['id'] ?? ''); ?>"
+                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <?php endif; ?>
 
                 <?php endif; ?>
 
                 <?php if ($this->data['order']['oder_type_id'] != 2) : ?>
 
-                    <?php if (in_array("GeneratePurchasing", $this->data['buttonPermissions'])): ?>
-                        <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
-                            class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
-                    <?php endif; ?>
+                <?php if (in_array("GeneratePurchasing", $this->data['buttonPermissions'])): ?>
+                <a href="<?= $_ENV['URL_ADM'] . 'generate-purchasing/' . ($this->data['order']['id'] ?? ''); ?>"
+                    class="btn btn-success btn-sm me-1 mb-1"><i class="fa-solid fa-bag-shopping"></i> Gerar Compra</a>
+                <?php endif; ?>
 
                 <?php endif; ?>
 
                 <?php if (in_array("DeleteOrder", $this->data['buttonPermissions'])) : ?>
-                    <?php  // Formulário para envio dos dados para deletar Pedido 
+                <?php  // Formulário para envio dos dados para deletar Pedido 
                     ?>
-                    <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>"
-                        action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
+                <form id="formDelete<?= ($this->data['order']['id'] ?? ''); ?>"
+                    action="<?= $_ENV['URL_ADM']; ?>delete-order" method="POST">
 
-                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                        <input type="hidden" name="id" id="id" value="<?= ($this->data['order']['id'] ?? ''); ?>">
+                    <input type="hidden" name="id" id="id" value="<?= ($this->data['order']['id'] ?? ''); ?>">
 
-                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                            onclick="confirmDeletion(event, <?= ($this->data['order']['id'] ?? '') ?>)"> <i
-                                class="fa-solid fa-trash"></i> Apagar</button>
+                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                        onclick="confirmDeletion(event, <?= ($this->data['order']['id'] ?? '') ?>)"> <i
+                            class="fa-solid fa-trash"></i> Apagar</button>
 
-                    </form>
+                </form>
                 <?php endif; ?>
                 </td>
             </span>
@@ -141,41 +141,41 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
                 $edited = ($updated_at ? date('d/m/Y H:i:s', strtotime($updated_at)) : "");
                 $expected_receipt_date = ($expected_receipt_date ? date('d/m/Y H:i:s', strtotime($expected_receipt_date)) : "");
             ?>
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Pedido:</strong> <?= $id ?></p>
-                        <p><strong>Data:</strong> <?= $created ?></p>
-                        <p><strong>Data da Modificação:</strong> <?= $edited ?></p>
-                        <p><strong>Status:</strong> <?= $order_status ?></p>
-                        <p><strong>Categoria:</strong> <?= $category_name ?></p>
-                        <p><strong>Obra:</strong> <?= $adms_daman_project_id . " | " . $project_name ?></p>
-                        <p><strong>Endereço da Obra:</strong> <?= $project_adrress ?></p>
-                    </div>
-
-                    <div class="col-md-6">
-                        <p><strong>Tipo:</strong> <?= $order_name_type ?></p>
-                        <p><strong>Prev. Recebimento:</strong> <?= $expected_receipt_date ?></p>
-                        <p><strong>Solicitante:</strong> <?= $usr_name ?></p>
-
-                        <?php if ($order_name_type == 'LOCAÇÃO'): ?>
-
-                            <p><strong>Locador:</strong> <?= $supplier_name ?></p>
-                            <p><strong>Contrato:</strong> <?= $rental_contract ?></p>
-                            <p><strong>Periodo:</strong> <?= $rental_period ?> Dias</p>
-
-                        <?php endif; ?>
-
-                    </div>
-
-                    <hr>
-
-                    <p><strong>Serviço:</strong> <?= $service ?></p>
-                    <p><strong>Observação:</strong> <?= $observation ?></p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Pedido:</strong> <?= $id ?></p>
+                    <p><strong>Data:</strong> <?= $created ?></p>
+                    <p><strong>Data da Modificação:</strong> <?= $edited ?></p>
+                    <p><strong>Status:</strong> <?= $order_status ?></p>
+                    <p><strong>Categoria:</strong> <?= $category_name ?></p>
+                    <p><strong>Obra:</strong> <?= $adms_daman_project_id . " | " . $project_name ?></p>
+                    <p><strong>Endereço da Obra:</strong> <?= $project_adrress ?></p>
                 </div>
+
+                <div class="col-md-6">
+                    <p><strong>Tipo:</strong> <?= $order_name_type ?></p>
+                    <p><strong>Prev. Recebimento:</strong> <?= $expected_receipt_date ?></p>
+                    <p><strong>Solicitante:</strong> <?= $usr_name ?></p>
+
+                    <?php if ($order_name_type == 'LOCAÇÃO'): ?>
+
+                    <p><strong>Locador:</strong> <?= $supplier_name ?></p>
+                    <p><strong>Contrato:</strong> <?= $rental_contract ?></p>
+                    <p><strong>Periodo:</strong> <?= $rental_period ?> Dias</p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <hr>
+
+                <p><strong>Serviço:</strong> <?= $service ?></p>
+                <p><strong>Observação:</strong> <?= $observation ?></p>
+            </div>
             <?php else: ?>
-                <?php // Caso a Obra não seja encontrada
+            <?php // Caso a Obra não seja encontrada
                 ?>
-                <div class='alert alert-danger' role='alert'>Pedido não encontrada</div>
+            <div class='alert alert-danger' role='alert'>Pedido não encontrada</div>
             <?php endif; ?>
         </div>
     </div>
@@ -183,120 +183,158 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
     <?php
     if ($this->data['items'] ?? false) :
     ?>
-        <div class="card mb-4">
-            <div class="card-header">
-                Itens do Pedido
-            </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            Itens do Pedido
+        </div>
 
-            <div class="card-body p-0">
-                <table class="table table-striped mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="d-none d-md-table-cell">Item</th>
-                            <th>Descrição</th>
-                            <th>Unidade</th>
-                            <?php if ($order_name_type == 'LOCAÇÃO'): ?>
-                                <th>Locado</th>
-                                <th>Devolvido</th>
-                            <?php else: ?>
-                                <th class="d-none d-md-table-cell">Qtd</th>
-                                <th>Comprado</th>
-                            <?php endif ?>
-                            <th>Preço Unit.</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="d-none d-md-table-cell">Item</th>
+                        <th>Descrição</th>
+                        <th>Unidade</th>
+                        <?php if ($order_name_type == 'LOCAÇÃO'): ?>
+                        <th>Locado</th>
+                        <th>Devolvido</th>
+                        <?php else: ?>
+                        <th class="d-none d-md-table-cell">Qtd</th>
+                        <th>Comprado</th>
+                        <?php endif ?>
+                        <th>Preço Unit.</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
                         // Iniciar a variável contadora
                         $qtd_items = 0;
+                        $sub_tot = 0;
                         foreach ($this->data['items'] as $item):
                         ?>
-                            <tr>
-                                <td class="d-none d-md-table-cell"><?= $qtd_items += 1 ?></td>
-                                <td><?= $item['description'] ?></td>
-                                <td><?= $item['measurement_units'] ?></td>
+                    <tr>
+                        <td class="d-none d-md-table-cell"><?= $qtd_items += 1 ?></td>
+                        <td><?= $item['description'] ?></td>
+                        <td><?= $item['measurement_units'] ?></td>
 
-                                <?php if ($order_name_type == 'LOCAÇÃO'): ?>
-                                    <td>
-                                        <?php
+                        <?php if ($order_name_type == 'LOCAÇÃO'): ?>
+                        <td>
+                            <?php
 
                                         $rented_quantity = $item['rented_quantity'] ?? '0';
                                         echo number_format($rented_quantity, 2, '.', ',');
 
                                         ?>
-                                    </td>
-                                    <td>
-                                        <?php
+                        </td>
+                        <td>
+                            <?php
 
                                         $returned_quantity = $item['returned_quantity'] ?? '0';
                                         echo number_format($returned_quantity, 2, '.', ',');
 
                                         ?>
-                                    </td>
-                                <?php else: ?>
-                                    <td class="d-none d-md-table-cell"><?= $item['quantity'] ?></td>
-                                    <td>
-                                        <?php
+                        </td>
+                        <?php else: ?>
+                        <td class="d-none d-md-table-cell"><?= $item['quantity'] ?></td>
+                        <td>
+                            <?php
 
                                         $purchased_quantity = $item['purchased_quantity'] ?? '0';
                                         echo number_format($purchased_quantity, 2, '.', ',');
 
                                         ?>
-                                    </td>
-                                <?php endif; ?>
-                                <td><?php
+                        </td>
+                        <?php endif; ?>
+                        <td><?php
                                     $unit_price = $item['unit_price'] ?? '0.00';
                                     echo "R$ " . number_format($unit_price, 2, ',', '.');
                                     ?>
-                                </td>
+                        </td>
 
-                                <?php if ($order_name_type == 'LOCAÇÃO'): ?>
-                                    <td>
-                                        R$ <?= number_format($rented_quantity * $item['unit_price'], 2, ',', '.') ?>
-                                    </td>
-                                <?php else: ?>
-                                    <td>
-                                        R$ <?= number_format($item['purchased_quantity'] * $item['unit_price'], 2, ',', '.') ?>
-                                    </td>
-                                <?php endif; ?>
-                                <td>
-                                    <?= $item['item_status_name'] ?? ''; ?>
-                                </td>
-                                <td>
+                        <?php if ($order_name_type == 'LOCAÇÃO'): ?>
+                        <td>
+                            <?php $tot_item = $rented_quantity * $item['unit_price'] ?>
+                            R$ <?= number_format($tot_item, 2, ',', '.') ?>
+                        </td>
+                        <?php else: ?>
+                        <td>
+                            <?php $tot_item = $purchased_quantity * $item['unit_price'] ?>
+                            R$ <?= number_format($tot_item, 2, ',', '.') ?>
+                        </td>
+                        <?php endif; ?>
+                        <td>
+                            <?= $item['item_status_name'] ?? ''; ?>
+                        </td>
+                        <td>
 
-                                <?php if (in_array("DeleteItem", $this->data['buttonPermissions'])): ?>
+                            <?php if (in_array("DeleteItem", $this->data['buttonPermissions'])): ?>
 
-                                    <?php  // Formulário para envio dos dados para deletar Item do pedido 
-                                    ?>
-                                    <form id="formDelete<?= $item['item_id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-item"
-                                        method="POST">
+                            <?php  // Formulário para envio dos dados para deletar Item do pedido 
+                                        ?>
+                            <form id="formDelete<?= $item['item_id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-item"
+                                method="POST">
 
-                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token_item; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token_item; ?>">
 
-                                        <input type="hidden" name="order_id" id="order_id" value="<?= $id ?? ''; ?>">
+                                <input type="hidden" name="order_id" id="order_id" value="<?= $id ?? ''; ?>">
 
-                                        <input type="hidden" name="item_id" id="item_id" value="<?= $item['item_id'] ?? ''; ?>">
+                                <input type="hidden" name="item_id" id="item_id" value="<?= $item['item_id'] ?? ''; ?>">
 
-                                        <button type="submit" class="btn btn-danger d-block btn-sm me-1 mb-1"
-                                            onclick="confirmDeletion(event, <?= $item['item_id']; ?>)"> <i
-                                                class="fa-solid fa-trash"></i> Excluir</button>
+                                <button type="submit" class="btn btn-danger d-block btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $item['item_id']; ?>)"> <i
+                                        class="fa-solid fa-trash"></i> Excluir</button>
 
-                                    </form>
+                            </form>
 
-                                    <?php endif; ?>
+                            <?php endif; ?>
 
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </td>
+                        <?php
+                                $isLocation = $order_name_type == 'LOCAÇÃO';
+
+                                $hiddenColumns = 1; // Item some no mobile
+
+                                $totalColumns = $isLocation ? 9 : 8;
+
+                                // mobile remove 1 coluna
+                                $mobileColumns = $totalColumns - $hiddenColumns;
+
+                                // $colspan = ($order_name_type == 'LOCAÇÃO') ? 8 : 7;
+                                $sub_tot += $tot_item;
+                                ?>
+                    </tr>
+                    <?php endforeach; ?>
+                    <tr class="d-table-row d-md-none">
+                        <td colspan="<?= $mobileColumns - 3 ?>" class="text-end fw-bold">
+                            Sub Total
+                        </td>
+
+                        <td class="fw-bold">
+                            R$ <?= number_format($sub_tot, 2, ',', '.') ?>
+                        </td>
+
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr class="d-none d-md-table-row">
+                        <td colspan="<?= $totalColumns - 2 ?>" class="text-end fw-bold">
+                            Sub Total
+                        </td>
+
+                        <td class="fw-bold">
+                            R$ <?= number_format($sub_tot, 2, ',', '.') ?>
+                        </td>
+
+                        <td colspan="2"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+    </div>
     <?php else : ?>
-        <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
+    <div class='alert alert-danger' role='alert'>Pedido sem itens para exibir</div>
     <?php endif ?>
 
     <!-- Card de atividades-->
@@ -333,55 +371,55 @@ $csrf_token_add_comment = CSRFHelper::generateCSRFToken('csrf_token_add_comment'
 
             </form>
             <?php if ($this->data['formatedComments'] ?? false): ?>
-                <div class="timeline mt-4">
+            <div class="timeline mt-4">
 
-                    <?php foreach ($this->data['formatedComments'] as $comment): ?>
+                <?php foreach ($this->data['formatedComments'] as $comment): ?>
 
-                        <div class="timeline-item mb-4 d-flex">
+                <div class="timeline-item mb-4 d-flex">
 
-                            <!-- Ícone -->
-                            <div class="me-3">
-                                <span class="badge bg-<?= $comment['color'] ?> p-2 rounded-circle">
-                                    <i class="fa-solid <?= $comment['icon'] ?>"></i>
-                                </span>
-                            </div>
+                    <!-- Ícone -->
+                    <div class="me-3">
+                        <span class="badge bg-<?= $comment['color'] ?> p-2 rounded-circle">
+                            <i class="fa-solid <?= $comment['icon'] ?>"></i>
+                        </span>
+                    </div>
 
-                            <div class="flex-grow-1 card shadow-sm border-0">
-                                <div class="card-body p-3">
+                    <div class="flex-grow-1 card shadow-sm border-0">
+                        <div class="card-body p-3">
 
-                                    <div class="d-flex align-items-start gap-3">
+                            <div class="d-flex align-items-start gap-3">
 
-                                        <!-- Avatar -->
-                                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
-                                            style="width: 36px; height: 36px; font-size: 1rem; font-weight: 500; color: #0d6efd;">
-                                            <?= strtoupper(substr($comment['user_name'] ?? '', 0, 1)) . strtoupper(substr(strrchr($comment['user_name'] ?? '', ' '), 1, 1)) ?>
-                                        </div>
+                                <!-- Avatar -->
+                                <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
+                                    style="width: 36px; height: 36px; font-size: 1rem; font-weight: 500; color: #0d6efd;">
+                                    <?= strtoupper(substr($comment['user_name'] ?? '', 0, 1)) . strtoupper(substr(strrchr($comment['user_name'] ?? '', ' '), 1, 1)) ?>
+                                </div>
 
-                                        <!-- Conteúdo -->
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between">
-                                                <strong><?= $comment['user_name'] ?></strong>
-                                                <small
-                                                    class="text-muted"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></small>
-                                            </div>
-
-                                            <p class="mb-1 mt-2"><?= $comment['message'] ?></p>
-
-                                            <!-- <small class="text-muted">por <?= $comment['user'] ?></small> -->
-                                        </div>
-
+                                <!-- Conteúdo -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong><?= $comment['user_name'] ?></strong>
+                                        <small
+                                            class="text-muted"><?= date('d/m/Y H:i', strtotime($comment['created_at'])) ?></small>
                                     </div>
 
+                                    <p class="mb-1 mt-2"><?= $comment['message'] ?></p>
+
+                                    <!-- <small class="text-muted">por <?= $comment['user'] ?></small> -->
                                 </div>
+
                             </div>
 
                         </div>
-
-                    <?php endforeach; ?>
+                    </div>
 
                 </div>
+
+                <?php endforeach; ?>
+
+            </div>
             <?php else : ?>
-                <div class='alert alert-primary' role='alert'>Nenhuma atividade para exibir!</div>
+            <div class='alert alert-primary' role='alert'>Nenhuma atividade para exibir!</div>
             <?php endif; ?>
         </div>
     </div>

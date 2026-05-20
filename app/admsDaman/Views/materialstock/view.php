@@ -18,7 +18,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
             </li>
 
             <li class="breadcrumb-item">
-                <a href="<?= $_ENV['URL_ADM'] ?>list-material-stock">Estoque</a>
+                <a class="text-decoration-none" href="<?= $_ENV['URL_ADM'] ?>list-material-stock">Estoque</a>
             </li>
 
             <li class="breadcrumb-item active">
@@ -145,7 +145,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                             <label class="form-label">Obra de destino</label>
                             <select name="adms_daman_project_id" class="form-select" required>
                                 <option value="">Selecione</option>
-                                <?php foreach ($this->data['getAllProjectsSelect'] as $project) : ?>
+                                <?php foreach ($this->data['getAllProjectsSelectActive'] as $project) : ?>
                                     <option value="<?= $project['id'] ?>">
                                         <?= htmlspecialchars($project['name']) ?>
                                     </option>

@@ -12,9 +12,6 @@ class MaterialStockMovementRepository extends DbConnection
     public function createMovement(array $data): bool
     {
 
-        // var_dump($data);
-        // exit;
-
         try {
             $this->getConnection()->beginTransaction();
 

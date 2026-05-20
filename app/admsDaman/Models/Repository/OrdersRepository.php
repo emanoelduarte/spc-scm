@@ -26,6 +26,21 @@ class OrdersRepository extends DbConnection
         $conditions = [];
         $params = [];
 
+        // Verificar se o usuário é Admin, Super Admin ou Comprador
+        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
+            WHERE adms_daman_user_id = :check_user_id 
+            AND adms_daman_access_level_id IN (1, 2, 5)";
+
+        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
+        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+
+        if (!$isPrivileged) {
+            $conditions[] = "ado.adms_daman_user_id = :logged_user_id";
+            $params['logged_user_id'] = $_SESSION['user_id'];
+        }
+
         // Mapeamento campo form → coluna banco
         $map = [
             'order_number' => 'ado.id',
@@ -111,6 +126,21 @@ class OrdersRepository extends DbConnection
     {
         $conditions = [];
         $params = [];
+
+        // Verificar se o usuário é Admin, Super Admin ou Comprador
+        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
+            WHERE adms_daman_user_id = :check_user_id 
+            AND adms_daman_access_level_id IN (1, 2, 5)";
+
+        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
+        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+
+        if (!$isPrivileged) {
+            $conditions[] = "adms_daman_user_id = :logged_user_id";
+            $params['logged_user_id'] = $_SESSION['user_id'];
+        }
 
         if (!empty($orderNumber)) {
             $conditions[] = "id = :order_number";
@@ -340,7 +370,7 @@ class OrdersRepository extends DbConnection
      */
     public function updateOrder(array $data): array|bool
     {
-        
+
         try {
 
             // QUERY para atualizar PEDIDO
@@ -621,7 +651,7 @@ class OrdersRepository extends DbConnection
      */
     public function rankProjectsStatusAnalisys(): array
     {
-       $sql = "SELECT 
+        $sql = "SELECT 
             adp.id,
             adp.name AS project_name,
             COUNT(ado.id) AS total

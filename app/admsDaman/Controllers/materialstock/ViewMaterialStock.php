@@ -35,8 +35,8 @@ class ViewMaterialStock
         }
 
         // Instanciar o repositório para preencher os selects.
-        $getAllProjectsSelect = new ProjectsRepository();
-        $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
+        $getAllProjectsSelectActive = new ProjectsRepository();
+        $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
 
         // Buscar Dados gerais de um Material específico da obra
         $viewMaterial = new MaterialStockRepository();

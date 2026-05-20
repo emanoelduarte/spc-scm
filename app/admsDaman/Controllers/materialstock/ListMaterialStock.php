@@ -39,8 +39,8 @@ class ListMaterialStock
         );
 
         // Instanciar o repositório para preencher os selects.
-        $getAllProjectsSelect = new ProjectsRepository();
-        $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
+        $getAllProjectsSelectActive = new ProjectsRepository();
+        $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
 
         // Configurar os elementos da página
         $pageElements = [

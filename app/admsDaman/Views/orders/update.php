@@ -62,9 +62,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
                 <div class="col-lg-8 col-md-6 col-sm-12">
                     <label for="solicitante" class="form-label">Solicitante:</label>
                     <input type="text" disabled class="form-control desabled" id="solicitante" name="solicitante"
-                        value="<?= $_SESSION['user_name'] ?? '';  ?>" placeholder="Nome do Usuário">
+                        value="<?= $this->data['form']['usr_name'] ?? '';  ?>" placeholder="Nome do Usuário">
                     <input type="hidden" class="form-control" id="adms_daman_user_id" name="adms_daman_user_id"
-                        value="<?= $_SESSION['user_id'] ?? ''; ?>" placeholder="Id do usuário">
+                        value="<?= $this->data['form']['adms_daman_user_id'] ?? ''; ?>" placeholder="Id do usuário">
                 </div>
 
                 <div class="col-lg-2 col-md-6 col-sm-12">
