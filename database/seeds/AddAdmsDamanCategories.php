@@ -20,7 +20,7 @@ class AddAdmsDamanCategories extends AbstractSeed
     public function run(): void
     {
 
-    // Variável para receber os dados a serem inserido
+        // Variável para receber os dados a serem inserido
         $data = [];
 
         ## 1 CARPINTARIA
@@ -179,12 +179,23 @@ class AddAdmsDamanCategories extends AbstractSeed
             ];
         }
 
+        ## 14 ESCRITÓRIO
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_categories WHERE name=:name', ['name' => 'ESCRITÓRIO'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'ESCRITÓRIO',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
 
         // Obter a tabela 'adms_access_levels' para inserir os registros
         $adms_daman_categories = $this->table('adms_daman_categories');
 
         // Insere os registros na tabela
         $adms_daman_categories->insert($data)->save();
-
     }
 }

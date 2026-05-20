@@ -4,6 +4,7 @@ namespace App\admsDaman\Controllers\materialstock;
 
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
+use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\MaterialStockRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
@@ -37,6 +38,10 @@ class ListMaterialStock
             (int) $page,
             'list-material-stock'
         );
+
+        // Instanciar o repositório para preencher os selects.
+        $getProjectSelect = new CategoriesRepository();
+        $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
         // Instanciar o repositório para preencher os selects.
         $getAllProjectsSelectActive = new ProjectsRepository();

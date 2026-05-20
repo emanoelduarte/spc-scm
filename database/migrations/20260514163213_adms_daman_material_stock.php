@@ -23,30 +23,33 @@ final class AdmsDamanMaterialStock extends AbstractMigration
     public function up(): void
     {
         // Acessa o if quando não existir a tabela no banco de dados
-        if(!$this->hasTable('adms_daman_material_stock')) {
+        if (!$this->hasTable('adms_daman_material_stock')) {
 
-        //Definir o nome da tabela
-        $table = $this->table('adms_daman_material_stock');
+            //Definir o nome da tabela
+            $table = $this->table('adms_daman_material_stock');
 
-        // Define as colunas da tabela
-        $table->addColumn('name', 'string', ['null' => false, 'comment' => 'Nome/Descrição do item'])
-            ->addColumn('adms_daman_measurement_units_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id da unidade de medida'])
-            ->addForeignKey('adms_daman_measurement_units_id', 'adms_daman_measurement_units', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+            // Define as colunas da tabela
+            $table->addColumn('name', 'string', ['null' => false, 'comment' => 'Nome/Descrição do item'])
+                ->addColumn('adms_daman_measurement_units_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id da unidade de medida'])
+                ->addForeignKey('adms_daman_measurement_units_id', 'adms_daman_measurement_units', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
-            ->addColumn('adms_daman_project_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id da Obra de alocamento'])
-            ->addForeignKey('adms_daman_project_id', 'adms_daman_projects', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+                ->addColumn('adms_daman_project_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'Id da Obra de alocamento'])
+                ->addForeignKey('adms_daman_project_id', 'adms_daman_projects', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
-            ->addColumn('current_quantity', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => false, 'comment' => 'Quantidade atual no estoque'])
+                // categoria do material do estoque
+                ->addColumn('adms_daman_category_id', 'integer', ['null' => false, 'signed' => false, 'comment' => 'civil, eletrica, carpintaria e etc.'])
+                ->addForeignKey('adms_daman_category_id', 'adms_daman_categories', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
 
-            ->addColumn('min_quantity', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => false, 'comment' => 'Quantidade mínima no estoque'])
+                ->addColumn('current_quantity', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => false, 'comment' => 'Quantidade atual no estoque'])
 
-            ->addColumn('created_at', 'timestamp', ['null' => false])
-            ->addColumn('updated_at', 'timestamp', ['null' => true])
+                ->addColumn('min_quantity', 'decimal', ['precision' => 10, 'scale' => 2, 'null' => false, 'comment' => 'Quantidade mínima no estoque'])
 
-            ->addIndex(['name', 'adms_daman_project_id'], ['unique' => true, 'name' => 'uq_name'])
+                ->addColumn('created_at', 'timestamp', ['null' => false])
+                ->addColumn('updated_at', 'timestamp', ['null' => true])
 
-            ->create();
+                ->addIndex(['name', 'adms_daman_project_id'], ['unique' => true, 'name' => 'uq_name'])
 
+                ->create();
         }
     }
 

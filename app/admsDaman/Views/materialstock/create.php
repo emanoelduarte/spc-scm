@@ -36,7 +36,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <input type="hidden" name="csrf_token"
                     value="<?= CSRFHelper::generateCSRFToken('form_create_material'); ?>" id="">
 
-                <div class="col-5">
+                <div class="col-4">
                     <label for="name" class="form-label">Material:</label>
                     <input type="text" class="form-control" id="name" name="name"
                         value="<?= $this->data['form']['name'] ?? ''; ?>" placeholder="Material">
@@ -59,6 +59,30 @@ use App\admsDaman\Helpers\CSRFHelper;
 
                                 // Verificar se deve manter selecionada a opção
                                 $selected = isset($this->data['form']['adms_daman_measurement_units_id']) && $this->data['form']['adms_daman_measurement_units_id'] == $id ? 'selected' : '';
+
+                                echo "<option value='$id' $selected>$name</option>";
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-lg-2 col-sm-12">
+                    <label for="adms_daman_category_id" class="form-label">Categoria</label>
+
+                    <select name="adms_daman_category_id" class="form-select" id="adms_daman_category_id">
+                        <option value="" selected>Selecione</option>
+
+                        <?php
+                        // Verificar se existe pacotes
+                        if ($this->data['getAllCategoriesSelect'] ?? false) {
+
+                            // Percorrer array de pacotes
+                            foreach ($this->data['getAllCategoriesSelect'] as $getAllCategoriesSelect) {
+                                extract($getAllCategoriesSelect);
+
+                                // Verificar se deve manter selecionada a opção
+                                $selected = isset($this->data['form']['adms_daman_category_id']) && $this->data['form']['adms_daman_category_id'] == $id ? 'selected' : '';
 
                                 echo "<option value='$id' $selected>$name</option>";
                             }
@@ -91,7 +115,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <div class="col-lg-2 col-sm-12">
+                <div class="col-lg-1 col-sm-12">
                     <label class="form-label">Quantidade</label>
                     <input type="number" name="quantity" class="form-control" min="0.01" step="0.01"
                         value="<?= $this->data['form']['quantity'] ?? ''; ?>" required>
@@ -100,7 +124,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <div class="col-lg-2 col-sm-12">
                     <label class="form-label">Quantidade Mínima</label>
                     <input type="number" name="min_quantity" class="form-control" min="0.01" step="0.01"
-                        value="<?= $this->data['form']['min_quantity'] ?? ''; ?>" required>
+                        value="<?= $this->data['form']['min_quantity'] ?? ''; ?>">
                 </div>
 
                 <div class="col-12">

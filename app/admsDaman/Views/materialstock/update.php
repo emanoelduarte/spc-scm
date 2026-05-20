@@ -74,6 +74,30 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
+                <div class="col-lg-2 col-sm-12">
+                    <label for="adms_daman_category_id" class="form-label">Categoria</label>
+
+                    <select name="adms_daman_category_id" class="form-select" id="adms_daman_category_id">
+                        <option value="" selected>Selecione</option>
+
+                        <?php
+                        // Verificar se existe pacotes
+                        if ($this->data['getAllCategoriesSelect'] ?? false) {
+
+                            // Percorrer array de pacotes
+                            foreach ($this->data['getAllCategoriesSelect'] as $getAllCategoriesSelect) {
+                                extract($getAllCategoriesSelect);
+
+                                // Verificar se deve manter selecionada a opção
+                                $selected = isset($this->data['form']['adms_daman_category_id']) && $this->data['form']['adms_daman_category_id'] == $id ? 'selected' : '';
+
+                                echo "<option value='$id' $selected>$name</option>";
+                            }
+                        }
+                        ?>
+                    </select>
+                </div>
+
                 <input type="hidden" name="adms_daman_project_id"
                     value="<?= $this->data['form']['adms_daman_project_id'] ?? '' ?>">
 

@@ -36,6 +36,7 @@ class ValidationMaterialStockService
         $rules['adms_daman_measurement_units_id'] = 'required|integer';
         $rules['adms_daman_project_id'] = 'required|integer';
         $rules['min_quantity'] = 'required';
+        $rules['adms_daman_category_id'] = 'required|integer';
 
         if (!isset($data['id'])) {
             $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . $data['name'] . ';' . $data['adms_daman_project_id'];
@@ -51,6 +52,8 @@ class ValidationMaterialStockService
             'adms_daman_measurement_units_id:integer'     => 'Dados Inválidos.',
             'adms_daman_project_id:required'              => 'O campo obra é obrigatório.',
             'adms_daman_project_id:integer'               => 'Dados Inválidos.',
+            'adms_daman_category_id:required'             => 'O campo categoria é obrigatório.',
+            'adms_daman_category_id:integer'              => 'O campo categoria é obrigatório.',
             'quantity:required'                           => 'O campo quantidade é obrigatório.',
             'min_quantity:required'                       => 'O campo quantidade mínima é obrigatório.',
         ];

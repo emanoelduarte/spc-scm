@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\materialstock;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationMaterialStockService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\MaterialStockRepository;
 use App\admsDaman\Models\Repository\MeasurementUnitsRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
@@ -49,6 +50,10 @@ class CreateMaterialStock
         // Instanciar o repositório para preencher os selects.
         $getAllProjectsSelectActive = new ProjectsRepository();
         $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
+
+        // Instanciar o repositório para preencher os selects.
+        $getProjectSelect = new CategoriesRepository();
+        $this->data['getAllCategoriesSelect'] = $getProjectSelect->getAllCategoriesSelect();
 
         // Configurar os elementos da página
         $pageElements = [
