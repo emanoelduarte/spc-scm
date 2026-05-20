@@ -13,20 +13,20 @@ class PageLayoutService
 {
     public function configurePageElements(array $data): array
     {
-         // Array com os itens de menu
-        $menu = ['Dashboard', 'ListUsers', 'ListOrders', 'ListPurchasings', 'ListProjects', 'ListSuppliers', 'ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages'];
+        // Array com os itens de menu
+        $menu = ['Dashboard', 'ListUsers', 'ListOrders', 'ListPurchasings', 'ListProjects', 'ListSuppliers', 'ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages', 'ListMaterialStock'];
 
         // Verificar se o usuário tem o nível de acesso Super Administrador.
         // Nivel de acesso Super Administrador tem acesso a todas as páginas/funcionalidades do sistema, então não é necessário verificar as permissões de botões para este nível de acesso.
         $usersAccessLevels = new UsersAccessLevelsRepository(); // Instanciar o repositório para verificar o nível de acesso do usuário
 
-        if(in_array(1, $usersAccessLevels->getUserAccessLevelsArray($_SESSION['user_id']))){ // Verificar se o usuário tem o nível de acesso Super Administrador (id 1)
+        if (in_array(1, $usersAccessLevels->getUserAccessLevelsArray($_SESSION['user_id']))) { // Verificar se o usuário tem o nível de acesso Super Administrador (id 1)
             return array_merge($data, ['menuPermission' => $menu]);
         }
 
         // Definir o título da página
         $pageElements['title_head'] = $data['title_head'] ?? '';
-        
+
         // Ativar o item de menu
         $pageElements['menu'] = $data['menu'] ?? '';
 

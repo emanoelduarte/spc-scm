@@ -167,7 +167,7 @@ class PurchasingRepository extends DbConnection
         INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
         INNER JOIN adms_daman_orders AS ado ON ado.id = adpu.adms_daman_order_id
         INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id 
-        INNER JOIN adms_daman_payment_methods AS adpm ON adpm.id = adpu.adms_daman_user_id 
+        INNER JOIN adms_daman_payment_methods AS adpm ON adpm.id = adpu.adms_daman_payment_methods_id 
         INNER JOIN adms_daman_acquisition_types AS adat ON adat.id = adpu.adms_daman_acquisition_types_id 
         INNER JOIN adms_daman_acquisition_purchasing_status AS adaps ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id 
         WHERE adpu.id = :id';

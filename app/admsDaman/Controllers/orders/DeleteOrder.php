@@ -40,10 +40,10 @@ class DeleteOrder
         if (!isset($this->data['form']['csrf_token']) or !CSRFHelper::validateCSRFToken('form_delete_order', $this->data['form']['csrf_token']) or empty($this->data['form']['id'])) {
 
             // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Pacote não encontrado", []);
+            GenerateLog::generateLog("error", "Pedido não encontrado", []);
 
             // Criar a mensagem de erro
-            $_SESSION['error'] = "Pacote não encontrado!";
+            $_SESSION['error'] = "Pedido não encontrado!";
 
             // Redirecionar o usuário para a página listar
             header("Location: {$_ENV['URL_ADM']}list-orders");
@@ -90,4 +90,3 @@ class DeleteOrder
         }
     }
 }
-?>

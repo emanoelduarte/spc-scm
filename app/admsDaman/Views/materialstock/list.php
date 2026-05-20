@@ -61,8 +61,10 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
+                <?php if (in_array("CreateMaterialStock", $this->data['buttonPermissions'])): ?>
                 <a href="<?= $_ENV['URL_ADM'] . 'create-Material-Stock'; ?>" class="btn btn-success btn-sm"><i
                         class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <?php endif; ?>
             </span>
         </div>
 
@@ -97,8 +99,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
                         <td><?= $project_name ?></td>
                         <td><?= $current_quantity ?></td>
                         <td class="text-center">
+
+                            <?php if (in_array("ViewMaterialStock", $this->data['buttonPermissions'])): ?>
                             <a href="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $id; ?>"
                                 class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <?php endif; ?>
+
+                            <?php if (in_array("CreateStockMovement", $this->data['buttonPermissions'])): ?>
                             <button class="btn btn-success btn-sm me-1 mb-1" data-bs-toggle="modal"
                                 data-project="<?= $adms_daman_project_id ?>" data-bs-target="#modalMovement"
                                 data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>" data-type="input">
@@ -110,11 +117,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
                                 data-name="<?= htmlspecialchars($name) ?>" data-type="output">
                                 Saída
                             </button>
+                            <?php endif; ?>
 
-
+                            <?php if (in_array("UpdateMaterialStock", $this->data['buttonPermissions'])): ?>
                             <a href="<?= $_ENV['URL_ADM'] . 'update-material-stock/' . $id; ?>"
                                 class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
                                 Editar</a>
+                            <?php endif; ?>
 
                         </td>
                     </tr>
@@ -148,6 +157,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
             <form action="<?= $_ENV['URL_ADM'] ?>create-stock-movement" method="POST">
 
                 <div class="modal-body">
+
+                    <input type="hidden" name="redirect_to" value="<?= $_ENV['URL_ADM'] ?>list-material-stock">
 
                     <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 

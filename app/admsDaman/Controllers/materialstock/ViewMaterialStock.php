@@ -6,6 +6,7 @@ use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\MaterialStockMovementRepository;
 use App\admsDaman\Models\Repository\MaterialStockRepository;
+use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ViewMaterialStock
@@ -32,6 +33,10 @@ class ViewMaterialStock
 
             return;
         }
+
+        // Instanciar o repositório para preencher os selects.
+        $getAllProjectsSelect = new ProjectsRepository();
+        $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
 
         // Buscar Dados gerais de um Material específico da obra
         $viewMaterial = new MaterialStockRepository();

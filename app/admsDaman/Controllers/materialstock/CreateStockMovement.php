@@ -84,7 +84,16 @@ class CreateStockMovement
             $_SESSION['error'] = "Erro ao registrar movimentação. Tente novamente.";
         }
 
-        header("Location: {$_ENV['URL_ADM']}list-material-stock");
-        return;
+        $redirectTo = $this->data['form']['redirect_to'] ?? $_ENV['URL_ADM'] . 'list-material-stock';
+
+        if ($result) {
+            $_SESSION['success'] = "{$type} registrada com sucesso!";
+            header('Location: ' . $redirectTo);
+            return;
+        } else {
+            $_SESSION['error'] = "Erro ao registrar movimentação. Tente novamente.";
+            header('Location: ' . $redirectTo);
+            return;
+        }
     }
 }

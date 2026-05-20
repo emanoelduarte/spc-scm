@@ -170,57 +170,75 @@ const openBtn = document.getElementById('openFilter');
 const sidebar = document.getElementById('filterSidebar');
 const overlay = document.getElementById('overlay');
 
-openBtn.addEventListener('click', () => {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-});
+if (openBtn && sidebar && overlay) {
 
-overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-});
+    openBtn.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+    });
 
-// Preencher o Modal de Movimentação dinamicamente
-document.getElementById('modalMovement').addEventListener('show.bs.modal', function (event) {
-    const button = event.relatedTarget;
-    const type = button.getAttribute('data-type');
-    const projectId = button.getAttribute('data-project');
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
 
-    // Campos de reason e projeto destino
-    const reasonField = document.getElementById('reasonField');
-    const projectField = document.getElementById('projectField');
-    const projectFixed = document.getElementById('projectFixed');
+}
 
-    console.log(projectField);
+document.addEventListener('DOMContentLoaded', function () {
 
-    if (type === 'input') {
-        // Esconde select de obra e passa a obra do item fixo
-        reasonField.classList.add('d-none');
-        projectField.classList.add('d-none');
-        projectField.querySelector('select').removeAttribute('required');
-        projectFixed.value = projectId;
-        projectFixed.removeAttribute('disabled'); // garante que o hidden vai ser enviado
+    const modalMovement = document.getElementById('modalMovement');
 
-        document.querySelector('[name="reason"]').removeAttribute('required');
-        document.getElementById('modalTitle').textContent = 'Registrar Entrada';
-        document.getElementById('modalBtn').className = 'btn btn-success';
-
-    } else {
-        // Mostra select de obra para escolher destino
-        reasonField.classList.remove('d-none');
-        projectField.classList.remove('d-none');
-        projectField.querySelector('select').setAttribute('required', 'required');
-        projectField.querySelector('select').removeAttribute('disabled'); // habilita o select
-        projectFixed.setAttribute('disabled', 'disabled'); // desabilita o hidden para não ser enviado
-        projectFixed.value = '';
-
-        document.querySelector('[name="reason"]').setAttribute('required', 'required');
-        document.getElementById('modalTitle').textContent = 'Registrar Saída';
-        document.getElementById('modalBtn').className = 'btn btn-danger';
+    if (!modalMovement) {
+        console.warn('Modal #modalMovement não encontrado');
+        return;
     }
 
-    // Preenche os campos hidden e o título
-    document.getElementById('stockId').value = button.getAttribute('data-id');
-    document.getElementById('movementType').value = type;
-    document.getElementById('itemName').textContent = button.getAttribute('data-name');
+    modalMovement.addEventListener('show.bs.modal', function (event) {
+
+        const button = event.relatedTarget;
+        const type = button.getAttribute('data-type');
+        const projectId = button.getAttribute('data-project');
+
+        const reasonField = document.getElementById('reasonField');
+        const projectField = document.getElementById('projectField');
+        const projectFixed = document.getElementById('projectFixed');
+
+        if (type === 'input') {
+
+            reasonField.classList.add('d-none');
+            projectField.classList.add('d-none');
+
+            projectField.querySelector('select').removeAttribute('required');
+
+            projectFixed.value = projectId;
+            projectFixed.removeAttribute('disabled');
+
+            document.querySelector('[name="reason"]').removeAttribute('required');
+
+            document.getElementById('modalTitle').textContent = 'Registrar Entrada';
+            document.getElementById('modalBtn').className = 'btn btn-success';
+
+        } else {
+
+            reasonField.classList.remove('d-none');
+            projectField.classList.remove('d-none');
+
+            projectField.querySelector('select').setAttribute('required', 'required');
+            projectField.querySelector('select').removeAttribute('disabled');
+
+            projectFixed.setAttribute('disabled', 'disabled');
+            projectFixed.value = '';
+
+            document.querySelector('[name="reason"]').setAttribute('required', 'required');
+
+            document.getElementById('modalTitle').textContent = 'Registrar Saída';
+            document.getElementById('modalBtn').className = 'btn btn-danger';
+        }
+
+        document.getElementById('stockId').value = button.getAttribute('data-id');
+        document.getElementById('movementType').value = type;
+        document.getElementById('itemName').textContent = button.getAttribute('data-name');
+
+    });
+
 });
