@@ -76,7 +76,7 @@ class ViewUser
         $pageElements = [
             'title_head' => "Visualizar Usuário",
             'menu' => "list-users",
-            'buttonPermissions' => ["ListUsers", "UpdatePasswordUser", "UpdateUser", "DeleteUser", "UpdateUserAccessLevels"],
+            'buttonPermissions' => ["ListUsers", "UpdatePasswordUser", "UpdateUser", "DeleteUser", "UpdateUserAccessLevels", "UpdateUserProjectAssociate"],
         ];
 
         $pageLayoutService = new PageLayoutService();

@@ -19,7 +19,7 @@ class Dashboard
         $pageElements = [
             'title_head' => "Dashboard",
             'menu' => "dashboard",
-            'buttonPermissions' => [],
+            'buttonPermissions' => ["BuyerContent"],
         ];
 
         $pageLayoutService = new PageLayoutService();
@@ -33,9 +33,13 @@ class Dashboard
         $ordersAnalysisByProject = new OrdersRepository();
         $this->data['ordersAnalysisByProject'] = $ordersAnalysisByProject->rankProjectsStatusAnalisys();
 
-        // Recuperar ultimas 5 compras efetivadas na semana 
+        // Recuperar ultimas 10 compras efetivadas na semana 
         $getLastPurchasingsWeek = new PurchasingRepository();
         $this->data['getLastPurchasingsWeek'] = $getLastPurchasingsWeek->getLastPurchasingsWeek();
+
+        // Recuperar o total de todas as compras dos ultimos 7 dias 
+        $getTotalPurchasingsWeek = new PurchasingRepository();
+        $this->data['getTotalPurchasingsWeek'] = $getTotalPurchasingsWeek->getTotalPurchasingsWeek();
 
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/dashboard/dashboard", $this->data);

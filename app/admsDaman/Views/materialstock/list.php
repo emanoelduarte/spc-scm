@@ -62,8 +62,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
             <span>Listar</span>
             <span class="ms-auto">
                 <?php if (in_array("CreateMaterialStock", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'create-Material-Stock'; ?>" class="btn btn-success btn-sm"><i
-                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'create-Material-Stock'; ?>" class="btn btn-success btn-sm"><i
+                        class="fa-solid fa-circle-plus"></i> Cadastrar</a>
                 <?php endif; ?>
             </span>
         </div>
@@ -76,61 +76,61 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
             if ($this->data['materialStock'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Nome</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col">Qtd</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col">Qtd</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-                        <?php
+                    <?php
                         // Percorrer o array de usuários
                         foreach ($this->data['materialStock'] as $material) {
                             extract($material);
                         ?>
-                            <tr>
-                                <td><?= $id ?></td>
-                                <td><?= $name ?></td>
-                                <td><?= $project_name ?></td>
-                                <td><?= $current_quantity ?></td>
-                                <td class="text-center">
+                    <tr>
+                        <td><?= $id ?></td>
+                        <td><?= $name ?></td>
+                        <td><?= $project_name ?></td>
+                        <td><?= $current_quantity ?></td>
+                        <td class="text-center">
 
-                                    <?php if (in_array("ViewMaterialStock", $this->data['buttonPermissions'])): ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $id; ?>"
-                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                                    <?php endif; ?>
+                            <?php if (in_array("ViewMaterialStock", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <?php endif; ?>
 
-                                    <?php if (in_array("CreateStockMovement", $this->data['buttonPermissions'])): ?>
-                                        <button class="btn btn-success btn-sm me-1 mb-1" data-bs-toggle="modal"
-                                            data-project="<?= $adms_daman_project_id ?>" data-bs-target="#modalMovement"
-                                            data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>" data-type="input">
-                                            Entrada
-                                        </button>
+                            <?php if (in_array("CreateStockMovement", $this->data['buttonPermissions'])): ?>
+                            <button class="btn btn-success btn-sm me-1 mb-1" data-bs-toggle="modal"
+                                data-project="<?= $adms_daman_project_id ?>" data-bs-target="#modalMovement"
+                                data-id="<?= $id ?>" data-name="<?= htmlspecialchars($name) ?>" data-type="input">
+                                Entrada
+                            </button>
 
-                                        <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal"
-                                            data-bs-target="#modalMovement" data-id="<?= $id ?>"
-                                            data-category="<?= $adms_daman_category_id ?>"
-                                            data-name="<?= htmlspecialchars($name) ?>" data-type="output">
-                                            Saída
-                                        </button>
-                                    <?php endif; ?>
+                            <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal"
+                                data-bs-target="#modalMovement" data-id="<?= $id ?>"
+                                data-category="<?= $adms_daman_category_id ?>"
+                                data-name="<?= htmlspecialchars($name) ?>" data-type="output">
+                                Saída
+                            </button>
+                            <?php endif; ?>
 
-                                    <?php if (in_array("UpdateMaterialStock", $this->data['buttonPermissions'])): ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-material-stock/' . $id; ?>"
-                                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                            Editar</a>
-                                    <?php endif; ?>
+                            <?php if (in_array("UpdateMaterialStock", $this->data['buttonPermissions'])): ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-material-stock/' . $id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
+                            <?php endif; ?>
 
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação
@@ -180,9 +180,9 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
                         <select name="adms_daman_project_id" class="form-select" required>
                             <option value="">Selecione</option>
                             <?php foreach ($this->data['getAllProjectsSelectActive'] as $project) : ?>
-                                <option value="<?= $project['id'] ?>">
-                                    <?= htmlspecialchars($project['name']) ?>
-                                </option>
+                            <option value="<?= $project['id'] ?>">
+                                <?= htmlspecialchars($project['name']) ?>
+                            </option>
                             <?php endforeach; ?>
                         </select>
                     </div>

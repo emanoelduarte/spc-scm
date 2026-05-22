@@ -26,13 +26,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
                 <?php
                 if (in_array('CreateAccessLevel', $this->data['buttonPermissions'])) :
                 ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'create-access-level'; ?>" class="btn btn-success btn-sm"><i
-                            class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'create-access-level'; ?>" class="btn btn-success btn-sm"><i
+                        class="fa-solid fa-circle-plus"></i> Cadastrar</a>
                 <?php endif; ?>
 
                 <?php if (in_array('AccessLevelPageSync', $this->data['buttonPermissions'])) : ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'access-level-page-sync'; ?>" class="btn btn-warning btn-sm"
-                        onclick="showLoading()"><i class="fa-solid fa-rotate"></i> Sincronizar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'access-level-page-sync'; ?>" class="btn btn-warning btn-sm"
+                    onclick="showLoading()"><i class="fa-solid fa-rotate"></i> Sincronizar</a>
                 <?php endif; ?>
             </span>
         </div>
@@ -46,72 +46,72 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_level');
             ?>
 
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Nome</th>
-                            <th scope="col" class="d-none d-md-table-cell">Ordem</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    <tbody>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col" class="d-none d-md-table-cell">Ordem</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                <tbody>
 
-                        <?php
+                    <?php
                         // Percorrer o array de níveis de acesso para exibilos em linha
                         foreach ($this->data['levelsAccess'] as $levelAccess) :
                             extract($levelAccess);
                         ?>
-                            <tr>
-                                <td><?= $id ?></td>
-                                <td><?= $name ?></td>
-                                <td class="d-none d-md-table-cell"><?= $order_levels ?></td>
+                    <tr>
+                        <td><?= $id ?></td>
+                        <td><?= $name ?></td>
+                        <td class="d-none d-md-table-cell"><?= $order_levels ?></td>
 
-                                <td class="text-center">
+                        <td class="text-center">
 
-                                    <?php if (in_array('ListAccessLevelsPermissions', $this->data['buttonPermissions'])) : ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels-permissions/' . $id; ?>"
-                                            class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-lock-open"></i>
-                                            Permissões</a>
-                                    <?php endif; ?>
+                            <?php if (in_array('ListAccessLevelsPermissions', $this->data['buttonPermissions'])) : ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'list-access-levels-permissions/' . $id; ?>"
+                                class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-lock-open"></i>
+                                Permissões</a>
+                            <?php endif; ?>
 
-                                    <?php if (in_array('ViewAccessLevel', $this->data['buttonPermissions'])) : ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $id; ?>"
-                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                                    <?php endif; ?>
+                            <?php if (in_array('ViewAccessLevel', $this->data['buttonPermissions'])) : ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-access-level/' . $id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
+                            <?php endif; ?>
 
-                                    <?php if (in_array('UpdateAccessLevel', $this->data['buttonPermissions'])) : ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $id; ?>"
-                                            class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
-                                            Editar</a>
-                                    <?php endif; ?>
+                            <?php if (in_array('UpdateAccessLevel', $this->data['buttonPermissions'])) : ?>
+                            <a href="<?= $_ENV['URL_ADM'] . 'update-access-level/' . $id; ?>"
+                                class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i>
+                                Editar</a>
+                            <?php endif; ?>
 
-                                    <?php if (in_array('DeleteAccessLevel', $this->data['buttonPermissions'])) : ?>
-                                        <?php
+                            <?php if (in_array('DeleteAccessLevel', $this->data['buttonPermissions'])) : ?>
+                            <?php
                                         // Formulário para envio dos dados para deletar nível de acesso 
                                         ?>
-                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level"
-                                            method="POST" class="d-inline">
+                            <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-access-level"
+                                method="POST" class="d-inline">
 
-                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                                <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                                <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
 
-                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                                onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
-                                                Apagar</button>
+                                <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                                    onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
+                                    Apagar</button>
 
-                                        </form>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
+                            </form>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
 
-                        <?php
+                    <?php
                         endforeach;
                         ?>
 
-                    </tbody>
-                    </thead>
-                </table>
+                </tbody>
+                </thead>
+            </table>
             <?php
                 // Adiconar o arquivo de paginação
                 require_once './app/admsDaman/Views/partials/pagination.php';

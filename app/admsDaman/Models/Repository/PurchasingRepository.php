@@ -495,11 +495,40 @@ class PurchasingRepository extends DbConnection
 
             ORDER BY adpu.created_at DESC
 
-            LIMIT 5";
+            LIMIT 10";
 
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalPurchasingsWeek(): float|bool
+    {
+        $sql = "SELECT SUM(total_final) AS total_week
+            FROM (
+                SELECT 
+                    (
+                        SUM(adpi.purchased_quantity * adpi.unit_price)
+                        + COALESCE(adpu.delivery_value, 0)
+                        - COALESCE(adpu.discount, 0)
+                    ) AS total_final
+
+                FROM adms_daman_purchasings AS adpu
+
+                INNER JOIN adms_daman_purchasing_items AS adpi 
+                    ON adpi.adms_daman_purchasing_id = adpu.id
+
+                WHERE 
+                    adpu.created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                    AND adpu.adms_daman_acquisition_purchasing_status_id = 1
+
+                GROUP BY adpu.id
+            ) AS totals";
+
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute();
+
+        return (float) $stmt->fetchColumn();
     }
 }

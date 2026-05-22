@@ -63,7 +63,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
             <span class="ms-auto">
                 <?php if (in_array("CreateOrder", $this->data['buttonPermissions'])): ?>
                 <a href="<?= $_ENV['URL_ADM'] . 'create-order'; ?>" class="btn btn-success btn-sm"><i
-                        class="fa-solid fa-user-plus"></i> Cadastrar</a>
+                        class="fa-solid fa-circle-plus"></i> Cadastrar</a>
                 <?php endif; ?>
             </span>
         </div>

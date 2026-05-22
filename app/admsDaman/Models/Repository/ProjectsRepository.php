@@ -268,23 +268,58 @@ class ProjectsRepository extends DbConnection
     }
 
     /**
-     * Recuperar uma obra específica Ativa
+     * Recuperar todas as obras que o usuário tem vínculo ou que tem autorização
      * 
      * @return array|bool Obra recuperada do banco de dados
      */
     public function getAllProjectsSelectActive(): array|bool
     {
+        $conditions = [];
+        $params = [];
+
+        // Verificar se o usuário é Super Admin, Admin, Comprador ou Almoxarife
+        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
+        WHERE adms_daman_user_id = :check_user_id 
+        AND adms_daman_access_level_id IN (1, 2, 5, 6)";
+
+        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
+        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmtCheck->execute();
+
+        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+
+        // Apenas obras ativas
+        $conditions[] = "status = :status";
+        $params['status'] = 1;
+
+        // JOIN apenas se não for privilegiado
+        $join = '';
+
+        // Se não for privilegiado
+        if (!$isPrivileged) {
+            $join = "INNER JOIN adms_daman_user_projects up 
+                    ON up.adms_daman_project_id = p.id";
+
+            $conditions[] = "up.adms_daman_user_id = :logged_user_id";
+
+            $params['logged_user_id'] = $_SESSION['user_id'];
+        }
+
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
         // QUERY para recuperar os registros do banco de dados
-        $sql = 'SELECT id, name, status 
-                FROM adms_daman_projects
-                WHERE status = :status
-                ORDER BY id ASC';
+        $sql = "SELECT p.id, p.name, p.status 
+                FROM adms_daman_projects AS p
+                {$join}
+                {$where}
+                ORDER BY p.id ASC";
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);
 
-        // Substituir Links por valor
-        $stmt->bindValue(':status', 1, PDO::PARAM_INT);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+        }
 
         // Executar a QUERY
         $stmt->execute();
