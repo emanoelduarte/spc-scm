@@ -5,6 +5,7 @@ use App\admsDaman\Helpers\CSRFHelper;
 
 $csrf_token = CSRFHelper::generateCSRFToken('form_delete_user');
 $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_level');
+$form_update_project_associate = CSRFHelper::generateCSRFToken('form_update_project_associate');
 ?>
 <div class="container-fluid px-4">
     <div class="mb-1 d-flex flex-column flex-sm-row gap-2">
@@ -27,27 +28,34 @@ $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_le
             <span>Visualizar</span>
             <span class="ms-sm-auto d-sm-flex flex-row">
                 <?php if (in_array("ListUsers", $this->data['buttonPermissions'])) : ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-users'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i class="fa-solid fa-list"></i> Listar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'list-users'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                        class="fa-solid fa-list"></i> Listar</a>
                 <?php endif; ?>
 
                 <?php if (in_array("UpdateUser", $this->data['buttonPermissions'])) : ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'update-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'update-user/' . ($this->data['user']['id'] ?? ''); ?>"
+                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar</a>
                 <?php endif; ?>
                 <?php if (in_array("UpdatePasswordUser", $this->data['buttonPermissions'])) : ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'update-password-user/' . ($this->data['user']['id'] ?? ''); ?>" class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar Senha</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'update-password-user/' . ($this->data['user']['id'] ?? ''); ?>"
+                    class="btn btn-warning btn-sm me-1 mb-1"><i class="fa-regular fa-pen-to-square"></i> Editar
+                    Senha</a>
                 <?php endif; ?>
                 <?php if (in_array("DeleteUser", $this->data['buttonPermissions'])) : ?>
-                    <?php  // Formulário para envio dos dados para deletar Usuário 
+                <?php  // Formulário para envio dos dados para deletar Usuário 
                     ?>
-                    <form id="formDelete<?= $this->data['user']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user" method="POST">
+                <form id="formDelete<?= $this->data['user']['id']; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-user"
+                    method="POST">
 
-                        <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
 
-                        <input type="hidden" name="id" id="id" value="<?= $this->data['user']['id'] ?? ''; ?>">
+                    <input type="hidden" name="id" id="id" value="<?= $this->data['user']['id'] ?? ''; ?>">
 
-                        <button type="submit" class="btn btn-danger btn-sm me-1 mb-1" onclick="confirmDeletion(event, <?= $this->data['user']['id'] ?>)"> <i class="fa-solid fa-trash"></i> Apagar</button>
+                    <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
+                        onclick="confirmDeletion(event, <?= $this->data['user']['id'] ?>)"> <i
+                            class="fa-solid fa-trash"></i> Apagar</button>
 
-                    </form>
+                </form>
                 <?php endif; ?>
             </span>
         </div>
@@ -68,50 +76,50 @@ $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_le
                 $edited = ($updated_at ? date('d/m/Y H:i:s', strtotime($updated_at)) : "");
             ?>
 
-                <dl class="row">
-                    <dt class="col-sm-3">ID: </dt>
-                    <dd class="col-sm-9"><?= $id ?></dd>
-                    <dt class="col-sm-3">Nome: </dt>
-                    <dd class="col-sm-9"><?= $name ?></dd>
-                    <dt class="col-sm-3">E-mail: </dt>
-                    <dd class="col-sm-9"><?= $email ?></dd>
-                    <dt class="col-sm-3">Usuário: </dt>
-                    <dd class="col-sm-9"><?= $username ?></dd>
-                    <dt class="col-sm-3">Cadastrado: </dt>
-                    <dd class="col-sm-9"><?= $created ?></dd>
-                    <dt class="col-sm-3">Editado: </dt>
-                    <dd class="col-sm-9"><?= $edited ?></dd>
-                </dl>
+            <dl class="row">
+                <dt class="col-sm-3">ID: </dt>
+                <dd class="col-sm-9"><?= $id ?></dd>
+                <dt class="col-sm-3">Nome: </dt>
+                <dd class="col-sm-9"><?= $name ?></dd>
+                <dt class="col-sm-3">E-mail: </dt>
+                <dd class="col-sm-9"><?= $email ?></dd>
+                <dt class="col-sm-3">Usuário: </dt>
+                <dd class="col-sm-9"><?= $username ?></dd>
+                <dt class="col-sm-3">Cadastrado: </dt>
+                <dd class="col-sm-9"><?= $created ?></dd>
+                <dt class="col-sm-3">Editado: </dt>
+                <dd class="col-sm-9"><?= $edited ?></dd>
+            </dl>
 
             <?php else: ?>
-                <?php // Caso usuário não seja encontrado
+            <?php // Caso usuário não seja encontrado
                 ?>
-                <div class='alert alert-danger' role='alert'>Usuário não encontrado</div>
+            <div class='alert alert-danger' role='alert'>Usuário não encontrado</div>
             <?php endif; ?>
         </div>
     </div>
 
     <?php if (in_array("UpdateUserAccessLevels", $this->data['buttonPermissions'])): ?>
-        <div class="card mb-4 border-light shadow">
-            <div class="card-header d-flex flex-column flex-sm-row gap-2">
-                <span>Permissões do Usuário</span>
-            </div>
+    <div class="card mb-4 border-light shadow">
+        <div class="card-header d-flex flex-column flex-sm-row gap-2">
+            <span>Permissões do Usuário</span>
+        </div>
 
-            <div class="card-body">
-                <?php
+        <div class="card-body">
+            <?php
                 // Verificar se há níveis de acesso do usuário com menor prioridade
                 if ($this->data['lowerPriorityAccessLevels'] ?? false): ?>
 
-                    <dl class="row">
-                        <dt class="col-sm-3">Níveis de acesso: </dt>
-                        <dd class="col-sm-9">
-                    </dl>
-                    <form action="<?= $_ENV['URL_ADM']; ?>update-user-access-levels" method="POST">
-                        <input type="hidden" name="csrf_token" value="<?= $csrf_update_access_level ?>">
+            <dl class="row">
+                <dt class="col-sm-3">Níveis de acesso: </dt>
+                <dd class="col-sm-9">
+            </dl>
+            <form action="<?= $_ENV['URL_ADM']; ?>update-user-access-levels" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $csrf_update_access_level ?>">
 
-                        <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
+                <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
 
-                        <?php
+                <?php
                         // Percorre a array de níveis de acesso do usuário
                         foreach ($this->data['lowerPriorityAccessLevels'] as $lowerPriorityAccessLevel) {
 
@@ -123,24 +131,79 @@ $csrf_update_access_level = CSRFHelper::generateCSRFToken('form_update_access_le
 
                             $checked = in_array($id, $userAccessLevels) ? 'checked' : ''; ?>
 
-                            <div class="form-check form-switch">
+                <div class="form-check form-switch">
 
-                                <input type="checkbox" name="userAccessLevels[<?= $id ?>]" class="form-check-input" role="switch" id="userAccessLevels<?= $id ?>" value="<?= $id ?>" <?= $checked ?>>
+                    <input type="checkbox" name="userAccessLevels[<?= $id ?>]" class="form-check-input" role="switch"
+                        id="userAccessLevels<?= $id ?>" value="<?= $id ?>" <?= $checked ?>>
 
-                                <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
-                            </div>
+                    <label class="form-check-label" for="userAccessLevels<?= $id ?>"><?= $name ?></label>
+                </div>
 
-                        <?php } ?>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
-                        </div>
-                    </form>
-                <?php
+                <?php } ?>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
+                </div>
+            </form>
+            <?php
                 else :
                     echo "<div class='alert alert-danger' role='alert'> Usuário não possui nível de acesso </div>";
                 endif; ?>
-            </div>
         </div>
+    </div>
     <?php endif; ?>
+
+    <div class="card mb-4 border-light shadow">
+        <div class="card-header d-flex flex-column flex-sm-row gap-2">
+            <span>Obras atreladas ao usuário</span>
+        </div>
+
+        <div class="card-body">
+            <?php
+            // Verificar se há obras atreladas ao usuário
+            if ($this->data['projectsActives'] ?? false): ?>
+
+            <dl class="row">
+                <dt class="col-sm-3">Obras: </dt>
+                <dd class="col-sm-9">
+            </dl>
+            <form action="<?= $_ENV['URL_ADM']; ?>update-user-project-associate" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= $form_update_project_associate ?>">
+
+                <input type="hidden" name="adms_daman_user_id" value="<?= ($this->data['user']['id'] ?? '') ?> ">
+
+                <?php
+                    // Percorre a array de obras associada ao usuário
+                    foreach ($this->data['projectsActives'] as $projectsActives) {
+
+                        // Extrair o Array pela coluna de níveis de acesso
+                        extract($projectsActives);
+
+                        // Verificar se a obra atual ($id) está no array de obras associada ao usuário
+                        $userProjectAssociate = $this->data['userProjectsAssociate'] ? $this->data['userProjectsAssociate'] : [];
+
+
+                        $checked = in_array($id, $userProjectAssociate) ? 'checked' : '';
+
+                    ?>
+
+                <div class="form-check form-switch">
+
+                    <input type="checkbox" name="userProjectsAssociate[<?= $id;?>]" class="form-check-input"
+                        role="switch" id="userProjectsAssociate<?= $id ?>" value="<?= $id;?>" <?= $checked ?>>
+
+                    <label class="form-check-label" for="userProjectsAssociate<?= $id ?>"><?= $name ?></label>
+                </div>
+
+                <?php } ?>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-warning btn-sm">Salvar</button>
+                </div>
+            </form>
+            <?php
+            else :
+                echo "<div class='alert alert-danger' role='alert'> Usuário não possui obras vinculadas!</div>";
+            endif; ?>
+        </div>
+    </div>
 
 </div>

@@ -35,7 +35,7 @@ final class AdmsDamanUsersAccessLevel extends AbstractMigration
              * Ainda quando for feito alguma update de nível de acesso na tabela aqui criada 'adms_daman_users_access_levels', deve fazer atualização em cascata mudando na tabela pai ('adms_daman_users').
              */
             $table->addColumn('adms_daman_user_id', 'integer', ['null' => false, 'signed' => false])
-                ->addForeignKey('adms_daman_user_id', 'adms_daman_users', 'id', ['delete' => 'RESTRICT', 'update' => 'CASCADE'])
+                ->addForeignKey('adms_daman_user_id', 'adms_daman_users', 'id', ['delete' => 'CASCADE', 'update' => 'CASCADE'])
 
                 /**  
                  * Coluna um define a chave estrangeira referente ao id do nível de acesso, logo quando ponho ['delete' => 'RESTRICT'] informo ao banco de dados que nenhum nível de acesso pode ser apagado/deletado (da tabela pai 'adms_daman_access_levels') se ele tiver algum nível de acesso vinculado a tabela aqui criada.

@@ -5,7 +5,9 @@ namespace App\admsDaman\Controllers\users;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserRakitService;
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\AccessLevelsRepository;
 use App\admsDaman\Models\Repository\AddressesRepository;
+use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
@@ -72,6 +74,14 @@ class CreateUser
 
     public function viewCreateUser()
     {
+
+        // Instanciar o repositório para preencher os selects.
+        $getAllProjectsSelectActive = new ProjectsRepository();
+        $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
+
+        // Instanciar o repositório para preencher os selects.
+        $getAllAccessLevels = new AccessLevelsRepository();
+        $this->data['getAllAccessLevels'] = $getAllAccessLevels->getAllAccessLevelsSelect();
 
         $pageElements = [
             'title_head' => "Cadastrar Usuário",

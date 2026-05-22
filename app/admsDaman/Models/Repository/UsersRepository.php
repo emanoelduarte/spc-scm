@@ -109,11 +109,55 @@ class UsersRepository extends DbConnection
             $stmt->execute();
 
             // Retornar o ID do usuário recém cadastrado
-            return $this->getConnection()->lastInsertId();
+            $userLastId = $this->getConnection()->lastInsertId();
+
+            $userDataAssociate = [
+                'user_last_id' => $userLastId,
+                'user_access_level' => $data['adms_daman_access_level_id']
+            ];
+
+            if ($userLastId) {
+                // Chamar função para associar o nível de acesso
+                $this->associateUserAccessLevel($userDataAssociate);
+            }
+
+            return $userLastId;
         } catch (Exception $e) {
             // Chamar método para salvar o log
-            GenerateLog::generateLog("error", "Usuário tentou cadastrar usuário existente", ['email' => $data['email']]);
+            GenerateLog::generateLog("error", "Usuário tentou cadastrar usuário existente", ['email' => $data['email'], 'error' => $e->getMessage()]);
             return false;
+        }
+    }
+
+    private function associateUserAccessLevel(array $data)
+    {
+        // Query para acadastar o access Level
+        $sql = "SELECT id 
+        FROM 
+        adms_daman_users_access_levels 
+        WHERE adms_daman_user_id=:adms_daman_user_id
+        AND adms_daman_access_level_id=:adms_daman_access_level_id";
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        $stmt->bindValue(':adms_daman_user_id', $data['user_last_id'], PDO::PARAM_INT);
+        $stmt->bindValue(':adms_daman_access_level_id', $data['user_access_level'], PDO::PARAM_INT);
+
+        $existingRecord = $stmt->fetch();
+
+        // Se não existir ele insere
+        if (!$existingRecord) {
+            $sql = "INSERT INTO adms_daman_users_access_levels (adms_daman_user_id, adms_daman_access_level_id) VALUES (:adms_daman_user_id, :adms_daman_access_level_id)";
+
+            // Preparar a query para inserir os dados no banco de dados
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links pelos valores passados no array
+            $stmt->bindValue(':adms_daman_user_id', $data['user_last_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_access_level_id', $data['user_access_level'], PDO::PARAM_INT);
+
+            // Executar a querry para cadastrar no banco de dados
+            $stmt->execute();
         }
     }
 
@@ -172,7 +216,7 @@ class UsersRepository extends DbConnection
      * 
      * @return bool Sucesso ou falha
      */
-    public function updatePasswordUser(array $data) : bool
+    public function updatePasswordUser(array $data): bool
     {
         //Usar try catch tratar exceção e erro
         try {
@@ -197,10 +241,10 @@ class UsersRepository extends DbConnection
             if ($affectedRows > 0) {
                 return true;
             } else {
-                
+
                 // Chamar o método para salvar o log
                 GenerateLog::generateLog("error", "Usuário não apagado.", ['id' => $data['id']]);
-                
+
                 return false;
             }
         } catch (Exception $e) {

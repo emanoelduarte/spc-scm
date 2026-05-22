@@ -40,6 +40,7 @@ class AAADatabaseSeeder extends AbstractSeed
             'AddAdmsDamanSupplierAddressesSeeder',
             'AddAdmsDamanMaterialStock',
             'AddAdmsDamanMaterialStockMovement',
+            'AddAdmsDamanUsersProject',
         ];
     }
 }

@@ -150,7 +150,19 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 12 BOL. 30/60/90 DIAS
+        ## 12 BOL. 30/60 DIAS
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60 DIAS'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'BOL. 30/60 DIAS',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        ## 13 BOL. 30/60/90 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90 DIAS'])->fetch();
 
@@ -162,7 +174,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 13 BOL. 30/60/90/120 DIAS
+        ## 14 BOL. 30/60/90/120 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90/120 DIAS'])->fetch();
 
@@ -174,7 +186,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 14 BOL. 30/60/90/120/150 DIAS
+        ## 15 BOL. 30/60/90/120/150 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90/120/150 DIAS'])->fetch();
 
@@ -186,7 +198,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 15 BOL. 30/60/90/120/150/180 DIAS
+        ## 16 BOL. 30/60/90/120/150/180 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90/120/150/180 DIAS'])->fetch();
 
@@ -198,7 +210,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 16 BOL. 30/60/90/120/150/180/210 DIAS
+        ## 17 BOL. 30/60/90/120/150/180/210 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90/120/150/180/210 DIAS'])->fetch();
 
@@ -210,7 +222,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 17 BOL. 30/60/90/120/150/180/210/240 DIAS
+        ## 18 BOL. 30/60/90/120/150/180/210/240 DIAS
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'BOL. 30/60/90/120/150/180/210/240 DIAS'])->fetch();
 
@@ -222,7 +234,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 1X'])->fetch();
 
@@ -234,7 +246,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 2X'])->fetch();
 
@@ -246,7 +258,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 3X'])->fetch();
 
@@ -258,7 +270,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 4X'])->fetch();
 
@@ -270,7 +282,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 5X'])->fetch();
 
@@ -282,7 +294,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 6X'])->fetch();
 
@@ -294,7 +306,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 7X'])->fetch();
 
@@ -306,7 +318,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 8X'])->fetch();
 
@@ -318,7 +330,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 9X'])->fetch();
 
@@ -330,7 +342,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 18 CARTÃO
+        ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 10X'])->fetch();
 
@@ -342,7 +354,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 19 DEPÓSITO BANCÁRIO
+        ## 20 DEPÓSITO BANCÁRIO
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'DEPÓSITO BANCÁRIO'])->fetch();
 
@@ -354,7 +366,7 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
             ];
         }
 
-        ## 19 PERMUTA
+        ## 21 PERMUTA
         // Verificar se a natureza de negócio com o nome especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'PERMUTA'])->fetch();
 
@@ -372,6 +384,5 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
 
         // Insere os registros na tabela
         $adms_daman_payment_methods->insert($data)->save();
-
     }
 }

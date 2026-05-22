@@ -10,9 +10,9 @@ class PaymentMethodsRepository extends DbConnection
     public function getAllPaymentSelect(): array|bool
     {
 
-    $sql = 'SELECT id, name
+        $sql = 'SELECT id, name
         FROM adms_daman_payment_methods
-        ORDER BY id ASC';
+        ORDER BY name ASC';
 
         // Preparar a query
         $stmt = $this->getConnection()->prepare($sql);
@@ -23,4 +23,3 @@ class PaymentMethodsRepository extends DbConnection
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-?>
