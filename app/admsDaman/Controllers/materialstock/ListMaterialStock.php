@@ -32,6 +32,12 @@ class ListMaterialStock
             $this->data['search']
         );
 
+        if (is_array($this->data['materialStock']) && isset($this->data['materialStock']['no_project'])) {
+            $_SESSION['error'] = "Você não possui obra vinculada. Entre em contato com o administrador.";
+            header('Location: ' . $_ENV['URL_ADM'] . 'dashboard');
+            exit;
+        }
+
         $this->data['pagination'] = PaginationService::generatePagination(
             (int) $listMaterial->getAmountMaterials(),
             (int) $this->limitResult,

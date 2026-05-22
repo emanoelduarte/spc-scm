@@ -133,6 +133,25 @@ class AddAdmsDamanUsersAccessLevels extends AbstractSeed
             ];
         }
 
+        ## 8 - CLEYTON - ENCARREGADO DE OBRA
+        // Verificar se o usuário e nível de acesso especificado já existe no banco de dados
+        $existingRecord = $this->query(
+            'SELECT id 
+            FROM adms_daman_users_access_levels 
+            WHERE adms_daman_user_id=:adms_daman_user_id
+            AND adms_daman_access_level_id=:adms_daman_access_level_id',
+            [':adms_daman_user_id' => 5, 'adms_daman_access_level_id' => 4]
+        )->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'adms_daman_user_id' => 5,
+                'adms_daman_access_level_id' => 4,
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
         // Indicar em qual tabela deve adicionar/salvar o registro
         $adms_daman_users_access_levels = $this->table('adms_daman_users_access_levels');
 

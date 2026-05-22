@@ -83,11 +83,26 @@ class AddAdmsDamanUsers extends AbstractSeed
             ];
         }
 
+        // Verificar se o registro já existe no banco de dados
+        $existingRecord = $this->query('SELECT id FROM adms_daman_users WHERE email=:email', [':email' => 'cleyton@damanarqeng.com.br'])->fetch();
+
+        // Testa a resposta da query, se o registro não existir ele insere os dados na variável $data para em seguida cadastrar na tabela
+        if (!$existingRecord) {
+            // Criar o array com os dados do usuário
+            $data[] = [
+                'name' => 'Cleyton Luis',
+                'email' => 'cleyton@damanarqeng.com.br',
+                'username' => 'cleyton@damanarqeng.com.br',
+                'password' => password_hash('123456A#', PASSWORD_DEFAULT),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => NULL
+            ];
+        }
+
         // Indicar emq ual tabela deve adicionar/salvar o registro
         $adms_daman_users = $this->table('adms_daman_users');
 
         // Inserir registros na tabela
         $adms_daman_users->insert($data)->save();
-
     }
 }

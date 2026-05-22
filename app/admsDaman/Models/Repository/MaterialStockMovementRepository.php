@@ -11,7 +11,6 @@ class MaterialStockMovementRepository extends DbConnection
 {
     public function createMovement(array $data): bool
     {
-
         try {
             $this->getConnection()->beginTransaction();
 
@@ -61,18 +60,82 @@ class MaterialStockMovementRepository extends DbConnection
                 WHERE id = :stock_id";
 
             $stmt = $this->getConnection()->prepare($sql);
-            $stmt->bindValue(':quantity',  (float) $data['quantity']);
+            $stmt->bindValue(':quantity',   (float) $data['quantity']);
             $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
-            $stmt->bindValue(':stock_id',  $data['stock_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':stock_id',   $data['stock_id'], PDO::PARAM_INT);
             $stmt->execute();
 
+            // 3. Se for transferência, cria entrada na obra de destino
+            if ($data['type'] === 'output' && ($data['reason'] ?? '') === 'transfer') {
+
+                $sqlCheck = "SELECT id FROM adms_daman_material_stock 
+                 WHERE name = :name 
+                 AND adms_daman_project_id = :project_id";
+
+                $stmtCheck = $this->getConnection()->prepare($sqlCheck);
+                $stmtCheck->bindValue(':name',       $data['item_name']);
+                $stmtCheck->bindValue(':project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
+                $stmtCheck->execute();
+                $existingItem = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+                // ID do item na obra de destino
+                $destinationStockId = null;
+
+                if ($existingItem) {
+                    $sqlTransfer = "UPDATE adms_daman_material_stock 
+                        SET current_quantity = current_quantity + :quantity,
+                            updated_at = :updated_at
+                        WHERE id = :id";
+
+                    $stmtTransfer = $this->getConnection()->prepare($sqlTransfer);
+                    $stmtTransfer->bindValue(':quantity',   (float) $data['quantity']);
+                    $stmtTransfer->bindValue(':updated_at', date('Y-m-d H:i:s'));
+                    $stmtTransfer->bindValue(':id',         $existingItem['id'], PDO::PARAM_INT);
+                    $stmtTransfer->execute();
+
+                    $destinationStockId = $existingItem['id'];
+                } else {
+                    $sqlInsert = "INSERT INTO adms_daman_material_stock 
+                        (adms_daman_project_id, adms_daman_category_id, adms_daman_measurement_units_id, name, current_quantity, min_quantity, created_at)
+                      SELECT :project_id, :adms_daman_category_id, adms_daman_measurement_units_id, name, :quantity, min_quantity, :created_at
+                      FROM adms_daman_material_stock
+                      WHERE id = :stock_id";
+
+                    $stmtInsert = $this->getConnection()->prepare($sqlInsert);
+                    $stmtInsert->bindValue(':project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
+                    $stmtInsert->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
+                    $stmtInsert->bindValue(':quantity',   (float) $data['quantity']);
+                    $stmtInsert->bindValue(':created_at', date('Y-m-d H:i:s'));
+                    $stmtInsert->bindValue(':stock_id',   $data['stock_id'], PDO::PARAM_INT);
+                    $stmtInsert->execute();
+
+                    $destinationStockId = $this->getConnection()->lastInsertId();
+                }
+
+                // Registra entrada na movimentação da obra de destino
+                $sqlMovement = "INSERT INTO adms_daman_material_stock_movements
+                        (adms_daman_material_stock_id, adms_daman_user_id, adms_daman_project_id, type, reason, quantity, observation, created_at)
+                    VALUES 
+                        (:stock_id, :user_id, :project_id, 'input', 'transfer', :quantity, :observation, :created_at)";
+
+                $stmtMovement = $this->getConnection()->prepare($sqlMovement);
+                $stmtMovement->bindValue(':stock_id',    $destinationStockId, PDO::PARAM_INT);
+                $stmtMovement->bindValue(':user_id',     $_SESSION['user_id'], PDO::PARAM_INT);
+                $stmtMovement->bindValue(':project_id',  $data['adms_daman_project_id'], PDO::PARAM_INT);
+                $stmtMovement->bindValue(':quantity',    (float) $data['quantity']);
+                $stmtMovement->bindValue(':observation', $data['observation'] ?? null);
+                $stmtMovement->bindValue(':created_at',  date('Y-m-d H:i:s'));
+                $stmtMovement->execute();
+            }
+
+            // commit só aqui, após tudo ter sido executado
             $this->getConnection()->commit();
             return true;
         } catch (Exception $e) {
             $this->getConnection()->rollBack();
             GenerateLog::generateLog("error", "Movimentação não registrada.", [
                 'error' => $e->getMessage(),
-                "id" => $data['project_id']
+                "id" => $data['adms_daman_project_id']
             ]);
             return false;
         }

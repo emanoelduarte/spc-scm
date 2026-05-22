@@ -31,7 +31,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Luminárias Preta 45W 6000k',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 29,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 25,
                 'min_quantity' => 35,
@@ -40,7 +40,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Luminárias Branca 30W 6000k',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 3,
+                'adms_daman_project_id' => 29,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 25,
                 'min_quantity' => 35,
@@ -49,7 +49,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Terminal Olha 6mm Azul',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 30,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 50,
                 'min_quantity' => 20,
@@ -58,7 +58,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Tomada de Sobrepor 220V 20A Branca',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 3,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 3,
                 'min_quantity' => 2,
@@ -76,7 +76,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Tomada de Sobrepor 220V 20A Branca',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 3,
+                'adms_daman_project_id' => 33,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 3,
                 'min_quantity' => 2,
@@ -85,7 +85,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Notebook ACER Aspire 5',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 17,
                 'adms_daman_category_id' => 5,
                 'current_quantity' => 25,
                 'min_quantity' => 35,
@@ -94,7 +94,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Mouse Multilaser',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 17,
                 'adms_daman_category_id' => 14,
                 'current_quantity' => 50,
                 'min_quantity' => 20,
@@ -103,7 +103,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Caneta Esferográfica Zul 0.3mm',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 32,
                 'adms_daman_category_id' => 14,
                 'current_quantity' => 5,
                 'min_quantity' => 10,
@@ -112,7 +112,7 @@ class AddAdmsDamanMaterialStock extends AbstractSeed
             [
                 'name' => 'Fonte Chaveada 400w',
                 'adms_daman_measurement_units_id' => 1,
-                'adms_daman_project_id' => 1,
+                'adms_daman_project_id' => 32,
                 'adms_daman_category_id' => 4,
                 'current_quantity' => 10,
                 'min_quantity' => 20,

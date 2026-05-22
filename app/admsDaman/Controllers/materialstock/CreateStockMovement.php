@@ -67,6 +67,20 @@ class CreateStockMovement
             return;
         }
 
+        // Bloquear transferência para a mesma obra de origem
+        if ($this->data['form']['type'] === 'output' && ($this->data['form']['reason'] ?? '') === 'transfer') {
+
+            // Buscar a obra de origem do item
+            $movimentMaterial = new MaterialStockRepository();
+            $stock = $movimentMaterial->getUniqueMaterial((int) $this->data['form']['stock_id']);
+
+            if ($stock && $stock['adms_daman_project_id'] == $this->data['form']['adms_daman_project_id']) {
+                $_SESSION['error'] = "Não é possível transferir para a mesma obra de origem.";
+                header('Location: ' . $this->data['form']['redirect_to']);
+                exit;
+            }
+        }
+
         // Criar a movimentação
         $movement = new MaterialStockMovementRepository();
         $result   = $movement->createMovement($this->data['form']);

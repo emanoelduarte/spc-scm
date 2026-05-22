@@ -14,19 +14,51 @@ class MaterialStockRepository extends DbConnection
      * 
      * @return array
      */
-    public function getAllMaterialStock(int $page = 1, int $limitResult = 10, ?array $filters = []): array
+    public function getAllMaterialStock(int $page = 1, int $limitResult = 10, ?array $filters = []): array|bool
     {
-        // Calcular o registro inicial de cada página exemplo:
         $offset = max(0, ($page - 1) * $limitResult);
 
         $conditions = [];
         $params = [];
 
+        // Verificar se o usuário tem nível privilegiado
+        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels AS adual
+                      INNER JOIN adms_daman_access_levels AS adal ON adal.id = adual.adms_daman_access_level_id
+                      WHERE adual.adms_daman_user_id = :check_user_id 
+                      AND adal.id IN (1, 2, 5)"; // Ajustar os ids conforme seus níveis
+
+        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
+        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+
+        if (!$isPrivileged) {
+            // Verificar se tem obra vinculada
+            $sqlCheckProject = "SELECT COUNT(*) FROM adms_daman_user_projects
+                            WHERE adms_daman_user_id = :user_id";
+            $stmtProject = $this->getConnection()->prepare($sqlCheckProject);
+            $stmtProject->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmtProject->execute();
+            $hasProject = $stmtProject->fetchColumn() > 0;
+
+            if (!$hasProject) {
+                return ['no_project' => true];
+            }
+
+            // Filtra só pelas obras do usuário
+            $conditions[] = "ams.adms_daman_project_id IN (
+            SELECT adms_daman_project_id 
+            FROM adms_daman_user_projects 
+            WHERE adms_daman_user_id = :logged_user_id
+        )";
+            $params['logged_user_id'] = $_SESSION['user_id'];
+        }
+
         // Mapeamento campo form → coluna banco
         $map = [
-            'id_number' => 'ams.id',
-            'adms_daman_project_id' => 'ams.adms_daman_project_id',
-            'adms_daman_category_id' => 'ams.adms_daman_category_id',
+            'id_number'                => 'ams.id',
+            'adms_daman_project_id'    => 'ams.adms_daman_project_id',
+            'adms_daman_category_id'   => 'ams.adms_daman_category_id',
         ];
 
         foreach ($map as $field => $column) {
@@ -36,14 +68,13 @@ class MaterialStockRepository extends DbConnection
             }
         }
 
-        // Filtro por intervalo de datas
         if (!empty($filters['data_inicio'])) {
-            $conditions[] = "ado.created_at >= :data_inicio";
+            $conditions[] = "ams.created_at >= :data_inicio";
             $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
         }
 
         if (!empty($filters['data_fim'])) {
-            $conditions[] = "ado.created_at <= :data_fim";
+            $conditions[] = "ams.created_at <= :data_fim";
             $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
 
@@ -54,42 +85,65 @@ class MaterialStockRepository extends DbConnection
 
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
-        $sql = "SELECT ams.id, ams.adms_daman_project_id, adms_daman_category_id, ams.name, ams.current_quantity, ams.min_quantity, ams.created_at,
-        admu.name AS measurement_unit,
-        adp.name AS project_name
-        FROM adms_daman_material_stock AS ams
-        INNER JOIN adms_daman_measurement_units AS admu ON admu.id = ams.adms_daman_measurement_units_id
-        INNER JOIN adms_daman_projects AS adp ON adp.id = ams.adms_daman_project_id
-        {$where}
-        ORDER BY name ASC
-        LIMIT :limit OFFSET :offset";
+        $sql = "SELECT ams.id, ams.adms_daman_project_id, adms_daman_category_id, ams.name, 
+                   ams.current_quantity, ams.min_quantity, ams.created_at,
+                   admu.name AS measurement_unit,
+                   adp.name AS project_name
+            FROM adms_daman_material_stock AS ams
+            INNER JOIN adms_daman_measurement_units AS admu ON admu.id = ams.adms_daman_measurement_units_id
+            INNER JOIN adms_daman_projects AS adp ON adp.id = ams.adms_daman_project_id
+            {$where}
+            ORDER BY name ASC
+            LIMIT :limit OFFSET :offset";
 
-        // Preparar a Query
         $stmt = $this->getConnection()->prepare($sql);
 
         foreach ($params as $key => $value) {
             $stmt->bindValue(":{$key}", $value);
         }
 
-        // Substituir o link da QUERY pelo valor
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        // Executar a Query
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Recuperar a quantidade de materiais para paginação
-     * @return int|bool Quantidade de materiais encontrados no banco de dados
-     */
-
     public function getAmountMaterials(?array $filters = []): int|bool
     {
         $conditions = [];
         $params = [];
+
+        // Verificar se o usuário tem nível privilegiado
+        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels AS adual
+                      INNER JOIN adms_daman_access_levels AS adal ON adal.id = adual.adms_daman_access_level_id
+                      WHERE adual.adms_daman_user_id = :check_user_id 
+                      AND adal.id IN (1, 2, 3)";
+
+        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
+        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+        $stmtCheck->execute();
+        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+
+        if (!$isPrivileged) {
+            $sqlCheckProject = "SELECT COUNT(*) FROM adms_daman_user_projects
+                            WHERE adms_daman_user_id = :user_id";
+            $stmtProject = $this->getConnection()->prepare($sqlCheckProject);
+            $stmtProject->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmtProject->execute();
+            $hasProject = $stmtProject->fetchColumn() > 0;
+
+            if (!$hasProject) {
+                return 0;
+            }
+
+            $conditions[] = "adms_daman_project_id IN (
+            SELECT adms_daman_project_id 
+            FROM adms_daman_user_projects 
+            WHERE adms_daman_user_id = :logged_user_id
+        )";
+            $params['logged_user_id'] = $_SESSION['user_id'];
+        }
 
         if (!empty($filters['name'])) {
             $conditions[] = "name LIKE :name";
@@ -98,19 +152,16 @@ class MaterialStockRepository extends DbConnection
 
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
-        // Criar Query para recuperar todos os registros no banco de dados
         $sql = "SELECT COUNT(id) AS amount_records
-        FROM adms_daman_material_stock
-        {$where}";
+            FROM adms_daman_material_stock
+            {$where}";
 
-        // Preparar a Query
         $stmt = $this->getConnection()->prepare($sql);
 
         foreach ($params as $key => $value) {
             $stmt->bindValue(":{$key}", $value);
         }
 
-        // Executar a query
         $stmt->execute();
 
         return ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);

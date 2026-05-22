@@ -238,6 +238,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('stockId').value = button.getAttribute('data-id');
         document.getElementById('movementType').value = type;
         document.getElementById('itemName').textContent = button.getAttribute('data-name');
+        document.getElementById('itemNameHidden').value = button.getAttribute('data-name');
+        document.getElementById('categoryIdHidden').value = button.getAttribute('data-category');
 
     });
 

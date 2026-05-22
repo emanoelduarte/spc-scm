@@ -48,6 +48,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
 
                     <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal" data-bs-target="#modalMovement"
                         data-id="<?= $this->data['material']['id']; ?>"
+                        data-category="<?= $this->data['material']['adms_daman_category_id']; ?>"
                         data-name="<?= htmlspecialchars($this->data['material']['name']); ?>" data-type="output">
                         Saída
                     </button>
@@ -133,6 +134,8 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
 
                         <input type="hidden" name="stock_id" id="stockId">
                         <input type="hidden" name="type" id="movementType">
+                        <input type="hidden" name="item_name" id="itemNameHidden">
+                        <input type="hidden" name="adms_daman_category_id" id="categoryIdHidden">
 
                         <p class="text-muted mb-3">Item: <strong id="itemName"></strong></p>
 
