@@ -8,13 +8,13 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
 <div class="container-fluid px-4">
 
     <div class="mb-1 hstack gap-2">
-        <h2 class="mt-3">Compras</h2>
+        <h2 class="mt-3">Compras Pendentes de Aprovação</h2>
 
         <ol class="breadcrumb mb-3 mt-3 ms-auto">
             <li class="breadcrumb-item">
                 <a class="text-decoration-none" href="<?= $_ENV['URL_ADM'] ?>dashboard">Dashboard</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Compras</li>
+            <li class="breadcrumb-item active" aria-current="page">Compras Pendentes</li>
             </li>
         </ol>
     </div>
@@ -40,7 +40,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                 class="fa-solid fa-magnifying-glass"></i>
                             Buscar
                         </button>
-                        <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>"
+                        <a href="<?= $_ENV['URL_ADM'] . 'list-purchasing-quotes'; ?>"
                             class="btn btn-secondary text-nowrap flex-grow-1 flex-sm-grow-0">
                             <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
                         </a>
@@ -61,8 +61,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
         <div class="card-header hstack gap-2">
             <span>Listar</span>
             <span class="ms-auto">
-                <a href="<?= $_ENV['URL_ADM'] . 'list-purchasing-quotes'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                        class="fa-solid fa-list"></i> Listar Compras Pendentes</a>
+
             </span>
         </div>
 
@@ -71,80 +70,55 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
             include './app/admsDaman/Views/partials/alerts.php';
 
             // Acessa o IF quando encontrar o elemento no array compras
-            if ($this->data['purchasings'] ?? false) {
+            if ($this->data['purchasingsQuote'] ?? false) {
             ?>
 
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">N°. Compra</th>
-                            <th scope="col">N°. Pedido</th>
-                            <th scope="col" class="d-none d-md-table-cell">Comprador</th>
-                            <th scope="col">Obra</th>
-                            <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
-                            <th scope="col" class="d-none d-md-table-cell">Status</th>
-                            <th scope="col" class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">N°. Compra</th>
+                        <th scope="col">N°. Pedido</th>
+                        <th scope="col" class="d-none d-md-table-cell">Comprador</th>
+                        <th scope="col">Obra</th>
+                        <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
 
-                        <?php
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <?php
                         // Percorrer o array de compras
-                        foreach ($this->data['purchasings'] as $purchasing) {
+                        foreach ($this->data['purchasingsQuote'] as $purchasing) {
                             extract($purchasing);
                         ?>
+                    <tr>
+                        <td><?= $id ?></td>
+                        <td><?= $adms_daman_order_id ?></td>
+                        <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
+                        <td><?= $project_name ?></td>
+                        <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
 
-                            <?php
-                            // Verificar o Status e aplicar a cor na borda do pedido
-                            switch ($purchasing_status_id) {
-                                case 1:
-                                    $highlightClass = "highlight-purchasing-purchased";
-                                    break;
-                                case 2:
-                                    $highlightClass = "highlight-purchasing-canceled";
-                                    break;
-                            }
-                            ?>
-                            <tr class="<?= $highlightClass ?>">
-                                <td><?= $id ?></td>
-                                <td><?= $adms_daman_order_id ?></td>
-                                <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
-                                <td><?= $project_name ?></td>
-                                <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
-                                <td class="d-none d-md-table-cell"><?= $purchasing_status ?></td>
-                                <td class="text-center">
-                                    <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
-                                        <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing/' . $id; ?>"
-                                            class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
-                                    <?php endif; ?>
+                        <td class="text-center">
 
-                                    <?php if (in_array("DeletePurchasing", $this->data['buttonPermissions'])): ?>
-                                        <?php  // Formulário para envio dos dados para deletar compra 
-                                        ?>
-                                        <form id="formDelete<?= $id; ?>" action="<?= $_ENV['URL_ADM']; ?>delete-purchasing"
-                                            method="POST" class="d-inline">
+                            <?php if (in_array("ViewPurchasingQuote", $this->data['buttonPermissions'])): ?>
 
-                                            <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
+                            <a href="<?= $_ENV['URL_ADM'] . 'view-purchasing-quote/' . $id; ?>"
+                                class="btn btn-primary btn-sm me-1 mb-1"><i class="fa-solid fa-eye"></i> Visualizar</a>
 
-                                            <input type="hidden" name="id" id="id" value="<?= $id ?? ''; ?>">
+                            <?php endif; ?>
 
-                                            <button type="submit" class="btn btn-danger btn-sm me-1 mb-1"
-                                                onclick="confirmDeletion(event, <?= $id ?>)"> <i class="fa-solid fa-trash"></i>
-                                                Apagar</button>
-                                        </form>
-                                    <?php endif; ?>
-
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
 
             <?php
                 // Adiconar o arquivo de paginação
                 require_once './app/admsDaman/Views/partials/pagination.php';
             } else {
-                echo "<div class='alert alert-danger' role='alert'>Nenhuma compra encontrada!</div>";
+                echo "<div class='alert alert-danger' role='alert'>Nenhuma compra pendente encontrada!</div>";
             }
             ?>
         </div>
@@ -192,31 +166,6 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
 
                         // Verificar se deve manter selecionada a opção
                         $selected = isset($this->data['search']['adms_daman_project_id']) && $this->data['search']['adms_daman_project_id'] == $id ? 'selected' : '';
-
-                        echo "<option value='$id' $selected>$name</option>";
-                    }
-                }
-                ?>
-            </select>
-        </div>
-
-        <div class="mb-2">
-            <label class="fw-bold">Status</label>
-
-            <select name="adms_daman_acquisition_purchasing_status_id" class="form-select"
-                id="adms_daman_acquisition_purchasing_status_id">
-                <option value="" selected>Selecione</option>
-
-                <?php
-                // Verificar se existe pacotes
-                if ($this->data['getAllPurchasingStatusSelect'] ?? false) {
-
-                    // Percorrer array de pacotes
-                    foreach ($this->data['getAllPurchasingStatusSelect'] as $getAllPurchasingStatusSelect) {
-                        extract($getAllPurchasingStatusSelect);
-
-                        // Verificar se deve manter selecionada a opção
-                        $selected = isset($this->data['search']['adms_daman_acquisition_purchasing_status_id']) && $this->data['search']['adms_daman_acquisition_purchasing_status_id'] == $id ? 'selected' : '';
 
                         echo "<option value='$id' $selected>$name</option>";
                     }

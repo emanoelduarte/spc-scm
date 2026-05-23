@@ -1,6 +1,7 @@
 CRIAÇÕES - CONTROLLERS
 -> Diretório (materialstock)
--> Controllers ('CreateMaterialStock','CreateStockMovement','ListMaterialStock','UpdateMaterialStock','ViewMaterialStock')
+-> Controllers
+('CreateMaterialStock','CreateStockMovement','ListMaterialStock','UpdateMaterialStock','ViewMaterialStock')
 
 MUDANÇAS - MENU
 -> ADICONADO O NOVO MENU DE ESTOQUE
@@ -30,3 +31,17 @@ CRIAÇÕES - REPOSITORY
 
 
 IMPLEMENTAR VALIDAÇÃO DE NÃO GERAÇÃO DE PDF EM COMPRAS COM STATUS CANCELADO
+
+-> Criar a Migration tabela de compras pendentes
+-> Criar a Migration tabela de itens pendentes
+-> Rodar MIGRATIONS
+-> Mudar Ação do Forms ( <?= $_ENV['URL_ADM'] ?>create-purchasing-quote" )e o Botão
+-> Criar o Repository PurchasingQuoteRepository
+-> Criar a Controller CreatePurchasingQuote e usar (adaptar) a generate existente para chamar
+-> Criar a Controller ListPurchasingQuote e View listQuote
+    -> Incluir botão de listagem de compras pendentes na listagem de compras
+-> Criar a Controller ViewPurchasingQuote e a View ViewPurchasingQuote
+    -> Modificar o script.js para confirmar a aprovação
+-> Ajustar o Repository PurchasingRepository para o envio da aprovação
+-> Criar a controller ApprovePurchasingQuote (controller de aprovação)
+-> Criar a controller RejectPurchasungQuote (controller de rejeição)

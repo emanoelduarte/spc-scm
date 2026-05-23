@@ -7,14 +7,12 @@ use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingItemnsServ
 use App\admsDaman\Controllers\Services\Validation\ValidationPurchasingService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\DiscountCalculator;
-use App\admsDaman\Helpers\NormalizeDecimal;
 use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
 use App\admsDaman\Models\Repository\PurchasingRepository;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Views\Services\LoadViewService;
-use Normalizer;
 
 class GeneratePurchasing
 {
@@ -43,11 +41,6 @@ class GeneratePurchasing
 
         // Acessa o IF se existir o CSRF e for válido o CSRF
         if (isset($this->data['form']['csrf_token']) and CSRFHelper::validateCSRFToken('form_generate_purchasing', $this->data['form']['csrf_token'])) {
-
-            // Chamar método cadastrar passando pelas validações necessárias
-            $this->addPurchasing();
-            // var_dump($this->data['form']);
-            // exit;
         } else {
             // Chamar o método carregar a view
             $this->viewPurchasing();
@@ -92,79 +85,5 @@ class GeneratePurchasing
         // Carregar a VIEW
         $loadView = new LoadViewService("admsDaman/Views/purchasing/generate", $this->data);
         $loadView->loadView();
-    }
-
-    private function addPurchasing()
-    {
-        // Instaciar a classe que valida os dados do formulário de dados gerais do pedido com Rakit
-        $validationPurchasing = new ValidationPurchasingService();
-        $this->data['errors'] = $validationPurchasing->validate($this->data['form']);
-
-        // Acessa o if quando existir algum campo com dados incorretos
-        if (!empty($this->data['errors'])) {
-
-            // Chamar o método carregar a view
-            $this->viewPurchasing();
-
-            return;
-        }
-
-        // Instaciar a classe que valida os dados do formulário de dados gerais do pedido com Rakit
-        $validationPurchasingItems = new ValidationPurchasingItemnsService();
-        $this->data['errors'] = $validationPurchasingItems->validate($this->data['form']);
-
-        // Acessa o if quando existir algum campo com dados incorretos
-        if (!empty($this->data['errors'])) {
-
-            // Chamar o método carregar a view
-            $this->viewPurchasing();
-
-            return;
-        }
-
-        // Calcular Desconto e atribuir novo valor ao array ou retornar mensagem de erro para o usuário
-        $calculateDiscount = new DiscountCalculator();
-        $discount = $calculateDiscount->calculateDiscount($this->data['form']);
-
-        if ($discount !== false) {
-            $this->data['form']['discount_value'] = $discount;
-        } else {
-            // Criar a mensagem de erro ao tentar cadastrar
-            $this->data['errors'][] = "Para aplicar o desconto, é necessário informar o valor e escolher uma modalidade de desconto!";
-
-            // Chamar o método carregar a view
-            $this->viewPurchasing();
-
-            return;
-        }
-
-        // Instanciar o Repository para cadastrar o Compra
-        $generatePurchasing = new PurchasingRepository();
-        $result = $generatePurchasing->generatePurchasing($this->data['form']);
-
-        // Acesso o IF se o repository retornou true
-        if ($result) {
-            // Atualizar Status do pedido
-            $changeStatus = new OrdersRepository();
-            $changeStatus->updateAutomaticOrderStatus($this->data['form']['adms_daman_order_id']);
-
-            // Criar comentário com a data da compra relacionada ao pedido
-            $createComment = new OrderCommentsRepository();
-            $createComment->createAutomaticOrderPurchased($this->data['form']['adms_daman_order_id']);
-
-            // Criar a mensagem de sucesso ao cadastrar
-            $_SESSION['success'] = "Compra cadastrada com sucesso!";
-
-            // Redirecionar o usuário para a página de visualizar a compra recem criada
-            header("Location: {$_ENV['URL_ADM']}view-purchasing/$result");
-
-            return;
-        } else {
-            // Criar a mensagem de erro ao tentar cadastrar
-            $this->data['errors'][] = "Compra não cadastrada!";
-
-            // Chamar o método carregar a view
-            $this->viewPurchasing();
-        }
     }
 }

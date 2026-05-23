@@ -27,8 +27,8 @@ use App\admsDaman\Helpers\CSRFHelper;
 
             <span class="ms-auto d-sm-flex flex-row">
                 <?php if (in_array("ListPurchasings", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
-                            class="fa-solid fa-list"></i> Listar</a>
+                <a href="<?= $_ENV['URL_ADM'] . 'list-purchasings'; ?>" class="btn btn-info btn-sm me-1 mb-1"><i
+                        class="fa-solid fa-list"></i> Listar</a>
                 <?php endif; ?>
             </span>
 
@@ -40,9 +40,9 @@ use App\admsDaman\Helpers\CSRFHelper;
             // var_dump($this->data['getOrder'], $this->data['getItems']);
             ?>
 
-            <form action="" method="POST" class="row g-3">
+            <form action="<?= $_ENV['URL_ADM'] ?>create-purchasing-quote" method="POST" class="row g-3">
                 <input type="hidden" name="csrf_token"
-                    value="<?php echo CSRFHelper::generateCSRFToken('form_generate_purchasing'); ?>" id="">
+                    value="<?php echo CSRFHelper::generateCSRFToken('form_generate_purchasing_quote'); ?>" id="">
 
                 <div class="col-lg-4 col-md-6 col-sm-12">
                     <label for="adms_daman_supplier_id" class="form-label">Fornecedores</label>
@@ -74,11 +74,11 @@ use App\admsDaman\Helpers\CSRFHelper;
                         placeholder="dd/mm/yyyy">
 
                     <script>
-                        flatpickr("#expected_receipt_date", {
-                            dateFormat: "d/m/Y",
-                            locale: "pt", // Para português
-                            minDate: new Date() // hoje + 3 dias
-                        });
+                    flatpickr("#expected_receipt_date", {
+                        dateFormat: "d/m/Y",
+                        locale: "pt", // Para português
+                        minDate: new Date() // hoje + 3 dias
+                    });
                     </script>
                 </div>
 
@@ -187,85 +187,87 @@ use App\admsDaman\Helpers\CSRFHelper;
                     // var_dump($this->data['getItems']);
                 ?>
 
-                    <table class="table table-striped mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Item</th>
-                                <th>Descrição</th>
-                                <th>Unidade</th>
-                                <th>Quantidade</th>
-                                <th>Preço Unit.</th>
-                                <th>Total</th>
-                                <th>Selecione</th>
-                            </tr>
-                        </thead>
+                <table class="table table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Item</th>
+                            <th>Descrição</th>
+                            <th>Unidade</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unit.</th>
+                            <th>Total</th>
+                            <th>Selecione</th>
+                        </tr>
+                    </thead>
 
-                        <tbody>
-                            <?php
+                    <tbody>
+                        <?php
                             // Iniciar a variável contadora e total
                             $qtd_items = 0;
                             $sub_tot = 0;
                             foreach ($this->data['getItems'] as  $key => $item):
                             ?>
 
-                                <tr>
-                                    <td><?= $qtd_items += 1 ?></td>
-                                    <td>
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <input type="text" class="form-control" name="items[<?= $key ?>][description]"
-                                                value="<?= $item['description']; ?>" readonly>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="items[<?= $key ?>][adms_daman_measurement_units_id]"
-                                            value="<?= $item['adms_daman_measurement_units_id']; ?>">
+                        <tr>
+                            <td><?= $qtd_items += 1 ?></td>
+                            <td>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="text" class="form-control" name="items[<?= $key ?>][description]"
+                                        value="<?= $item['description']; ?>" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="hidden" name="items[<?= $key ?>][adms_daman_measurement_units_id]"
+                                    value="<?= $item['adms_daman_measurement_units_id']; ?>">
 
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <input type="text" class="form-control" name="items[<?= $key ?>][measurement_units]"
-                                                value="<?= $item['measurement_units']; ?>" readonly>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <input type="text" class="form-control"
-                                                name="items[<?= $key ?>][purchased_quantity]"
-                                                value="<?= $item['purchased_quantity']; ?>" readonly>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="col-lg-12 col-md-12 col-sm-12">
-                                            <input type="text" class="form-control" name="items[<?= $key ?>][unit_price]"
-                                                value="<?= $item['unit_price']; ?>" readonly>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <?php
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="text" class="form-control" name="items[<?= $key ?>][measurement_units]"
+                                        value="<?= $item['measurement_units']; ?>" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="text" class="form-control"
+                                        name="items[<?= $key ?>][purchased_quantity]"
+                                        value="<?= $item['purchased_quantity']; ?>" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <input type="text" class="form-control" name="items[<?= $key ?>][unit_price]"
+                                        value="<?= $item['unit_price']; ?>" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <?php
                                         $tot_item = $item['purchased_quantity'] * $item['unit_price']
                                         ?>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center">
-                                            <span><?= number_format($tot_item, 2, ',', '.') ?></span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input"
-                                                name="items[<?= $key ?>][selected_item]" value="1" id="checkDefault">
-                                        </div>
-                                    </td>
-                                </tr>
+                                <div class="col-lg-12 col-md-12 col-sm-12 d-flex align-items-center">
+                                    <span><?= number_format($tot_item, 2, ',', '.') ?></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                        name="items[<?= $key ?>][selected_item]" value="1" id="checkDefault">
+                                </div>
+                            </td>
+                        </tr>
 
-                            <?php
+                        <?php
                             endforeach;
                             ?>
-                        </tbody>
-                    </table>
+                    </tbody>
+                </table>
 
                 <?php else: ?>
-                    <div class='alert alert-danger' role='alert'>Compra sem itens para exibir</div>
+                <div class='alert alert-danger' role='alert'>Compra sem itens para exibir</div>
                 <?php endif; ?>
 
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-sm" onclick="showLoading()">Gerar Compra</button>
+                    <button type="submit" class="btn btn-primary btn-sm" onclick="showLoading()"> <i
+                            class="fa-solid fa-clock"></i> Enviar para
+                        Aprovação</button>
                 </div>
             </form>
         </div>

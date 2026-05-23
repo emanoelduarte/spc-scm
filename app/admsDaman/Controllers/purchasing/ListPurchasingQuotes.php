@@ -5,10 +5,10 @@ namespace App\admsDaman\Controllers\purchasing;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\ProjectsRepository;
-use App\admsDaman\Models\Repository\PurchasingRepository;
+use App\admsDaman\Models\Repository\PurchasingQuoteRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
-class ListPurchasings
+class ListPurchasingQuotes
 {
     /** @var array|string|null $dados Recebe os dados que devem ser enviados para a View */
     private array|string|null $data = null;
@@ -21,20 +21,20 @@ class ListPurchasings
         $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
         // Instanciar o Repository para recuperar os registros do banco de dados
-        $listPurchasings = new PurchasingRepository();
-        $listPurchasings->getAllPurchasings();
+        $listPurchasingsQuotes = new PurchasingQuoteRepository();
+        $listPurchasingsQuotes->getAllPurchasingsQuotes();
 
-        $this->data['purchasings'] = $listPurchasings->getAllPurchasings(
+        $this->data['purchasingsQuote'] = $listPurchasingsQuotes->getAllPurchasingsQuotes(
             (int) $page,
             (int) $this->limitResult,
             $this->data['search']
         );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listPurchasings->getAmountPurchasings(),
+            (int) $listPurchasingsQuotes->getAmountPurchasingQuotes(),
             (int) $this->limitResult,
             (int) $page,
-            'list-purchasings'
+            'list-purchasing-quotes'
         );
 
         $this->data['purchasing_number'] = $this->data['search'];
@@ -43,21 +43,18 @@ class ListPurchasings
         $getAllProjectsSelect = new ProjectsRepository();
         $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
 
-        $getAllPurchasingStatusSelect = new PurchasingRepository();
-        $this->data['getAllPurchasingStatusSelect'] = $getAllPurchasingStatusSelect->getAllPurchasingStatusSelect();
-
         // Configurar os elementos da página
         $pageElements = [
             'title_head' => "Listar Compras",
-            'menu' => "list-purchasings",
-            'buttonPermissions' => ["ViewPurchasing", "DeletePurchasing"],
+            'menu' => "list-purchasing-quotes",
+            'buttonPermissions' => ["ViewPurchasingQuote"],
         ];
 
         $pageLayoutService = new PageLayoutService();
         $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
 
         // Carregar a VIEW
-        $loadView = new LoadViewService("admsDaman/Views/purchasing/list", $this->data);
+        $loadView = new LoadViewService("admsDaman/Views/purchasing/listQuotes", $this->data);
         $loadView->loadView();
     }
 }
