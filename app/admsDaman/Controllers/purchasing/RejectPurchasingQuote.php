@@ -3,6 +3,7 @@
 namespace App\admsDaman\Controllers\purchasing;
 
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\PurchasingQuoteRepository;
 
 class RejectPurchasingQuote
@@ -44,6 +45,10 @@ class RejectPurchasingQuote
 
         // Acesso o IF se o repository retornou true
         if ($result) {
+
+            // Criar comentário com a data da rejeição relacionada ao pedido
+            $createComment = new OrderCommentsRepository();
+            $createComment->createAutomaticOrderRejected($this->data['form']);
 
             // Criar a mensagem de sucesso ao cadastrar/autorizar
             $_SESSION['success'] = "Compra rejeitada com sucesso!";

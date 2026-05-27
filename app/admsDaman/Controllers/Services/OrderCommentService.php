@@ -241,13 +241,16 @@ class OrderCommentService
 
         foreach ($arrayComments as $comment) {
 
+            $comment['user_name'] = $comment['type'] === 'auto' ? 'Sistema' : $comment['user_name'];
+
+
             $item = [
                 'title' => '',
                 'message' => '',
                 'icon' => 'bi-chat',
                 'color' => 'secondary',
                 'created_at' => $comment['created_at'],
-                'user_name' => $comment['user_name'] ?? 'Sistema'
+                'user_name' => $comment['user_name'],
             ];
 
             switch ($comment['action']) {
@@ -257,6 +260,13 @@ class OrderCommentService
                     $item['message'] = $this->formatCommentUser($comment);
                     $item['icon'] = 'fa-comment';
                     $item['color'] = 'primary';
+                    break;
+
+                case 'rejected':
+                    $item['title'] = 'Compra não aprovada';
+                    $item['message'] = $this->formatRejected($comment);
+                    $item['icon'] = 'fa-ban';
+                    $item['color'] = 'danger';
                     break;
 
                 case 'purchased_in':
@@ -286,7 +296,7 @@ class OrderCommentService
                     $item['icon'] = 'fa-align-left';
                     $item['color'] = 'warning';
                     break;
-                
+
                 case 'update_categorie':
                     $item['title'] = 'Obra Editada';
                     $item['message'] = $this->formatUpdateCategorie($comment);
@@ -300,7 +310,7 @@ class OrderCommentService
                     $item['icon'] = 'fa-pencil';
                     $item['color'] = 'warning';
                     break;
-                
+
                 case 'update_observation':
                     $item['title'] = 'Observação Editada';
                     $item['message'] = $this->formatUpdateObservation($comment);
@@ -358,9 +368,13 @@ class OrderCommentService
 
     private function formatCommentPurchased(array $c): string
     {
-        $formatedDate = date('d/m/Y', strtotime($c['created_at']));
-        $formatedHour = date('H:i', strtotime($c['created_at']));
-        return "Uma compra realizada deste pedido em {$formatedDate} às {$formatedHour}";
+        return "Uma compra realizada deste pedido";
+    }
+
+    private function formatRejected(array $c): string
+    {
+        $comment = $c['comment']; // Vem do banco formulado
+        return "$comment";
     }
 
     private function formatUpdateProject(array $c): string
@@ -378,7 +392,7 @@ class OrderCommentService
         return "{$c['comment']}";
     }
 
-     private function formatUpdateObservation(array $c): string
+    private function formatUpdateObservation(array $c): string
     {
         return "Editou a observação do pedido de {$c['old_value']} para {$c['new_value']}";
     }

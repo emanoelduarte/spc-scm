@@ -83,7 +83,7 @@ class OrderCommentsRepository extends DbConnection
     }
 
     /**
-     * Metodo para mudar status automático do pedido a gerar uma compra.
+     * Metodo para comentar automáticamente no pedido ao gerar uma compra.
      */
     public function createAutomaticOrderPurchased(int $idOrder): bool
     {
@@ -111,6 +111,48 @@ class OrderCommentsRepository extends DbConnection
 
                 // Chamar o método para salvar o log
                 GenerateLog::generateLog("error", "Comentário não inserido.", ['id_pedido' => $idOrder]);
+
+                return false;
+            }
+        } catch (Exception $e) {
+            // Chamar o método para salvar o log
+            GenerateLog::generateLog("error", "Comentário não inserido.", ['name' => $_SESSION['user_name'], 'error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Metodo para mudar status automático da cotação, de pending para aproved ou rejected.
+     */
+    public function createAutomaticOrderRejected(array $data): bool
+    {
+        try {
+            $sql = "INSERT INTO adms_daman_order_comments  (adms_daman_order_id, adms_daman_user_id, type, action, comment, created_at)
+        VALUES (:adms_daman_order_id, :adms_daman_user_id, :type, :action, :comment, :created_at)";
+
+            $comment = "Solicitação de autorização para cotação N° " . $data['id'] . " Rejeitada, motivo: " . $data['new_rejection_reason'];
+            // Preparar a QUERY
+            $stmt = $this->getConnection()->prepare($sql);
+
+            // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':adms_daman_order_id', $data['adms_daman_order_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':type', 'auto', PDO::PARAM_STR);
+            $stmt->bindValue(':action', 'rejected', PDO::PARAM_STR);
+            $stmt->bindValue(':comment', $comment, PDO::PARAM_STR);
+            $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
+
+            // Executar a QUERY
+            $stmt->execute();
+
+            // Verificar o número de linhas afetadas
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+
+                // Chamar o método para salvar o log
+                GenerateLog::generateLog("error", "Comentário não inserido.", ['id_pedido' => $data['adms_daman_order_id']]);
 
                 return false;
             }

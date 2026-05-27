@@ -26,10 +26,10 @@ class OrdersRepository extends DbConnection
         $conditions = [];
         $params = [];
 
-        // Verificar se o usuário é Admin, Super Admin ou Comprador
+        // Verificar se o usuário é Super Admin, Admin, Comprador ou Almoxarife
         $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
             WHERE adms_daman_user_id = :check_user_id 
-            AND adms_daman_access_level_id IN (1, 2, 5)";
+            AND adms_daman_access_level_id IN (1, 2, 5, 6)";
 
         $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
         $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
