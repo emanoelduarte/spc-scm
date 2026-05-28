@@ -262,7 +262,8 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                                             </td>
                                             <td>
                                                 <span class="badge <?= $typeBadge ?>">
-                                                    <?= number_format((float) $movement['quantity'], 2, ',', '.') ?>
+                                                    <?php $operator = $movement['type'] === 'input' ? '+' : '-';?>
+                                                    <?= $operator . number_format((float) $movement['quantity'], 2, ',', '.') ?>
 
                                                     <?= htmlspecialchars($this->data['material']['measurement_unit']) ?>
                                                 </span>
