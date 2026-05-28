@@ -169,7 +169,7 @@ class MaterialStockRepository extends DbConnection
 
     public function getUniqueMaterial(int $materialId)
     {
-        $sql = "SELECT ams.id, ams.adms_daman_measurement_units_id, ams.adms_daman_project_id, adms_daman_category_id, ams.name, ams.current_quantity, ams.min_quantity, ams.created_at,
+        $sql = "SELECT ams.id, ams.adms_daman_measurement_units_id, ams.adms_daman_project_id, adms_daman_category_id, ams.name, ams.current_quantity, ams.min_quantity, ams.obs, ams.created_at,
         admu.name AS measurement_unit,
         adp.name AS project_name
         FROM adms_daman_material_stock AS ams
@@ -195,7 +195,7 @@ class MaterialStockRepository extends DbConnection
         try { // Permanece no try se não houver nenhum erro
 
             // QUERY cadastrar material
-            $sql = 'INSERT INTO adms_daman_material_stock (name, adms_daman_measurement_units_id, adms_daman_project_id, adms_daman_category_id, current_quantity, min_quantity, created_at) VALUES (:name, :adms_daman_measurement_units_id, :adms_daman_project_id, :adms_daman_category_id, :current_quantity, :min_quantity, :created_at)';
+            $sql = 'INSERT INTO adms_daman_material_stock (name, adms_daman_measurement_units_id, adms_daman_project_id, adms_daman_category_id, current_quantity, min_quantity, obs, created_at) VALUES (:name, :adms_daman_measurement_units_id, :adms_daman_project_id, :adms_daman_category_id, :current_quantity, :min_quantity, :obs, :created_at)';
 
             // Preparar a QUERY
             $stmt = $this->getConnection()->prepare($sql);
@@ -207,6 +207,7 @@ class MaterialStockRepository extends DbConnection
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':current_quantity', (float) $data['quantity']);
             $stmt->bindValue(':min_quantity', (float) $data['min_quantity']);
+            $stmt->bindValue(':obs', $data['obs'] ?? null, PDO::PARAM_STR);
             $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
 
             // Executar a QUERY
@@ -235,7 +236,7 @@ class MaterialStockRepository extends DbConnection
 
             // Query para atualizar o material
             $sql = "UPDATE adms_daman_material_stock
-            SET name = :name, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, adms_daman_category_id = :adms_daman_category_id, min_quantity = :min_quantity, updated_at = :updated_at";
+            SET name = :name, adms_daman_measurement_units_id = :adms_daman_measurement_units_id, adms_daman_category_id = :adms_daman_category_id, min_quantity = :min_quantity, obs = :obs, updated_at = :updated_at";
 
             // Condição para indicar qual registo editar
             $sql .= ' WHERE id = :id';
@@ -248,6 +249,7 @@ class MaterialStockRepository extends DbConnection
             $stmt->bindValue(':adms_daman_measurement_units_id', $data['adms_daman_measurement_units_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':min_quantity', (float) $data['min_quantity']);
+            $stmt->bindValue(':obs', $data['obs'] ?? null, PDO::PARAM_STR);
             $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
             $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
 

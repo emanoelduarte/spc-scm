@@ -45,3 +45,11 @@ IMPLEMENTAR VALIDAÇÃO DE NÃO GERAÇÃO DE PDF EM COMPRAS COM STATUS CANCELADO
 -> Ajustar o Repository PurchasingRepository para o envio da aprovação
 -> Criar a controller ApprovePurchasingQuote (controller de aprovação)
 -> Criar a controller RejectPurchasungQuote (controller de rejeição)
+
+-------------------------------
+
+Migrations de adição da coluna observação no cadastro de material
+Adicionar Textarea na view do create (obs) modificar as classes de tamanho conforme a tela do formulário
+Incluir a coluna obs no getUniqueMaterial, creteMaterial e updateMaterial do MaterialStockRepository
+Incluir o Textarea na view do update (obs)
+Adicionar a observação do material na view

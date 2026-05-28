@@ -36,13 +36,13 @@ use App\admsDaman\Helpers\CSRFHelper;
                 <input type="hidden" name="csrf_token"
                     value="<?= CSRFHelper::generateCSRFToken('form_create_material'); ?>" id="">
 
-                <div class="col-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                     <label for="name" class="form-label">Material:</label>
                     <input type="text" class="form-control" id="name" name="name"
                         value="<?= $this->data['form']['name'] ?? ''; ?>" placeholder="Material">
                 </div>
 
-                <div class="col-lg-1">
+                <div class="col-lg-1 col-md-6 col-sm-12">
                     <label for="name" class="form-label">Unidades:</label>
 
                     <select name="adms_daman_measurement_units_id" class="form-select"
@@ -67,7 +67,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <div class="col-lg-2 col-sm-12">
+                <div class="col-lg-2 col-md-6 col-sm-12">
                     <label for="adms_daman_category_id" class="form-label">Categoria</label>
 
                     <select name="adms_daman_category_id" class="form-select" id="adms_daman_category_id">
@@ -91,7 +91,7 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <div class="col-lg-2 col-sm-12">
+                <div class="col-lg-2 col-md-6 col-sm-12">
                     <label for="adms_daman_project_id" class="form-label">Obra de Destino</label>
 
                     <select name="adms_daman_project_id" class="form-select" id="adms_daman_project_id">
@@ -115,16 +115,21 @@ use App\admsDaman\Helpers\CSRFHelper;
                     </select>
                 </div>
 
-                <div class="col-lg-1 col-sm-12">
+                <div class="col-lg-1 col-md-6 col-sm-12">
                     <label class="form-label">Quantidade</label>
                     <input type="number" name="quantity" class="form-control" min="0.01" step="0.01"
                         value="<?= $this->data['form']['quantity'] ?? ''; ?>" required>
                 </div>
 
-                <div class="col-lg-2 col-sm-12">
+                <div class="col-lg-2 col-md-6 col-sm-12">
                     <label class="form-label">Quantidade Mínima</label>
                     <input type="number" name="min_quantity" class="form-control" min="0.01" step="0.01"
                         value="<?= $this->data['form']['min_quantity'] ?? ''; ?>">
+                </div>
+
+                <div class="col-12">
+                    <label for="obs" class="form-label">Observação</label>
+                    <textarea class="form-control" placeholder="Observação" name="obs" id="obs" style="height: 100px"><?= $this->data['form']['obs'] ?? ''; ?></textarea>
                 </div>
 
                 <div class="col-12">

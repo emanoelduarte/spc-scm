@@ -106,7 +106,10 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                         <?= number_format($current, 2, ',', '.') ?>
                     </span>
                 </div>
-
+                <div class="col-12">
+                    <small class="text-muted d-block">Observação</small>
+                    <?= htmlspecialchars($this->data['material']['obs'] ?? '') ?>
+                </div>
             </div>
         </div>
     </div>
@@ -221,12 +224,27 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                                                 <small><?= date('d/m/Y H:i', strtotime($movement['created_at'])) ?></small>
                                             </td>
 
+                                            <style>
+                                                .success_personality {
+                                                    background-color: #18571822;
+                                                    border-radius: 5px;
+                                                    border: 1px solid #018401;
+                                                    color: #018401;
+                                                }
+                                                .danger_personality {
+                                                    background-color: #d9534f22;
+                                                    border-radius: 5px;
+                                                    border: 1px solid #d9534f;
+                                                    color: #d9534f;
+                                                }
+                                            </style>
+
                                             <td>
                                                 <?php
                                                 $typeLabel = $movement['type'] === 'input' ? 'Entrada' : 'Saída';
-                                                $typeBadge = $movement['type'] === 'input' ? 'success' : 'danger';
+                                                $typeBadge = $movement['type'] === 'input' ? 'success_personality' : 'danger_personality';
                                                 ?>
-                                                <span class="badge bg-<?= $typeBadge ?>">
+                                                <span class="badge <?= $typeBadge ?>">
                                                     <?= $typeLabel ?>
                                                 </span>
                                             </td>
@@ -242,10 +260,12 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                                                 echo $reasons[$movement['reason']] ?? '—';
                                                 ?>
                                             </td>
-
                                             <td>
-                                                <?= number_format((float) $movement['quantity'], 2, ',', '.') ?>
-                                                <?= htmlspecialchars($this->data['material']['measurement_unit']) ?>
+                                                <span class="badge <?= $typeBadge ?>">
+                                                    <?= number_format((float) $movement['quantity'], 2, ',', '.') ?>
+
+                                                    <?= htmlspecialchars($this->data['material']['measurement_unit']) ?>
+                                                </span>
                                             </td>
 
                                             <td><?= htmlspecialchars($movement['project_name']) ?></td>
