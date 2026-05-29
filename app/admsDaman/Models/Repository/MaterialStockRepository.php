@@ -25,7 +25,7 @@ class MaterialStockRepository extends DbConnection
         $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels AS adual
                       INNER JOIN adms_daman_access_levels AS adal ON adal.id = adual.adms_daman_access_level_id
                       WHERE adual.adms_daman_user_id = :check_user_id 
-                      AND adal.id IN (1, 2, 5)"; // Ajustar os ids conforme seus níveis
+                      AND adal.id IN (1, 2, 5, 6)"; // Ajustar os ids conforme seus níveis
 
         $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
         $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
@@ -118,7 +118,7 @@ class MaterialStockRepository extends DbConnection
         $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels AS adual
                       INNER JOIN adms_daman_access_levels AS adal ON adal.id = adual.adms_daman_access_level_id
                       WHERE adual.adms_daman_user_id = :check_user_id 
-                      AND adal.id IN (1, 2, 3)";
+                      AND adal.id IN (1, 2, 5, 6)";
 
         $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
         $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
@@ -200,8 +200,10 @@ class MaterialStockRepository extends DbConnection
             // Preparar a QUERY
             $stmt = $this->getConnection()->prepare($sql);
 
+            $descriptionUpper = mb_convert_case($data['name'], MB_CASE_TITLE, 'UTF-8');
+
             // Substituir os links da QUERY pelo valor
-            $stmt->bindValue(':name', $data['name'], PDO::PARAM_STR);
+            $stmt->bindValue(':name', $descriptionUpper, PDO::PARAM_STR);
             $stmt->bindValue(':adms_daman_measurement_units_id', $data['adms_daman_measurement_units_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
@@ -244,8 +246,10 @@ class MaterialStockRepository extends DbConnection
             // Preparar a Query
             $stmt = $this->getConnection()->prepare($sql);
 
-            //Substitui os links pelos valores
-            $stmt->bindValue(':name', $data['name'], PDO::PARAM_STR);
+            $descriptionUpper = mb_convert_case($data['name'], MB_CASE_TITLE, 'UTF-8');
+
+            // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':name', $descriptionUpper, PDO::PARAM_STR);
             $stmt->bindValue(':adms_daman_measurement_units_id', $data['adms_daman_measurement_units_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':min_quantity', (float) $data['min_quantity']);
