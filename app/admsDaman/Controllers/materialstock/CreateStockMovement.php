@@ -105,7 +105,7 @@ class CreateStockMovement
             header('Location: ' . $redirectTo);
             return;
         } else {
-            $_SESSION['error'] = "Erro ao registrar movimentação. Tente novamente.";
+            $_SESSION['error'] = "Erro ao registrar movimentação. Verifique o saldo do material e tente novamente.";
             header('Location: ' . $redirectTo);
             return;
         }
