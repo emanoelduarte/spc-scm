@@ -48,6 +48,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
 
                     <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal" data-bs-target="#modalMovement"
                         data-id="<?= $this->data['material']['id']; ?>"
+                        data-project="<?= $this->data['material']['adms_daman_project_id']; ?>"
                         data-category="<?= $this->data['material']['adms_daman_category_id']; ?>"
                         data-name="<?= htmlspecialchars($this->data['material']['name']); ?>" data-type="output">
                         Saída
@@ -114,7 +115,9 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
         </div>
     </div>
 
-    <?php // Motal de abertura do formulário de entrada e saída
+    <?php
+    // Verificar se o usuário é encarregado — ajusta o id conforme seu banco
+    $isEncarregado = in_array(4, array_column($this->data['userAccessLevelsArray'], 'id'));
     ?>
 
     <div class="modal fade" id="modalMovement" tabindex="-1">
@@ -128,55 +131,65 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
 
                 <form action="<?= $_ENV['URL_ADM'] ?>create-stock-movement" method="POST">
 
-                    <div class="modal-body">
+                    <div class="modal-body" data-is-encarregado="<?= $isEncarregado ? '1' : '0' ?>">
 
-                        <input type="hidden" name="redirect_to"
-                            value="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $this->data['material']['id'] ?>">
-
+                        <input type="hidden" name="redirect_to" value="<?= $_ENV['URL_ADM'] ?>list-material-stock">
                         <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
-
                         <input type="hidden" name="stock_id" id="stockId">
                         <input type="hidden" name="type" id="movementType">
                         <input type="hidden" name="item_name" id="itemNameHidden">
                         <input type="hidden" name="adms_daman_category_id" id="categoryIdHidden">
 
+                        <!-- Se encarregado, reason já vem fixo -->
+                        <?php if ($isEncarregado) : ?>
+                            <input type="hidden" name="reason" value="consumption">
+                        <?php endif; ?>
+
                         <p class="text-muted mb-3">Item: <strong id="itemName"></strong></p>
+
+                        <input type="hidden" name="redirect_to"
+                            value="<?= $_ENV['URL_ADM'] . 'view-material-stock/' . $this->data['material']['id'] ?>">
 
                         <div class="mb-3">
                             <label class="form-label">Quantidade</label>
                             <input type="number" name="quantity" class="form-control" min="0.01" step="0.01" required>
                         </div>
 
-                        <div class="mb-3" id="projectField">
-                            <label class="form-label">Obra de destino</label>
-                            <select name="adms_daman_project_id" class="form-select" required>
-                                <option value="">Selecione</option>
-                                <?php foreach ($this->data['getAllProjectsSelectActive'] as $project) : ?>
-                                    <option value="<?= $project['id'] ?>">
-                                        <?= htmlspecialchars($project['name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                        <!-- Obra de destino — só aparece para não encarregado -->
+                        <?php if (!$isEncarregado) : ?>
+                            <div class="mb-3" id="projectField">
+                                <label class="form-label">Obra de destino</label>
+                                <select name="adms_daman_project_id" class="form-select" required>
+                                    <option value="">Selecione</option>
+                                    <?php foreach ($this->data['getAllProjectsSelectActive'] as $project) : ?>
+                                        <option value="<?= $project['id'] ?>">
+                                            <?= htmlspecialchars($project['name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-                        <!-- Obra fixa para entrada -->
+                        <!-- Obra fixa sempre presente -->
                         <input type="hidden" name="adms_daman_project_id" id="projectFixed">
 
-                        <div class="mb-3 d-none" id="reasonField">
-                            <label class="form-label">Motivo da saída</label>
-                            <select name="reason" class="form-select">
-                                <option value="">Selecione</option>
-                                <option value="consumption">Consumo na obra</option>
-                                <option value="transfer">Transferência para outra obra</option>
-                                <option value="return">Devolução ao fornecedor</option>
-                                <option value="discard">Descarte</option>
-                            </select>
-                        </div>
+                        <!-- Motivo da saída — só aparece para não encarregado -->
+                        <?php if (!$isEncarregado) : ?>
+                            <div class="mb-3 d-none" id="reasonField">
+                                <label class="form-label">Motivo da saída</label>
+                                <select name="reason" class="form-select">
+                                    <option value="">Selecione</option>
+                                    <option value="consumption">Consumo na obra</option>
+                                    <option value="transfer">Transferência para outra obra</option>
+                                    <option value="return">Devolução ao fornecedor</option>
+                                    <option value="discard">Descarte</option>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label class="form-label">Observação</label>
-                            <textarea name="observation" class="form-control" rows="2"
-                                placeholder="Opcional"></textarea>
+                            <textarea name="observation" class="form-control" rows="2" placeholder="Opcional"></textarea>
                         </div>
 
                     </div>
@@ -231,6 +244,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                                                     border: 1px solid #018401;
                                                     color: #018401;
                                                 }
+
                                                 .danger_personality {
                                                     background-color: #d9534f22;
                                                     border-radius: 5px;
@@ -262,7 +276,7 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
                                             </td>
                                             <td>
                                                 <span class="badge <?= $typeBadge ?>">
-                                                    <?php $operator = $movement['type'] === 'input' ? '+' : '-';?>
+                                                    <?php $operator = $movement['type'] === 'input' ? '+' : '-'; ?>
                                                     <?= $operator . number_format((float) $movement['quantity'], 2, ',', '.') ?>
 
                                                     <?= htmlspecialchars($this->data['material']['measurement_unit']) ?>

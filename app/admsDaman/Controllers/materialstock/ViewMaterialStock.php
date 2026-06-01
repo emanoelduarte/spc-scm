@@ -7,6 +7,7 @@ use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\MaterialStockMovementRepository;
 use App\admsDaman\Models\Repository\MaterialStockRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ViewMaterialStock
@@ -45,6 +46,10 @@ class ViewMaterialStock
         // Buscar informações de movimentação do material na obra:
         $viewMaterialMovement = new MaterialStockMovementRepository();
         $this->data['movements'] = $viewMaterialMovement->getMaterialMovement((int) $id);
+
+        // Solicitar do repositório de níveis de acesso do usuário os níveis do usuário logado para configurar o conteúdo que ele tem acesso para manipular saídas do estoque
+        $userAccessLevel = new UsersAccessLevelsRepository();
+        $this->data['userAccessLevelsArray'] = $userAccessLevel->getUsersAccessLevels($_SESSION['user_id']);
 
         // Verificar se encontrou o registro no banco de dados
         if (!$this->data['material']) {
