@@ -13,9 +13,10 @@ class OrderCommentsRepository extends DbConnection
     {
         $sql = "SELECT adoc.id, adoc.adms_daman_order_id, adoc.adms_daman_user_id, adoc.type, adoc.action, adoc.field, adoc.old_value, adoc.new_value, adoc.adms_daman_order_item_id, adoc.comment, adoc.created_at,
         
-        adu.name AS user_name
+        adu.name AS user_buyer, adu_approved.name AS user_approved
         FROM adms_daman_order_comments AS adoc
-        INNER JOIN adms_daman_users AS adu ON adu.id=adoc.adms_daman_user_id 
+        INNER JOIN adms_daman_users AS adu ON adu.id=adoc.adms_daman_user_id
+        LEFT JOIN adms_daman_users AS adu_approved ON adu_approved.id = adoc.adms_daman_approved_by 
         WHERE adoc.adms_daman_order_id = :adms_daman_order_id
         ORDER BY id DESC";
 
@@ -85,18 +86,19 @@ class OrderCommentsRepository extends DbConnection
     /**
      * Metodo para comentar automáticamente no pedido ao gerar uma compra.
      */
-    public function createAutomaticOrderPurchased(int $idOrder): bool
+    public function createAutomaticOrderPurchased(array $data): bool
     {
         try {
-            $sql = "INSERT INTO adms_daman_order_comments  (adms_daman_order_id, adms_daman_user_id, type, action, created_at)
-        VALUES (:adms_daman_order_id, :adms_daman_user_id, :type, :action, :created_at)";
+            $sql = "INSERT INTO adms_daman_order_comments  (adms_daman_order_id, adms_daman_user_id, adms_daman_approved_by, type, action, created_at)
+        VALUES (:adms_daman_order_id, :adms_daman_user_id, :adms_daman_approved_by, :type, :action, :created_at)";
 
             // Preparar a QUERY
             $stmt = $this->getConnection()->prepare($sql);
 
             // Substituir os links da QUERY pelo valor
-            $stmt->bindValue(':adms_daman_order_id', $idOrder, PDO::PARAM_INT);
-            $stmt->bindValue(':adms_daman_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_order_id', $data['adms_daman_order_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':adms_daman_approved_by', $_SESSION['user_id'], PDO::PARAM_INT);
             $stmt->bindValue(':type', 'auto', PDO::PARAM_STR);
             $stmt->bindValue(':action', 'purchased_in', PDO::PARAM_STR);
             $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
@@ -110,7 +112,7 @@ class OrderCommentsRepository extends DbConnection
             } else {
 
                 // Chamar o método para salvar o log
-                GenerateLog::generateLog("error", "Comentário não inserido.", ['id_pedido' => $idOrder]);
+                GenerateLog::generateLog("error", "Comentário não inserido.", ['id_pedido' => $data['adms_daman_order_id']]);
 
                 return false;
             }

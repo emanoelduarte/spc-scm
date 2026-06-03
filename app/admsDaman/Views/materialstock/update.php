@@ -108,6 +108,11 @@ use App\admsDaman\Helpers\CSRFHelper;
                 </div>
 
                 <div class="col-12">
+                    <label for="obs" class="form-label">Observação</label>
+                    <textarea class="form-control" placeholder="Observação" name="obs" id="obs" style="height: 100px"><?= $this->data['form']['obs'] ?? ''; ?></textarea>
+                </div>
+
+                <div class="col-12">
                     <button type="submit" class="btn btn-warning btn-sm" onclick="showLoading()">Editar</button>
                 </div>
             </form>

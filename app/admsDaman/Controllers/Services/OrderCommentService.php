@@ -241,8 +241,7 @@ class OrderCommentService
 
         foreach ($arrayComments as $comment) {
 
-            $comment['user_name'] = $comment['type'] === 'auto' ? 'Sistema' : $comment['user_name'];
-
+            $comment['user_name'] = $comment['type'] === 'auto' ? 'Sistema' : $comment['user_buyer'];
 
             $item = [
                 'title' => '',
@@ -250,6 +249,8 @@ class OrderCommentService
                 'icon' => 'bi-chat',
                 'color' => 'secondary',
                 'created_at' => $comment['created_at'],
+                'user_approved' => isset($comment['user_approved']) ? $comment['user_approved'] : '',
+                'user_buyer' => $comment['user_buyer'] ?? '',
                 'user_name' => $comment['user_name'],
             ];
 
@@ -367,8 +368,8 @@ class OrderCommentService
     }
 
     private function formatCommentPurchased(array $c): string
-    {
-        return "Uma compra realizada deste pedido";
+    {  
+        return $c['user_approved'] . ", autorizou uma compra deste pedido, solicitado por " . $c['user_buyer'];
     }
 
     private function formatRejected(array $c): string

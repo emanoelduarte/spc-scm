@@ -7,6 +7,7 @@ use App\admsDaman\Controllers\Services\PaginationService;
 use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\MaterialStockRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ListMaterialStock
@@ -52,6 +53,10 @@ class ListMaterialStock
         // Instanciar o repositório para preencher os selects.
         $getAllProjectsSelectActive = new ProjectsRepository();
         $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
+
+        // Solicitar do repositório de níveis de acesso do usuário os níveis do usuário logado para configurar o conteúdo que ele tem acesso para manipular saídas do estoque
+        $userAccessLevel = new UsersAccessLevelsRepository();
+        $this->data['userAccessLevelsArray'] = $userAccessLevel->getUsersAccessLevels($_SESSION['user_id']);
 
         // Configurar os elementos da página
         $pageElements = [

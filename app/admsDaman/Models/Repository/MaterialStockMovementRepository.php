@@ -14,6 +14,25 @@ class MaterialStockMovementRepository extends DbConnection
         try {
             $this->getConnection()->beginTransaction();
 
+            // 0. Verificar saldo antes de executar saída
+            if ($data['type'] === 'output') {
+                $sqlCheck = "SELECT current_quantity FROM adms_daman_material_stock WHERE id = :stock_id";
+                $stmtCheck = $this->getConnection()->prepare($sqlCheck);
+                $stmtCheck->bindValue(':stock_id', $data['stock_id'], PDO::PARAM_INT);
+                $stmtCheck->execute();
+                $currentQuantity = (float) $stmtCheck->fetchColumn();
+
+                if ((float) $data['quantity'] > $currentQuantity) {
+                    GenerateLog::generateLog("warning", "Tentativa de saída sem saldo suficiente.", [
+                        'stock_id'          => $data['stock_id'],
+                        'quantity_requested' => $data['quantity'],
+                        'current_quantity'  => $currentQuantity,
+                        'user_id'           => $_SESSION['user_id']
+                    ]);
+                    return false;
+                }
+            }
+
             // 1. Registra a movimentação
             $sql = 'INSERT INTO adms_daman_material_stock_movements
                     (adms_daman_material_stock_id, adms_daman_user_id, 

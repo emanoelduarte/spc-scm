@@ -205,63 +205,61 @@ if (openBtn && sidebar && overlay) {
 
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+modalMovement.addEventListener('show.bs.modal', function (event) {
 
-    const modalMovement = document.getElementById('modalMovement');
+    const button = event.relatedTarget;
+    const type = button.getAttribute('data-type');
+    const projectId = button.getAttribute('data-project');
+    const isEncarregado = document.querySelector('.modal-body').getAttribute('data-is-encarregado') === '1';
 
-    if (!modalMovement) {
-        console.warn('Modal #modalMovement não encontrado');
-        return;
-    }
+    const reasonField  = document.getElementById('reasonField');
+    const projectField = document.getElementById('projectField');
+    const projectFixed = document.getElementById('projectFixed');
 
-    modalMovement.addEventListener('show.bs.modal', function (event) {
+    if (type === 'input') {
 
-        const button = event.relatedTarget;
-        const type = button.getAttribute('data-type');
-        const projectId = button.getAttribute('data-project');
+        if (reasonField) reasonField.classList.add('d-none');
+        if (projectField) projectField.classList.add('d-none');
+        if (projectField) projectField.querySelector('select').removeAttribute('required');
 
-        const reasonField = document.getElementById('reasonField');
-        const projectField = document.getElementById('projectField');
-        const projectFixed = document.getElementById('projectFixed');
+        projectFixed.value = projectId;
+        projectFixed.removeAttribute('disabled');
 
-        if (type === 'input') {
+        const reasonSelect = document.querySelector('[name="reason"]');
+        if (reasonSelect) reasonSelect.removeAttribute('required');
 
-            reasonField.classList.add('d-none');
-            projectField.classList.add('d-none');
+        document.getElementById('modalTitle').textContent = 'Registrar Entrada';
+        document.getElementById('modalBtn').className = 'btn btn-success';
 
-            projectField.querySelector('select').removeAttribute('required');
+    } else {
 
+        if (isEncarregado) {
+            // Encarregado — obra e motivo fixos, não mostra campos
             projectFixed.value = projectId;
             projectFixed.removeAttribute('disabled');
-
-            document.querySelector('[name="reason"]').removeAttribute('required');
-
-            document.getElementById('modalTitle').textContent = 'Registrar Entrada';
-            document.getElementById('modalBtn').className = 'btn btn-success';
-
         } else {
-
-            reasonField.classList.remove('d-none');
-            projectField.classList.remove('d-none');
-
-            projectField.querySelector('select').setAttribute('required', 'required');
-            projectField.querySelector('select').removeAttribute('disabled');
+            // Outros níveis — mostra campos normalmente
+            if (reasonField) reasonField.classList.remove('d-none');
+            if (projectField) {
+                projectField.classList.remove('d-none');
+                projectField.querySelector('select').setAttribute('required', 'required');
+                projectField.querySelector('select').removeAttribute('disabled');
+            }
 
             projectFixed.setAttribute('disabled', 'disabled');
             projectFixed.value = '';
 
-            document.querySelector('[name="reason"]').setAttribute('required', 'required');
-
-            document.getElementById('modalTitle').textContent = 'Registrar Saída';
-            document.getElementById('modalBtn').className = 'btn btn-danger';
+            const reasonSelect = document.querySelector('[name="reason"]');
+            if (reasonSelect) reasonSelect.setAttribute('required', 'required');
         }
 
-        document.getElementById('stockId').value = button.getAttribute('data-id');
-        document.getElementById('movementType').value = type;
-        document.getElementById('itemName').textContent = button.getAttribute('data-name');
-        document.getElementById('itemNameHidden').value = button.getAttribute('data-name');
-        document.getElementById('categoryIdHidden').value = button.getAttribute('data-category');
+        document.getElementById('modalTitle').textContent = 'Registrar Saída';
+        document.getElementById('modalBtn').className = 'btn btn-danger';
+    }
 
-    });
-
+    document.getElementById('stockId').value          = button.getAttribute('data-id');
+    document.getElementById('movementType').value     = type;
+    document.getElementById('itemName').textContent   = button.getAttribute('data-name');
+    document.getElementById('itemNameHidden').value   = button.getAttribute('data-name');
+    document.getElementById('categoryIdHidden').value = button.getAttribute('data-category');
 });

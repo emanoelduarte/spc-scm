@@ -71,7 +71,7 @@ class ApprovePurchasingQuote
 
             // Criar comentário com a data da compra relacionada ao pedido
             $createComment = new OrderCommentsRepository();
-            $createComment->createAutomaticOrderPurchased($this->data['form']['adms_daman_order_id']);
+            $createComment->createAutomaticOrderPurchased($this->data['form']);
 
             // Criar a mensagem de sucesso ao cadastrar/autorizar
             $_SESSION['success'] = "Compra autorizada com sucesso!";
