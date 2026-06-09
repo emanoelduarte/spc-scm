@@ -39,7 +39,7 @@ class ValidationMaterialStockService
         $rules['adms_daman_category_id'] = 'required|integer';
 
         if (!isset($data['id'])) {
-            $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . $data['name'] . ';' . $data['adms_daman_project_id'];
+            $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . base64_encode($data['name']) . ';' . $data['adms_daman_project_id'];
             $rules['quantity'] = 'required';
         } else {
             $rules['name'] = 'required|uniqueComposite:adms_daman_material_stock,name;adms_daman_project_id,' . $data['name'] . ';' . $data['adms_daman_project_id'] . ',' . $data['id'];
@@ -47,6 +47,7 @@ class ValidationMaterialStockService
 
         // definir as regras de validação
         $messages = [
+            'name:required'                               => 'O campo nome é obrigatório.',
             'name:uniqueComposite'                        => 'Já existe um item com este nome nesta obra.<br>Considere uma nova <strong>Entrada</strong> do item.',
             'adms_daman_measurement_units_id:required'    => 'O campo unidade é obrigatório.',
             'adms_daman_measurement_units_id:integer'     => 'Dados Inválidos.',

@@ -62,7 +62,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
             <span>Listar</span>
             <span class="ms-auto">
                 <?php if (in_array("CreateMaterialStock", $this->data['buttonPermissions'])): ?>
-                    <a href="<?= $_ENV['URL_ADM'] . 'create-Material-Stock'; ?>" class="btn btn-success btn-sm"><i
+                    <a href="<?= $_ENV['URL_ADM'] . 'create-material-stock'; ?>" class="btn btn-success btn-sm"><i
                             class="fa-solid fa-circle-plus"></i> Cadastrar</a>
                 <?php endif; ?>
             </span>
@@ -130,8 +130,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_stock_movement');
                                         <button class="btn btn-danger btn-sm me-1 mb-1" data-bs-toggle="modal"
                                             data-bs-target="#modalMovement" data-id="<?= $id ?>"
                                             data-category="<?= $adms_daman_category_id ?>"
-                                            data-project="<?= $adms_daman_project_id ?>"
-                                            data-name="<?= htmlspecialchars($name) ?>" data-type="output">
+                                            data-project="<?= $adms_daman_project_id ?>" data-name="<?= htmlspecialchars($name) ?>"
+                                            data-type="output">
                                             Saída
                                         </button>
                                     <?php endif; ?>
