@@ -252,7 +252,8 @@ $isEncarregado = in_array(4, array_column($this->data['userAccessLevelsArray'], 
 <div id="filterSidebar">
     <h5>Filtrar Material</h5>
 
-    <form action="" method="POST" id="filterForm">
+    <?php // Inclui o action para o formulário sempre submeter e começar da página 1?>
+    <form action="<?= $_ENV['URL_ADM'] ?>list-material-stock/1" method="POST" id="filterForm">
 
         <?php // Campo para pesquisar Material por numero de registro
         ?>
@@ -322,7 +323,7 @@ $isEncarregado = in_array(4, array_column($this->data['userAccessLevelsArray'], 
         <button type="submit" class="btn btn-success w-100 mt-3"><i class="fa-solid fa-filter"></i>
             Filtrar
         </button>
-        <a href="<?= $_ENV['URL_ADM'] . 'list-orders'; ?>" class="btn btn-secondary w-100 mt-3">
+        <a href="<?= $_ENV['URL_ADM'] . 'list-material-stock'; ?>" class="btn btn-secondary w-100 mt-3">
             <i class="fa-solid fa-filter-circle-xmark"></i> Limpar
         </a>
     </form>
