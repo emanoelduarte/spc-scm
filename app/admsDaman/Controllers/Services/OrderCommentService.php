@@ -85,8 +85,8 @@ class OrderCommentService
                 'order_id' => $data['id'],
                 'user_id' => $userId,
                 'type' => 'auto',
-                'action' => 'update_project',
-                'field' => 'project',
+                'action' => 'update_categorie',
+                'field' => 'categorie',
                 'old_value' => $oldCategorie['name'] ?? null,
                 'new_value' => $newCategorie['name'] ?? null,
                 'comment' => null,
@@ -299,7 +299,7 @@ class OrderCommentService
                     break;
 
                 case 'update_categorie':
-                    $item['title'] = 'Obra Editada';
+                    $item['title'] = 'Categoria Editada';
                     $item['message'] = $this->formatUpdateCategorie($comment);
                     $item['icon'] = 'fa-pencil';
                     $item['color'] = 'warning';
@@ -350,25 +350,25 @@ class OrderCommentService
             $oldValue = number_format((float)$c['old_value'] ?? 0, 2, ',', '.');
             $newValue = number_format((float)$c['new_value'] ?? 0, 2, ',', '.');
 
-            return "Alterou {$field} de  {$oldValue} para {$newValue}";
+            return $c['user_buyer'] . ", alterou {$field} de  {$oldValue} para {$newValue}";
         } else {
             $qtyOld = $c['old_value'] ?? 0;
-            return "Alterou {$field} de {$qtyOld} para {$c['new_value']}";
+            return  $c['user_buyer'] . ", alterou {$field} de {$qtyOld} para {$c['new_value']}";
         }
     }
 
     private function formatUpdateStatus(array $c): string
     {
-        return "Alterou o status de {$c['old_value']} para {$c['new_value']}";
+        return  $c['user_buyer'] . ", alterou o status de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatUpdateService(array $c): string
     {
-        return "Alterou a descrição do serviço de {$c['old_value']} para {$c['new_value']}";
+        return $c['user_buyer'] . ", alterou a descrição do serviço de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatCommentPurchased(array $c): string
-    {  
+    {
         return $c['user_approved'] . ", autorizou uma compra deste pedido, solicitado por " . $c['user_buyer'];
     }
 
@@ -380,12 +380,12 @@ class OrderCommentService
 
     private function formatUpdateProject(array $c): string
     {
-        return "Alterou a obra de destino do pedido de {$c['old_value']} para {$c['new_value']}";
+        return  $c['user_buyer'] . ", alterou a obra de destino do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatUpdateCategorie(array $c): string
     {
-        return "Alterou a categoria do pedido de {$c['old_value']} para {$c['new_value']}";
+        return  $c['user_buyer'] . ", alterou a categoria do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatCommentUser(array $c): string
@@ -395,7 +395,7 @@ class OrderCommentService
 
     private function formatUpdateObservation(array $c): string
     {
-        return "Editou a observação do pedido de {$c['old_value']} para {$c['new_value']}";
+        return  $c['user_buyer'] . ", editou a observação do pedido de {$c['old_value']} para {$c['new_value']}";
     }
 
     private function formatAddItem(array $c): string
@@ -406,7 +406,7 @@ class OrderCommentService
         $qty  = $data['quantity'] ?? '—';
         $price = $data['unit_price'] ?? '—';
 
-        return "Adicionou um novo item: {$desc} (Qtd: {$qty})";
+        return  $c['user_buyer'] . ", adicionou um novo item: {$desc} (Qtd: {$qty})";
     }
 
     private function formatDeleteItem(array $c): string

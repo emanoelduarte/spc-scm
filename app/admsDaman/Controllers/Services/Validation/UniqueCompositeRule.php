@@ -18,6 +18,14 @@ class UniqueCompositeRule extends Rule
         try {
             $this->requireParameters(['table', 'columns', 'values']);
 
+            $values = explode(';', $this->parameter('values'));
+
+            // Decodifica cada valor para evitar problemas com caracteres especiais como , ; e =
+            $values = array_map(function ($value) {
+                $decoded = base64_decode($value, true);
+                return $decoded !== false ? $decoded : $value;
+            }, $values);
+
             $table   = $this->parameter('table');
             $columns = explode(';', $this->parameter('columns'));
             $values  = explode(';', $this->parameter('values'));

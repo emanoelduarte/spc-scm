@@ -204,7 +204,9 @@ if (openBtn && sidebar && overlay) {
     });
 
 }
-
+/**
+ * Mostrar modal de saída e entrada de material
+ */
 modalMovement.addEventListener('show.bs.modal', function (event) {
 
     const button = event.relatedTarget;
@@ -212,7 +214,7 @@ modalMovement.addEventListener('show.bs.modal', function (event) {
     const projectId = button.getAttribute('data-project');
     const isEncarregado = document.querySelector('.modal-body').getAttribute('data-is-encarregado') === '1';
 
-    const reasonField  = document.getElementById('reasonField');
+    const reasonField = document.getElementById('reasonField');
     const projectField = document.getElementById('projectField');
     const projectFixed = document.getElementById('projectFixed');
 
@@ -257,9 +259,9 @@ modalMovement.addEventListener('show.bs.modal', function (event) {
         document.getElementById('modalBtn').className = 'btn btn-danger';
     }
 
-    document.getElementById('stockId').value          = button.getAttribute('data-id');
-    document.getElementById('movementType').value     = type;
-    document.getElementById('itemName').textContent   = button.getAttribute('data-name');
-    document.getElementById('itemNameHidden').value   = button.getAttribute('data-name');
+    document.getElementById('stockId').value = button.getAttribute('data-id');
+    document.getElementById('movementType').value = type;
+    document.getElementById('itemName').textContent = button.getAttribute('data-name');
+    document.getElementById('itemNameHidden').value = button.getAttribute('data-name');
     document.getElementById('categoryIdHidden').value = button.getAttribute('data-category');
 });
