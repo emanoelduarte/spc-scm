@@ -53,3 +53,7 @@ Adicionar Textarea na view do create (obs) modificar as classes de tamanho confo
 Incluir a coluna obs no getUniqueMaterial, creteMaterial e updateMaterial do MaterialStockRepository
 Incluir o Textarea na view do update (obs)
 Adicionar a observação do material na view
+
+------------------------------------
+
+

@@ -1,5 +1,5 @@
 <?php
-    
+
 namespace App\admsDaman\Controllers\Services;
 
 /**
@@ -17,19 +17,24 @@ class PaginationService
      * @param string $urlController URL da controller
      * @return array Dados da paginação
      */
-    public static function generatePagination(int $totalRecords, int $limitResult, int $currentPage, string $urlController): array
+    public static function generatePagination(int $totalRecords, int $limitResult, int $currentPage, string $urlController, ?array $filters = []): array
     {
-
-        // Calcular a ultima página
         $lastPage = (int) ceil($totalRecords / $limitResult);
 
-        // Retornar os dados da paginação
+        // Remover campos que não são filtros
+        $cleanFilters = array_filter($filters ?? [], function ($value, $key) {
+            return !empty($value) && !in_array($key, ['csrf_token', 'submit', 'url']);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        // Serializar os filtros como query string
+        $queryString = !empty($cleanFilters) ? '?' . http_build_query($cleanFilters) : '';
+
         return [
-            'amount_records' => $totalRecords,
-            'last_page' => $lastPage,
-            'current_page' => $currentPage == 0 ? 1 : $currentPage,
-            'url_controller' => $urlController
+            'amount_records'  => $totalRecords,
+            'last_page'       => $lastPage,
+            'current_page'    => $currentPage == 0 ? 1 : $currentPage,
+            'url_controller'  => $urlController,
+            'query_string'    => $queryString
         ];
     }
 }
-?>

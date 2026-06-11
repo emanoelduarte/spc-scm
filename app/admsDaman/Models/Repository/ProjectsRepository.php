@@ -255,7 +255,7 @@ class ProjectsRepository extends DbConnection
         // QUERY para recuperar os registros do banco de dados
         $sql = 'SELECT id, name 
                 FROM adms_daman_projects
-                ORDER BY id ASC';
+                ORDER BY name ASC';
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);

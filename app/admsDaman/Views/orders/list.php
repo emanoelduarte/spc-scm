@@ -207,7 +207,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_order');
 <div id="filterSidebar">
     <h5>Filtrar Pedidos</h5>
 
-    <form action="" method="POST" id="filterForm">
+    <?php // Inclui o action para o formulário sempre submeter e começar da página 1?>
+    <form action="<?= $_ENV['URL_ADM'] ?>list-orders/1" method="POST" id="filterForm">
 
         <?php // Campo para pesquisar pedido por numero 
         ?>

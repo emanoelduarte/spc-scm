@@ -158,7 +158,8 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
 <div id="filterSidebar">
     <h5>Filtrar Compras</h5>
 
-    <form action="" method="POST" id="filterForm">
+    <?php // Inclui o action para o formulário sempre submeter e começar da página 1?>
+    <form action="<?= $_ENV['URL_ADM'] ?>list-purchasings/1" method="POST" id="filterForm">
 
         <?php // Campo para pesquisar compra por numero 
         ?>

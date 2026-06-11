@@ -145,6 +145,31 @@ class MaterialStockRepository extends DbConnection
             $params['logged_user_id'] = $_SESSION['user_id'];
         }
 
+        if (!empty($filters['id_number'])) {
+            $conditions[] = "id = :id_number";
+            $params['id_number'] = $filters['id_number'];
+        }
+
+        if (!empty($filters['adms_daman_project_id'])) {
+            $conditions[] = "adms_daman_project_id = :adms_daman_project_id";
+            $params['adms_daman_project_id'] = $filters['adms_daman_project_id'];
+        }
+
+        if (!empty($filters['adms_daman_category_id'])) {
+            $conditions[] = "adms_daman_category_id = :adms_daman_category_id";
+            $params['adms_daman_category_id'] = $filters['adms_daman_category_id'];
+        }
+
+        if (!empty($filters['data_inicio'])) {
+            $conditions[] = "created_at >= :data_inicio";
+            $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
+        }
+
+        if (!empty($filters['data_fim'])) {
+            $conditions[] = "created_at <= :data_fim";
+            $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
+        }
+
         if (!empty($filters['name'])) {
             $conditions[] = "name LIKE :name";
             $params['name'] = '%' . $filters['name'] . '%';

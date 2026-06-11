@@ -19,11 +19,21 @@ class ListOrders
     private array|string|null $data = null;
 
     /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
-    private int $limitResult = 10;
+    private int $limitResult = 1;
 
     public function index(string|int $page = 1): void
     {
-        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+        // Recebe filtros do POST (quando aplica filtro) ou do GET (quando pagina)
+        $this->data['search'] = $_SERVER['REQUEST_METHOD'] === 'POST'
+            ? filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW)
+            : filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+
+        // Remove campos internos que não são filtros do usuário
+        unset(
+            $this->data['search']['url'],
+            $this->data['search']['csrf_token'],
+            $this->data['search']['submit']
+        );
 
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listOrders = new OrdersRepository();
@@ -35,13 +45,12 @@ class ListOrders
         );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listOrders->getAmountOrders(),
+            (int) $listOrders->getAmountOrders($this->data['search']),
             (int) $this->limitResult,
             (int) $page,
-            'list-orders'
+            'list-orders',
+            $this->data['search']
         );
-
-        $this->data['order_number'] = $this->data['search'];
 
         // Instanciar o repositório para preencher os selects.
         $getAllProjectsSelect = new ProjectsRepository();

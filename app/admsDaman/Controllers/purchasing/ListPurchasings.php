@@ -18,7 +18,17 @@ class ListPurchasings
 
     public function index(string|int $page = 1): void
     {
-        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+        // Recebe filtros do POST (quando aplica filtro) ou do GET (quando pagina)
+        $this->data['search'] = $_SERVER['REQUEST_METHOD'] === 'POST'
+            ? filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW)
+            : filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+
+        // Remove campos internos que não são filtros do usuário
+        unset(
+            $this->data['search']['url'],
+            $this->data['search']['csrf_token'],
+            $this->data['search']['submit']
+        );
 
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listPurchasings = new PurchasingRepository();
@@ -31,13 +41,14 @@ class ListPurchasings
         );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listPurchasings->getAmountPurchasings(),
+            (int) $listPurchasings->getAmountPurchasings($this->data['search']),
             (int) $this->limitResult,
             (int) $page,
-            'list-purchasings'
+            'list-purchasings',
+            $this->data['search']
         );
 
-        $this->data['purchasing_number'] = $this->data['search'];
+        // $this->data['purchasing_number'] = $this->data['search'];
 
         // Instanciar o repositório para preencher os selects.
         $getAllProjectsSelect = new ProjectsRepository();

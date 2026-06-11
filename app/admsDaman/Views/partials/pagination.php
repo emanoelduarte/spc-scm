@@ -9,11 +9,20 @@
         ?>
                 <?php //  Exibir a páginação - Primiera página 
                 ?>
-                <li class="page-item"><a href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '')  ?>/1" class="page-link">Primeira</a></li>
+
+                <a href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . '/1' . ($this->data['pagination']['query_string'] ?? '') ?>"
+                    class="page-link">Primeira</a>
+                </li>
 
                 <?php //  Exibir a páginação - Uma página antes da atual 
                 ?>
-                <li class="page-item"><a class="page-link" href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . '/' . $beforePage ?>"><?= $beforePage ?></a></li>
+
+                <li class="page-item">
+                    <a class="page-link"
+                        href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . '/' . $beforePage . ($this->data['pagination']['query_string'] ?? '') ?>">
+                        <?= $beforePage ?>
+                    </a>
+                </li>
 
             <?php // Finalização do segundo IF primeira página 
             endif; ?>
@@ -21,7 +30,12 @@
             <?php // Exibir a páginação - Página atual 
             ?>
             <li class="page-item active">
-                <a class="page-link" href="#" aria-current="page"><?= ($this->data['pagination']['current_page'] ?? false) ?></a>
+                <!-- <a class="page-link" href="#" aria-current="page"><?= ($this->data['pagination']['current_page'] ?? false) ?></a> -->
+            <li class="page-item active">
+                <a class="page-link" href="#" aria-current="page">
+                    <?= ($this->data['pagination']['current_page'] ?? false) ?>
+                </a>
+            </li>
             </li>
 
             <?php
@@ -34,20 +48,28 @@
 
                 <?php // Exibir a páginação - Uma página posterior da atual 
                 ?>
+
                 <li class="page-item">
-                    <a class="page-link" href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . "/" . $afterPage ?>"><?= $afterPage ?></a>
+                    <a class="page-link"
+                        href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . '/' . $afterPage . ($this->data['pagination']['query_string'] ?? '') ?>">
+                        <?= $afterPage ?>
+                    </a>
                 </li>
 
                 <?php // Exibir a páginação - Ultima página 
                 ?>
+
                 <li class="page-item">
-                    <a class="page-link" href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . "/" . ($this->data['pagination']['last_page'] ?? '') ?>">Última</a>
+                    <a class="page-link"
+                        href="<?= $_ENV['URL_ADM'] . ($this->data['pagination']['url_controller'] ?? '') . '/' . ($this->data['pagination']['last_page'] ?? '') . ($this->data['pagination']['query_string'] ?? '') ?>">
+                        Última
+                    </a>
                 </li>
     </ul>
 </nav>
 <?php
 
-// Finalização do terceiro IF
-endif;
-// Finalização do primeiro IF
-endif; ?>
+            // Finalização do terceiro IF
+            endif;
+        // Finalização do primeiro IF
+        endif; ?>

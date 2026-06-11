@@ -122,7 +122,7 @@ class OrdersRepository extends DbConnection
      *
      * @return int Quantidade total de pedidos encontrados no banco de dados.
      */
-    public function getAmountOrders(?string $orderNumber = null): int
+    public function getAmountOrders(?array $filters = []): int
     {
         $conditions = [];
         $params = [];
@@ -142,9 +142,34 @@ class OrdersRepository extends DbConnection
             $params['logged_user_id'] = $_SESSION['user_id'];
         }
 
-        if (!empty($orderNumber)) {
+        if (!empty($filters['order_number'])) {
             $conditions[] = "id = :order_number";
-            $params['order_number'] = $orderNumber;
+            $params['order_number'] = $filters['order_number'];
+        }
+
+        if (!empty($filters['adms_daman_project_id'])) {
+            $conditions[] = "adms_daman_project_id = :adms_daman_project_id";
+            $params['adms_daman_project_id'] = $filters['adms_daman_project_id'];
+        }
+
+        if (!empty($filters['adms_daman_category_id'])) {
+            $conditions[] = "adms_daman_category_id = :adms_daman_category_id";
+            $params['adms_daman_category_id'] = $filters['adms_daman_category_id'];
+        }
+
+        if (!empty($filters['adms_daman_acquisition_status_id'])) {
+            $conditions[] = "adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id";
+            $params['adms_daman_acquisition_status_id'] = $filters['adms_daman_acquisition_status_id'];
+        }
+
+        if (!empty($filters['data_inicio'])) {
+            $conditions[] = "created_at >= :data_inicio";
+            $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
+        }
+
+        if (!empty($filters['data_fim'])) {
+            $conditions[] = "created_at <= :data_fim";
+            $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
 
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';

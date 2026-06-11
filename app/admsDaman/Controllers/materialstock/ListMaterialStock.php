@@ -20,8 +20,17 @@ class ListMaterialStock
 
     public function index(string|int $page = 1)
     {
-        // Pegar dados para filtar por item
-        $this->data['search'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+        // Recebe filtros do POST (quando aplica filtro) ou do GET (quando pagina)
+        $this->data['search'] = $_SERVER['REQUEST_METHOD'] === 'POST'
+            ? filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW)
+            : filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+
+        // Remove campos internos que não são filtros do usuário
+        unset(
+            $this->data['search']['url'],
+            $this->data['search']['csrf_token'],
+            $this->data['search']['submit']
+        );
 
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listMaterial = new MaterialStockRepository();
@@ -32,7 +41,8 @@ class ListMaterialStock
             (int) $this->limitResult,
             $this->data['search']
         );
-
+        
+        // Verifica se o usuário tem alguma obra vinculada com ele, caso contrário ele redireciona para o dashboard com uma mensagem de erro
         if (is_array($this->data['materialStock']) && isset($this->data['materialStock']['no_project'])) {
             $_SESSION['error'] = "Você não possui obra vinculada. Entre em contato com o administrador.";
             header('Location: ' . $_ENV['URL_ADM'] . 'dashboard');
@@ -40,10 +50,11 @@ class ListMaterialStock
         }
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listMaterial->getAmountMaterials(),
+            (int) $listMaterial->getAmountMaterials($this->data['search']),
             (int) $this->limitResult,
             (int) $page,
-            'list-material-stock'
+            'list-material-stock',
+            $this->data['search']
         );
 
         // Instanciar o repositório para preencher os selects.

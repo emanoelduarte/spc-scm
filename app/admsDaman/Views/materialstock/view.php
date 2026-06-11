@@ -133,7 +133,6 @@ $csrf_token_delete = CSRFHelper::generateCSRFToken('form_delete_item_stock');
 
                     <div class="modal-body" data-is-encarregado="<?= $isEncarregado ? '1' : '0' ?>">
 
-                        <input type="hidden" name="redirect_to" value="<?= $_ENV['URL_ADM'] ?>list-material-stock">
                         <input type="hidden" name="csrf_token" value="<?= $csrf_token; ?>">
                         <input type="hidden" name="stock_id" id="stockId">
                         <input type="hidden" name="type" id="movementType">
