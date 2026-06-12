@@ -20,7 +20,9 @@ class PageLayoutService
         // Nivel de acesso Super Administrador tem acesso a todas as páginas/funcionalidades do sistema, então não é necessário verificar as permissões de botões para este nível de acesso.
         $usersAccessLevels = new UsersAccessLevelsRepository(); // Instanciar o repositório para verificar o nível de acesso do usuário
 
-        if (in_array(1, $usersAccessLevels->getUserAccessLevelsArray($_SESSION['user_id']))) { // Verificar se o usuário tem o nível de acesso Super Administrador (id 1)
+        $userLevels = $usersAccessLevels->getUserAccessLevelsArray($_SESSION['user_id']);
+
+        if (is_array($userLevels) && in_array(1, $userLevels)) { // Verificar se o usuário tem o nível de acesso Super Administrador (id 1)
             return array_merge($data, ['menuPermission' => $menu]);
         }
 

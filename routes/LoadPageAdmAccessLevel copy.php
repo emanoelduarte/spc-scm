@@ -36,54 +36,30 @@ class LoadPageAdmAccessLevel
         $accessLevelPage = new PagesRoutesRepository();
         $this->page = $accessLevelPage->getPage($this->urlController);
 
-        if (!$this->page) {
-            // Página não existe no banco
-            GenerateLog::generateLog("error", "Controller não encontrada.", [
-                'pagina' => $this->urlController,
-                'parametro' => $this->urlParameter
-            ]);
+        if (($this->page && $this->page['public_page'] == 1) or ($this->page && $this->verifyLogin())) {
+            $this->checkControllersExists();
+        } else {
+            GenerateLog::generateLog("error", "Controller não encontrada.", ['pagina' => $this->urlController, 'parametro' => $this->urlParameter]);
             die("Erro 003: Por favor tente novamente. Caso o problema persista, entre em contato com o administrador {$_ENV['EMAIL_ADM']}");
         }
-
-        if ($this->page['public_page'] == 1) {
-            $this->checkControllersExists();
-            return;
-        }
-
-        // Página privada — verifica login e permissão
-        $loginStatus = $this->verifyLogin();
-
-        if ($loginStatus === 'ok') {
-            $this->checkControllersExists();
-        } elseif ($loginStatus === 'no_permission') {
-            // Usuário logado mas sem permissão
-            $totalPermissoes = count($_SESSION['menuPermission'] ?? []);
-
-            if ($totalPermissoes === 0) {
-                // Conta nova, sem nenhuma permissão ainda
-                header("Location: {$_ENV['URL_ADM']}access-denied-controller?reason=no_access");
-            } else {
-                // Tem permissões, mas não nesta página
-                header("Location: {$_ENV['URL_ADM']}access-denied-controller?reason=restricted");
-            }
-            exit;
-        }
-        // 'redirect' já foi tratado dentro do verifyLogin (não logado → vai pro login)
     }
 
-    private function verifyLogin(): string
+    private function verifyLogin(): bool
     {
         if (!($_SESSION['user_id'] ?? false)) {
+            // Redirecionar o usuário para a página de visualizar usuário
             header("Location: {$_ENV['URL_ADM']}login");
             exit;
         }
 
-        $accessLevelPage = new PagesRoutesRepository();
-        if ($accessLevelPage->checkUserPagePermission($this->page['id_ap'])) {
-            return 'ok';
-        }
+        if ($_SESSION['user_id'] ?? false) {
 
-        return 'no_permission';
+            $accessLevelPage = new PagesRoutesRepository();
+            if ($accessLevelPage->checkUserPagePermission($this->page['id_ap'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

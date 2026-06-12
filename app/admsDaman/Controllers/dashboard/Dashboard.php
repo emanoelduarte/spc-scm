@@ -3,7 +3,6 @@
 namespace App\admsDaman\Controllers\dashboard;
 
 use App\admsDaman\Controllers\Services\PageLayoutService;
-use App\admsDaman\Models\Repository\MenuPermissionUserRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\PurchasingRepository;
 use App\admsDaman\Models\Repository\StatusRepository;

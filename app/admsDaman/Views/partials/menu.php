@@ -60,44 +60,81 @@
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListAccessLevels', $this->data['menuPermission'])) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-access-levels')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-access-levels">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>
-                        Níveis de Acesso
-                    </a>
-                <?php endif; ?>
+                <?php
+                // Verifica se algum item do grupo está ativo para manter o menu aberto
+                $configMenuActive = in_array($this->data['menu'] ?? '', [
+                    'list-access-levels',
+                    'list-categories',
+                    'list-packages',
+                    'list-groups-pages',
+                    'list-pages'
+                ]);
 
-                <?php if (in_array('ListCategories', $this->data['menuPermission'])) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-categories')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-categories">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-tags"></i></div>
-                        Categorias
-                    </a>
-                <?php endif; ?>
+                // Verifica se o usuário tem permissão em pelo menos um item do grupo
+                $showConfigGroup = array_intersect(
+                    ['ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages'],
+                    $this->data['menuPermission']
+                );
+                ?>
 
-                <?php if (in_array('ListPackages', $this->data['menuPermission'])) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-packages')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-packages">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
-                        Pacotes
+                <?php if (!empty($showConfigGroup)) : ?>
+                   <?php // Botão do grupo pai ?>
+                    <a class="nav-link collapsed <?= $configMenuActive ? 'active' : '' ?>"
+                        href="#collapseConfiguracoes"
+                        data-bs-toggle="collapse"
+                        aria-expanded="<?= $configMenuActive ? 'true' : 'false' ?>"
+                        aria-controls="collapseConfiguracoes">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-gear"></i></div>
+                        Configurações
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                <?php endif; ?>
 
-                <?php if (in_array('ListGroupsPages', $this->data['menuPermission'])) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-groups-pages')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-groups-pages">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i></div>
-                        Grupos
-                    </a>
-                <?php endif; ?>
+                    <?php // Sub-itens ?>
+                    <div class="collapse <?= $configMenuActive ? 'show' : '' ?>" id="collapseConfiguracoes">
+                        <nav class="sb-sidenav-menu-nested nav">
 
-                <?php if (in_array('ListPages', $this->data['menuPermission'])) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-pages')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-pages">
-                        <div class="sb-nav-link-icon"><i class="fa-regular fa-file"></i> </div>
-                        Páginas
-                    </a>
+                            <?php if (in_array('ListAccessLevels', $this->data['menuPermission'])) : ?>
+                                <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-access-levels') ? 'active' : '' ?>"
+                                    href="<?= $_ENV['URL_ADM'] ?>list-access-levels">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>
+                                    Níveis de Acesso
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array('ListCategories', $this->data['menuPermission'])) : ?>
+                                <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-categories') ? 'active' : '' ?>"
+                                    href="<?= $_ENV['URL_ADM'] ?>list-categories">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-tags"></i></div>
+                                    Categorias
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array('ListPackages', $this->data['menuPermission'])) : ?>
+                                <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-packages') ? 'active' : '' ?>"
+                                    href="<?= $_ENV['URL_ADM'] ?>list-packages">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
+                                    Pacotes
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array('ListGroupsPages', $this->data['menuPermission'])) : ?>
+                                <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-groups-pages') ? 'active' : '' ?>"
+                                    href="<?= $_ENV['URL_ADM'] ?>list-groups-pages">
+                                    <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i></div>
+                                    Grupos
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array('ListPages', $this->data['menuPermission'])) : ?>
+                                <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-pages') ? 'active' : '' ?>"
+                                    href="<?= $_ENV['URL_ADM'] ?>list-pages">
+                                    <div class="sb-nav-link-icon"><i class="fa-regular fa-file"></i></div>
+                                    Páginas
+                                </a>
+                            <?php endif; ?>
+
+                        </nav>
+                    </div>
                 <?php endif; ?>
 
                 <a class="nav-link" href="<?= $_ENV['URL_ADM'] ?>logout">

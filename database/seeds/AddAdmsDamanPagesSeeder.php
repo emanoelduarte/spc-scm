@@ -65,7 +65,9 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Cadastrar Nova Senha', 'controller' => 'ResetPassword', 'controller_url' => 'reset-password', 'directory' => 'login', 'obs' => 'Página com o formulário cadastrar nova senha no login.', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 7],
             ['name' => 'Sair do Administrativo', 'controller' => 'Logout', 'controller_url' => 'logout', 'directory' => 'login', 'obs' => 'Deslogar do sistema administrativo.', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 7],
 
+            // Páginas de Erro
             ['name' => 'Erro 403', 'controller' => 'Error403', 'controller_url' => 'logout', 'directory' => 'errors', 'obs' => 'Erro que deve apresentado quando não encontrar a página.', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 8],
+            ['name' => 'Acesso Negado à Páginas', 'controller' => 'AccessDeniedController', 'controller_url' => 'access-denied-controller', 'directory' => 'errors', 'obs' => 'Exibe mensagem de erro conforme o erro gerado', 'public_page' => 1, 'page_status' => 1, 'adms_packages_page_id' => 1, 'adms_groups_page_id' => 8],
 
             // Páginas Pedidos
             ['name' => 'Criar Pedidos', 'controller' => 'CreateOrder', 'controller_url' => 'create-order', 'directory' => 'orders', 'obs' => 'Página para criar pedido', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
