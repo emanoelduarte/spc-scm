@@ -67,7 +67,7 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
 
             // Páginas de Erro
             ['name' => 'Erro 403', 'controller' => 'Error403', 'controller_url' => 'logout', 'directory' => 'errors', 'obs' => 'Erro que deve apresentado quando não encontrar a página.', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 8],
-            ['name' => 'Acesso Negado à Páginas', 'controller' => 'AccessDeniedController', 'controller_url' => 'access-denied-controller', 'directory' => 'errors', 'obs' => 'Exibe mensagem de erro conforme o erro gerado', 'public_page' => 1, 'page_status' => 1, 'adms_packages_page_id' => 1, 'adms_groups_page_id' => 8],
+            ['name' => 'Acesso Negado à Páginas', 'controller' => 'AccessDeniedController', 'controller_url' => 'access-denied-controller', 'directory' => 'errors', 'obs' => 'Exibe mensagem de erro conforme o erro gerado', 'public_page' => 1, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 8],
 
             // Páginas Pedidos
             ['name' => 'Criar Pedidos', 'controller' => 'CreateOrder', 'controller_url' => 'create-order', 'directory' => 'orders', 'obs' => 'Página para criar pedido', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 9],
@@ -130,6 +130,30 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Conteúdo Solicitante de compra', 'controller' => 'PurchaseContent', 'controller_url' => 'purchase-content', 'directory' => 'content', 'obs' => 'Conteúdo exclusivo para solicitantes de compra e usuários com permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 17],
 
             ['name' => 'Conteúdo Comprador', 'controller' => 'BuyerContent', 'controller_url' => 'buyer-content', 'directory' => 'content', 'obs' => 'Conteúdo exclusivo do comprador e de usuários com permissão', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 17],
+
+            // Orçamentos de obras
+            ['name' => 'Listar Orçamento de Obra', 'controller' => 'ListBudgets', 'controller_url' => 'list-budgets', 'directory' => 'budgets', 'obs' => 'Página de listagem de orçamento de obras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 18],
+            ['name' => 'Criar Orçamento de Obra', 'controller' => 'CreateBudget', 'controller_url' => 'create-budget', 'directory' => 'budgets', 'obs' => 'Página de criação de orçamento de obras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 18],
+            ['name' => 'Criar Item da Etapas', 'controller' => 'CreateBudgetItems', 'controller_url' => 'create-budget-items', 'directory' => 'budgets', 'obs' => 'Página de criação de itens de orçamento de etapas', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 18],
+
+            // NFes
+            ['name' => 'Listar Nfe', 'controller' => 'ListNfes', 'controller_url' => 'list-nfes', 'directory' => 'nfes', 'obs' => 'Página de listagem de NF-e', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 19],
+            ['name' => 'Checar Nfe e dar como conferida', 'controller' => 'CheckNfe', 'controller_url' => 'check-nfe', 'directory' => 'nfes', 'obs' => 'Página para marcar NF-e como conferida', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 19],
+            ['name' => 'Desfazer Conferência da Nfe', 'controller' => 'UncheckNfe', 'controller_url' => 'uncheck-nfe', 'directory' => 'nfes', 'obs' => 'Página para desfazer a conferência da NF-e', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 19],
+            ['name' => 'Sincronizar Nfe', 'controller' => 'SyncNfes', 'controller_url' => 'sync-nfes', 'directory' => 'nfes', 'obs' => 'Página para sincronizar NF-e com a SEFAZ', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 19],
+
+            // Pagamentos
+            ['name' => 'Página de Listagem de Compras', 'controller' => 'ListPurchaseDocuments', 'controller_url' => 'list-purchase-documents', 'directory' => 'accountsPayable', 'obs' => 'Página de listagem de documentos de compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Criar Documento de Compra', 'controller' => 'CreatePurchaseDocument', 'controller_url' => 'create-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página de criação de documento de compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Criar Documento de Compra Manual', 'controller' => 'CreateManualPurchaseDocument', 'controller_url' => 'create-manual-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página de criação de documento de compra manual', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Criar Condição de pagamento de Compra', 'controller' => 'GetPaymentMethodItems', 'controller_url' => 'get-payment-method-items', 'directory' => 'accountsPayable', 'obs' => 'Página de criação de parcela de compra', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Visualizar Documento de Compra', 'controller' => 'ViewPurchaseDocument', 'controller_url' => 'view-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página para visualizar Documento de compra.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Baixar Parcela de Compra', 'controller' => 'CreatePurchaseInstallmentPayment', 'controller_url' => 'create-purchase-installment-payment', 'directory' => 'accountsPayable', 'obs' => 'Página para baixar parcela de compra.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Estornar Parcela de Compra', 'controller' => 'ReversePurchaseInstallmentPayment', 'controller_url' => 'reverse-purchase-installment-payment', 'directory' => 'accountsPayable', 'obs' => 'Página para estornar parcela de compra.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Confirmar Cronograma de Compra FB', 'controller' => 'ConfirmPurchasePaymentSchedule', 'controller_url' => 'confirm-purchase-payment-schedule', 'directory' => 'accountsPayable', 'obs' => 'Página para confirmar o cronograma de compras que estavam como FB.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Editar Lançamentos', 'controller' => 'EditPurchaseDocument', 'controller_url' => 'dit-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página para editar os lançamentos para pagamento.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Página Deletar Lançamentos', 'controller' => 'DeletePurchaseDocument', 'controller_url' => 'delete-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página para deletar lançamentos.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+
         ];
 
         // Percorrer o array com dados que devem ser validados antes de cadastrar

@@ -205,4 +205,48 @@ class UsersAccessLevelsRepository extends DbConnection
         }
         return true;
     }
+
+    /**
+     * Recuperar usuários que podem atuar como comprador.
+     *
+     * @return array|false
+     */
+    public function getPurchaseUsersSelect(): array|false
+    {
+        $sql = 'SELECT DISTINCT
+                u.id,
+                u.name
+            FROM adms_daman_users u
+            INNER JOIN adms_daman_users_access_levels ual
+                ON ual.adms_daman_user_id = u.id
+            INNER JOIN adms_daman_access_levels al
+                ON al.id = ual.adms_daman_access_level_id
+            WHERE al.name IN (
+                :super_admin,
+                :admin,
+                :buyer
+            )
+            ORDER BY u.name ASC';
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        $stmt->bindValue(
+            ':super_admin',
+            'Super Administrador'
+        );
+
+        $stmt->bindValue(
+            ':admin',
+            'Administrador'
+        );
+
+        $stmt->bindValue(
+            ':buyer',
+            'Comprador'
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

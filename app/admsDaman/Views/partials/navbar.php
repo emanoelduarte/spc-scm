@@ -16,6 +16,21 @@
     </form>
     <?php // Navbar 
     ?>
+    <button
+        type="button"
+        class="btn btn-link nav-link me-3"
+        id="theme-toggle"
+        title="Ativar tema escuro">
+
+        <span class="theme-icon-moon">
+            <i class="fa-solid fa-moon"></i>
+        </span>
+
+        <span class="theme-icon-sun">
+            <i class="fa-solid fa-sun"></i>
+        </span>
+
+    </button>
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"

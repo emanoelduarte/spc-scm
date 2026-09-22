@@ -8,9 +8,15 @@
     <link rel="shortcut icon" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/image/icon/favicon.ico"
         type="image/x-icon">
 
+    <!-- Aplicar tema ANTES de renderizar a página -->
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/dark_theme.js"></script>
+
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/sbadmin.css">
 
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/styles_admin.css">
+
+    <!-- Tema escuro -->
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/dark_theme.css">
 
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/bootstrap.min.css">
 
@@ -47,7 +53,7 @@
                 ?>
             </main>
 
-            <footer class="py-4 bg-light mt-auto">
+            <footer class="py-4 mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
                         <div class="text-muted">Copyright &copy; <?= $_ENV['APP_NAME'] . " " . date("y"); ?></div>
@@ -73,6 +79,37 @@
     <?php // Inclui o arquivo script_admin que tratará diretamente a função de confirmar ações 
     ?>
     <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/script_admin.js"></script>
+
+    <?php // Inclui o arquivo script_budgets que tratará diretamente a função de confirmar ações 
+    ?>
+    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/script_budgets.js"></script>
+    <?php // Inclui o script de accounts_payable_installments.js
+    ?>
+    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/accounts_payable_installments.js"></script>
+
+    <?php // Inclui o script de manual_purchase_installments.js
+    ?>
+    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/manual_purchase_installments.js"></script>
+
+    <?php // Inclui o script de purchase_installment_payment.js
+    ?>
+    <script src="<?php echo $_ENV['URL_ADM']; ?>public/admsDaman/js/purchase_installment_payment.js"></script>
+
+    <?php // Inclui o script de purchase_installment_history.js
+    ?>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/purchase_installment_history.js" defer></script>
+    
+    <?php // Inclui o script de purchase_document_allocations.js
+    ?>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/purchase_document_allocations.js" defer></script>
+
+    <?php // Inclui o script de confirm_purchase_installments.js
+    ?>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/confirm_purchase_installments.js" defer></script>
+
+    <?php // Inclui o script de edit_purchase_document.js
+    ?>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/edit_purchase_document.js" defer></script>
 
 </body>
 

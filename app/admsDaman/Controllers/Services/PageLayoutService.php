@@ -14,7 +14,7 @@ class PageLayoutService
     public function configurePageElements(array $data): array
     {
         // Array com os itens de menu
-        $menu = ['Dashboard', 'ListUsers', 'ListOrders', 'ListPurchasings', 'ListProjects', 'ListSuppliers', 'ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages', 'ListMaterialStock'];
+        $menu = ['Dashboard', 'ListUsers', 'ListOrders', 'ListPurchasings', 'ListProjects', 'ListSuppliers', 'ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages', 'ListMaterialStock', 'ListBudgets','ListNfes', 'ListPurchaseDocuments'];
 
         // Verificar se o usuário tem o nível de acesso Super Administrador.
         // Nivel de acesso Super Administrador tem acesso a todas as páginas/funcionalidades do sistema, então não é necessário verificar as permissões de botões para este nível de acesso.

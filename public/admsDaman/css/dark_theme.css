@@ -1,0 +1,979 @@
+/* ============================================================
+   DARK THEME
+   ============================================================
+   Arquivo responsável exclusivamente pelo tema escuro.
+
+   O tema é ativado quando o BODY recebe:
+
+   <body class="dark-theme">
+
+   ============================================================ */
+
+
+/* ============================================================
+   VARIÁVEIS DO TEMA
+   ============================================================ */
+
+html.dark-theme {
+
+    /* Fundo geral */
+    --dark-bg: #181818;
+
+    /* Superfícies */
+    --dark-surface: #242424;
+    --dark-surface-secondary: #2b2b2b;
+    --dark-surface-tertiary: #323232;
+
+    /* Hover */
+    --dark-hover: #353535;
+
+    /* Bordas */
+    --dark-border: #3d3d3d;
+    --dark-border-light: #484848;
+
+    /* Textos */
+    --dark-text: #e6e6e6;
+    --dark-text-light: #f5f5f5;
+    --dark-muted: #a8a8a8;
+
+    /* Inputs */
+    --dark-input-bg: #202020;
+    --dark-input-focus: #292929;
+
+    /* Sidebar */
+    --dark-sidebar-bg: #202020;
+    --dark-sidebar-hover: #2b2b2b;
+    --dark-sidebar-active: #383838;
+
+    /* Navbar */
+    --dark-navbar-bg: #202020;
+
+    /* Tabelas */
+    --dark-table-bg: #242424;
+    --dark-table-striped: #292929;
+    --dark-table-hover: #333333;
+
+    /* Sombras */
+    --dark-shadow: rgba(0, 0, 0, 0.35);
+
+    html.dark-theme {
+    /* ...as demais variáveis... */
+
+    --dark-sidebar-text: #d0d0d0;
+    --dark-sidebar-icon: #a8a8a8;
+
+    --dark-sidebar-text-hover: #ffffff;
+    --dark-sidebar-icon-hover: #ffffff;
+
+    --dark-sidebar-text-active: #ffffff;
+    --dark-sidebar-icon-active: #ffffff;
+}
+}
+
+
+/* ============================================================
+   BODY / FUNDO GERAL
+   ============================================================ */
+
+html.dark-theme {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+
+/* Área principal do SBAdmin */
+html.dark-theme #layoutSidenav_content {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+
+/* Main */
+html.dark-theme main {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+/* ============================================================
+   BOTÃO ALTERAR TEMA
+   ============================================================ */
+
+#theme-toggle {
+    color: rgba(255, 255, 255, 0.75) !important;
+    text-decoration: none;
+}
+
+#theme-toggle:hover,
+#theme-toggle:focus {
+    color: #ffffff !important;
+}
+
+
+/* Por padrão mostra lua */
+#theme-toggle .theme-icon-moon {
+    display: inline-flex;
+}
+
+
+/* Por padrão esconde sol */
+#theme-toggle .theme-icon-sun {
+    display: none;
+}
+
+
+/* Tema escuro: esconde lua */
+html.dark-theme #theme-toggle .theme-icon-moon {
+    display: none;
+}
+
+
+/* Tema escuro: mostra sol */
+html.dark-theme #theme-toggle .theme-icon-sun {
+    display: inline-flex;
+}
+
+
+/* ============================================================
+   TEXTOS
+   ============================================================ */
+
+html.dark-theme h1,
+html.dark-theme h2,
+html.dark-theme h3,
+html.dark-theme h4,
+html.dark-theme h5,
+html.dark-theme h6 {
+    color: var(--dark-text-light);
+}
+
+
+html.dark-theme p,
+html.dark-theme span,
+html.dark-theme label {
+    color: inherit;
+}
+
+
+html.dark-theme .text-muted {
+    color: var(--dark-muted) !important;
+}
+
+
+html.dark-theme .text-dark {
+    color: var(--dark-text) !important;
+}
+
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+
+html.dark-theme a:not(.btn):not(.nav-link) {
+    color: #8ab4f8;
+}
+
+
+html.dark-theme a:not(.btn):not(.nav-link):hover {
+    color: #aecbfa;
+}
+
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+html.dark-theme .card {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-color: var(--dark-border) !important;
+}
+
+
+html.dark-theme .card-header {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text-light);
+    border-bottom-color: var(--dark-border);
+}
+
+
+html.dark-theme .card-body {
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .card-footer {
+    background-color: var(--dark-surface-secondary);
+    border-top-color: var(--dark-border);
+}
+
+
+/* Corrigir cards com border-light */
+html.dark-theme .border-light {
+    border-color: var(--dark-border) !important;
+}
+
+
+/* Sombras dos cards */
+html.dark-theme .shadow,
+html.dark-theme .shadow-sm {
+    box-shadow: 0 .125rem .5rem var(--dark-shadow) !important;
+}
+
+html.dark-theme .bg-light-subtle {
+    background-color: var(--dark-surface-tertiary) !important;
+}
+
+
+/* ============================================================
+   BORDAS
+   ============================================================ */
+
+html.dark-theme .border {
+    border-color: var(--dark-border) !important;
+}
+
+
+html.dark-theme .border-top {
+    border-top-color: var(--dark-border) !important;
+}
+
+
+html.dark-theme .border-bottom {
+    border-bottom-color: var(--dark-border) !important;
+}
+
+
+html.dark-theme .border-start {
+    border-left-color: var(--dark-border) !important;
+}
+
+
+html.dark-theme .border-end {
+    border-right-color: var(--dark-border) !important;
+}
+
+
+/* ============================================================
+   FORMULÁRIOS
+   ============================================================ */
+
+html.dark-theme .form-control,
+html.dark-theme .form-select {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-border-light);
+}
+
+
+html.dark-theme .form-control:focus,
+html.dark-theme .form-select:focus {
+    background-color: var(--dark-input-focus);
+    color: var(--dark-text-light);
+    border-color: #6c757d;
+
+    box-shadow:
+        0 0 0 .25rem rgba(108, 117, 125, 0.20);
+}
+
+
+/* Placeholder */
+html.dark-theme .form-control::placeholder {
+    color: #777;
+    opacity: 1;
+}
+
+
+/* Select */
+html.dark-theme .form-select option {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+}
+
+
+/* Input readonly */
+html.dark-theme .form-control[readonly] {
+    background-color: var(--dark-surface-tertiary);
+    color: var(--dark-muted);
+}
+
+
+/* Disabled */
+html.dark-theme .form-control:disabled,
+html.dark-theme .form-select:disabled {
+    background-color: #303030;
+    color: #888;
+}
+
+
+/* Input group */
+html.dark-theme .input-group-text {
+    background-color: var(--dark-surface-tertiary);
+    color: var(--dark-text);
+    border-color: var(--dark-border-light);
+}
+
+
+/* Checkboxes */
+html.dark-theme .form-check-input {
+    background-color: var(--dark-input-bg);
+    border-color: var(--dark-border-light);
+}
+
+
+/* ============================================================
+   TABELAS
+   ============================================================ */
+
+html.dark-theme .table {
+    --bs-table-bg: var(--dark-table-bg);
+    --bs-table-color: var(--dark-text);
+    --bs-table-border-color: var(--dark-border);
+
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+/* Células */
+html.dark-theme .table > :not(caption) > * > * {
+    background-color: var(--dark-table-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+/* Cabeçalho */
+html.dark-theme .table thead th {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text-light);
+}
+
+
+/* Table light */
+html.dark-theme .table-light,
+html.dark-theme .table-light > th,
+html.dark-theme .table-light > td {
+    --bs-table-bg: var(--dark-surface-secondary);
+    --bs-table-color: var(--dark-text);
+}
+
+
+/* Linhas alternadas */
+html.dark-theme .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: var(--dark-table-striped);
+    color: var(--dark-text);
+}
+
+
+/* Hover */
+html.dark-theme .table-hover > tbody > tr:hover > * {
+    background-color: var(--dark-table-hover);
+    color: var(--dark-text-light);
+}
+
+
+/* ============================================================
+   ACCORDION
+   ============================================================ */
+
+html.dark-theme .accordion {
+    --bs-accordion-bg: var(--dark-surface);
+    --bs-accordion-color: var(--dark-text);
+    --bs-accordion-border-color: var(--dark-border);
+}
+
+
+html.dark-theme .accordion-item {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+html.dark-theme .accordion-button {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .accordion-button.collapsed {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .accordion-button:not(.collapsed) {
+    background-color: var(--dark-surface-tertiary);
+    color: var(--dark-text-light);
+    box-shadow:
+        inset 0 calc(-1 * var(--bs-accordion-border-width))
+        0 var(--dark-border);
+}
+
+
+html.dark-theme .accordion-body {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+}
+
+
+/* Ícone/seta do accordion */
+html.dark-theme .accordion-button::after {
+    filter: invert(1);
+}
+
+/* ============================================================
+   BOTÃO DE FILTROS
+   ============================================================ */
+
+html.dark-theme #openFilter {
+    background-color: var(--dark-surface-tertiary);
+    color: var(--dark-text);
+    border-color: var(--dark-border-light);
+}
+
+html.dark-theme #openFilter:hover,
+html.dark-theme #openFilter:focus {
+    background-color: var(--dark-hover);
+    color: var(--dark-text-light);
+    border-color: #666;
+}
+
+html.dark-theme #openFilter .svg-inline--fa {
+    color: inherit;
+}
+
+/* ============================================================
+   SIDEBAR DE FILTROS
+   ============================================================ */
+
+html.dark-theme #filterSidebar {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+
+    border-left: 1px solid var(--dark-border);
+
+    box-shadow:
+        -2px 0 10px rgba(0, 0, 0, 0.45);
+}
+
+
+/* Título */
+html.dark-theme #filterSidebar h5 {
+    color: var(--dark-text-light);
+}
+
+
+/* Labels */
+html.dark-theme #filterSidebar label {
+    color: var(--dark-text);
+}
+
+
+/* Inputs e selects */
+html.dark-theme #filterSidebar .form-control,
+html.dark-theme #filterSidebar .form-select {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+    border-color: var(--dark-border-light);
+}
+
+
+/* Placeholder */
+html.dark-theme #filterSidebar .form-control::placeholder {
+    color: var(--dark-muted);
+}
+
+
+/* Focus */
+html.dark-theme #filterSidebar .form-control:focus,
+html.dark-theme #filterSidebar .form-select:focus {
+    background-color: var(--dark-input-focus);
+    color: var(--dark-text-light);
+    border-color: #6c757d;
+}
+
+
+/* Opções do select */
+html.dark-theme #filterSidebar .form-select option {
+    background-color: var(--dark-input-bg);
+    color: var(--dark-text);
+}
+
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+
+html.dark-theme .breadcrumb {
+    --bs-breadcrumb-divider-color: var(--dark-muted);
+}
+
+
+html.dark-theme .breadcrumb-item {
+    color: var(--dark-muted);
+}
+
+
+html.dark-theme .breadcrumb-item.active {
+    color: var(--dark-muted);
+}
+
+
+html.dark-theme .breadcrumb-item a {
+    color: #9ec5fe;
+}
+
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+html.dark-theme .sb-topnav {
+    background-color: var(--dark-navbar-bg) !important;
+    border-bottom: 1px solid var(--dark-border);
+}
+
+
+html.dark-theme .navbar {
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .navbar .nav-link {
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .navbar .nav-link:hover {
+    color: var(--dark-text-light);
+}
+
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+html.dark-theme .sb-sidenav-five {
+    background-color: var(--dark-sidebar-bg);
+    color: var(--dark-text);
+}
+
+
+/* Texto dos menus */
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link {
+    color: var(--dark-sidebar-text);
+}
+
+
+/* Ícones dos menus */
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link
+.sb-nav-link-icon {
+    color: var(--dark-sidebar-icon) !important;
+}
+
+
+/* Font Awesome convertido para SVG */
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link
+.sb-nav-link-icon
+.svg-inline--fa {
+    color: var(--dark-sidebar-icon) !important;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+html.dark-theme footer {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-top: 1px solid var(--dark-border);
+}
+
+html.dark-theme footer .text-muted {
+    color: var(--dark-muted) !important;
+}
+
+html.dark-theme footer a {
+    color: #9ec5fe;
+}
+
+html.dark-theme footer a:hover {
+    color: #c5dcff;
+}
+
+/* ============================================================
+   FOOTER DA SIDEBAR
+   ============================================================ */
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-footer {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-muted);
+}
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-footer strong {
+    color: var(--dark-text);
+}
+
+
+/* ============================================================
+   HOVER
+   ============================================================ */
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link:hover {
+    background-color: var(--dark-sidebar-hover);
+    color: var(--dark-sidebar-text-hover);
+}
+
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link:hover
+.sb-nav-link-icon,
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link:hover
+.sb-nav-link-icon
+.svg-inline--fa {
+    color: var(--dark-sidebar-icon-hover) !important;
+}
+
+/* ============================================================
+   SWEETALERT2
+   ============================================================ */
+
+html.dark-theme .swal2-popup {
+    background-color: var(--dark-surface) !important;
+    color: var(--dark-text) !important;
+}
+
+
+/* Título */
+html.dark-theme .swal2-title {
+    color: var(--dark-text-light) !important;
+}
+
+
+/* Texto / descrição */
+html.dark-theme .swal2-html-container {
+    color: var(--dark-text) !important;
+}
+
+
+/* Caso use input dentro do SweetAlert */
+html.dark-theme .swal2-input,
+html.dark-theme .swal2-textarea,
+html.dark-theme .swal2-select {
+    background-color: var(--dark-input-bg) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border-light) !important;
+}
+
+
+/* Rodapé do alerta */
+html.dark-theme .swal2-footer {
+    color: var(--dark-muted) !important;
+    border-top-color: var(--dark-border) !important;
+}
+
+
+/* Botão X */
+html.dark-theme .swal2-close {
+    color: var(--dark-muted) !important;
+}
+
+html.dark-theme .swal2-close:hover {
+    color: var(--dark-text-light) !important;
+}
+
+
+/* ============================================================
+   MENU ATIVO
+   ============================================================ */
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link.active {
+    background-color: var(--dark-sidebar-active);
+    color: var(--dark-sidebar-text-active);
+    font-weight: bold;
+}
+
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link.active
+.sb-nav-link-icon,
+
+html.dark-theme
+.sb-sidenav-five
+.sb-sidenav-menu
+.nav-link.active
+.sb-nav-link-icon
+.svg-inline--fa {
+    color: var(--dark-sidebar-icon-active) !important;
+    background-color: transparent;
+}
+
+
+/* ============================================================
+   DROPDOWN
+   ============================================================ */
+
+html.dark-theme .dropdown-menu {
+    background-color: var(--dark-surface-secondary);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+html.dark-theme .dropdown-item {
+    color: var(--dark-text);
+}
+
+
+html.dark-theme .dropdown-item:hover,
+html.dark-theme .dropdown-item:focus {
+    background-color: var(--dark-hover);
+    color: var(--dark-text-light);
+}
+
+
+html.dark-theme .dropdown-divider {
+    border-color: var(--dark-border);
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+html.dark-theme .modal-content {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+html.dark-theme .modal-header {
+    background-color: var(--dark-surface-secondary);
+    border-bottom-color: var(--dark-border);
+}
+
+
+html.dark-theme .modal-footer {
+    background-color: var(--dark-surface-secondary);
+    border-top-color: var(--dark-border);
+}
+
+
+/* X do modal */
+html.dark-theme .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+
+/* ============================================================
+   LIST GROUP
+   ============================================================ */
+
+html.dark-theme .list-group-item {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+html.dark-theme .list-group-item-action:hover {
+    background-color: var(--dark-hover);
+    color: var(--dark-text-light);
+}
+
+
+/* ============================================================
+   PAGINAÇÃO
+   ============================================================ */
+
+html.dark-theme .page-link {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+    border-color: var(--dark-border);
+}
+
+
+html.dark-theme .page-link:hover {
+    background-color: var(--dark-hover);
+    color: var(--dark-text-light);
+}
+
+
+html.dark-theme .page-item.disabled .page-link {
+    background-color: var(--dark-surface-secondary);
+    color: #777;
+    border-color: var(--dark-border);
+}
+
+
+/* ============================================================
+   HR
+   ============================================================ */
+
+html.dark-theme hr {
+    border-color: var(--dark-border);
+    opacity: 1;
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+/*
+   Mantemos as cores do Bootstrap nos badges porque elas
+   representam estados do sistema.
+
+   Apenas evitamos que badges claros fiquem muito brilhantes.
+*/
+
+html.dark-theme .badge.bg-light {
+    background-color: var(--dark-surface-tertiary) !important;
+    color: var(--dark-text) !important;
+}
+
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+
+/*
+   Não eliminamos as cores dos alerts, pois elas indicam
+   sucesso, erro, informação e aviso.
+
+   Apenas reduzimos o brilho do fundo.
+*/
+
+html.dark-theme .alert-success {
+    background-color: #173c28;
+    color: #b9f6ca;
+    border-color: #285d3d;
+}
+
+
+html.dark-theme .alert-danger {
+    background-color: #472025;
+    color: #f5c2c7;
+    border-color: #6b2d35;
+}
+
+
+html.dark-theme .alert-warning {
+    background-color: #403510;
+    color: #ffe69c;
+    border-color: #665515;
+}
+
+
+html.dark-theme .alert-info {
+    background-color: #143c47;
+    color: #b6effb;
+    border-color: #216070;
+}
+
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+
+html.dark-theme .progress {
+    background-color: var(--dark-surface-tertiary);
+}
+
+
+/* ============================================================
+   OFFCANVAS
+   ============================================================ */
+
+html.dark-theme .offcanvas {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+}
+
+
+/* ============================================================
+   POPOVER / TOOLTIP
+   ============================================================ */
+
+html.dark-theme .popover {
+    --bs-popover-bg: var(--dark-surface-secondary);
+    --bs-popover-border-color: var(--dark-border);
+    --bs-popover-body-color: var(--dark-text);
+    --bs-popover-header-bg: var(--dark-surface-tertiary);
+    --bs-popover-header-color: var(--dark-text-light);
+}
+
+
+/* ============================================================
+   TRANSIÇÃO DO TEMA
+   ============================================================ */
+
+/*
+   Uma pequena transição evita uma mudança muito brusca
+   entre claro e escuro.
+*/
+
+body,
+#layoutSidenav_content,
+.card,
+.card-header,
+.form-control,
+.form-select,
+.table,
+.accordion-item,
+.accordion-button,
+.dropdown-menu {
+
+    transition:
+        background-color 0.20s ease,
+        color 0.20s ease,
+        border-color 0.20s ease;
+}
+
+
+/* Usuários que desativaram animações no sistema operacional */
+@media (prefers-reduced-motion: reduce) {
+
+    body,
+    #layoutSidenav_content,
+    .card,
+    .card-header,
+    .form-control,
+    .form-select,
+    .table,
+    .accordion-item,
+    .accordion-button,
+    .dropdown-menu {
+
+        transition: none;
+    }
+}

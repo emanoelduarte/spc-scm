@@ -19,7 +19,7 @@ class ListOrders
     private array|string|null $data = null;
 
     /** @var int $page Recebe a quantidade de registros que deve retornar do banco de dados para ser usado na paginação*/
-    private int $limitResult = 1;
+    private int $limitResult = 10;
 
     public function index(string|int $page = 1): void
     {

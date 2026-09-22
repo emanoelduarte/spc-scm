@@ -21,6 +21,7 @@
         "robmorgan/phinx": "^0.16.10",
         "rakit/validation": "^1.4",
         "phpmailer/phpmailer": "^7.0",
-        "dompdf/dompdf": "^3.1"
+        "dompdf/dompdf": "^3.1",
+        "nfephp-org/sped-nfe": "^5.2"
     }
 }

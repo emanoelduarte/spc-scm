@@ -12,3 +12,52 @@
 
 # Arquivo de anotações
 Notations
+
+# ==========================================================
+# MÓDULO DE ORÇAMENTO - TEMPORARIAMENTE FORA DO GIT
+# ==========================================================
+
+# Controllers - módulo inteiro
+/app/admsDaman/Controllers/budgets/
+
+
+# Services / Validation - arquivos específicos
+/app/admsDaman/Controllers/Services/Validation/ValidationBudgetItemsService.php
+/app/admsDaman/Controllers/Services/Validation/ValidationBudgetService.php
+/app/admsDaman/Controllers/Services/Validation/ValidationBudgetStagesService.php
+
+
+# Repositories - arquivos específicos
+/app/admsDaman/Models/Repository/BudgetRepository.php
+/app/admsDaman/Models/Repository/BudgetItemRepository.php
+/app/admsDaman/Models/Repository/BudgetStageRepository.php
+/app/admsDaman/Models/Repository/StagesRepository.php
+
+
+# Views - módulo inteiro
+/app/admsDaman/Views/budgets/
+
+
+# ==========================================================
+# MIGRATIONS - MÓDULO DE ORÇAMENTO
+# ==========================================================
+
+/database/migrations/20260825171629_adms_daman_stages.php
+/database/migrations/20260825171630_adms_daman_budgets.php
+/database/migrations/20260825174843_adms_daman_budget_stages.php
+/database/migrations/20260825181610_adms_daman_budget_items.php
+/database/migrations/20260825183342_adms_daman_order_item_allocations.php
+
+
+# ==========================================================
+# SEEDS - MÓDULO DE ORÇAMENTO
+# ==========================================================
+
+/database/seeds/AddAdmsDamanBudgetItemsSeeder.php
+/database/seeds/AddAdmsDamanBudgetsSeeder.php
+/database/seeds/AddAdmsDamanBudgetStagesSeeder.php
+/database/seeds/AddAdmsDamanOrderItemAllocationsSeeder.php
+/database/seeds/AddAdmsDamanStagesSeeder.php
+
+/public/admsDaman/js/script_budgets.js
+

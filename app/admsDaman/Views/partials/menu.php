@@ -3,7 +3,11 @@
         <div class="sb-sidenav-menu">
             <div class="nav">
 
-                <?php if (in_array('Dashboard', $this->data['menuPermission'])) : ?>
+                <?php
+                $menuPermission = $this->data['menuPermission'] ?? [];
+                ?>
+
+                <?php if (in_array('Dashboard', $menuPermission)) : ?>
 
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'dashboard')) ? 'active' : '' ?>"
                         href="<?= $_ENV['URL_ADM'] ?>dashboard">
@@ -12,7 +16,7 @@
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListUsers', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListUsers', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-users')) ? 'active' : '' ?>"
                         href="<?= $_ENV['URL_ADM'] ?>list-users">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
@@ -20,7 +24,7 @@
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListOrders', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListOrders', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-orders')) ? 'active' : '' ?>"
                         href="<?php echo $_ENV['URL_ADM'] ?>list-orders">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-file-lines"></i></div>
@@ -28,23 +32,39 @@
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListPurchasings', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListPurchasings', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-purchasings')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-purchasings">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
-                        Compras
+                    href="<?php echo $_ENV['URL_ADM'] ?>list-purchasings">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                    Compras
+                </a>
+                <?php endif; ?>
+
+                <?php if (in_array('ListPurchaseDocuments', $menuPermission)) : ?>
+                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-purchase-documents')) ? 'active' : '' ?>"
+                        href="<?php echo $_ENV['URL_ADM'] ?>list-purchase-documents">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        Financeiro
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListProjects', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListNfes', $menuPermission)) : ?>
+                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-nfes')) ? 'active' : '' ?>"
+                        href="<?php echo $_ENV['URL_ADM'] ?>list-nfes">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-receipt"></i></div>
+                        NF-e
+                    </a>
+                <?php endif; ?>
+
+                <?php if (in_array('ListProjects', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-projects')) ? 'active' : '' ?>"
                         href="<?php echo $_ENV['URL_ADM'] ?>list-projects">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-helmet-safety"></i></div>
                         Obras
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListMaterialStock', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListMaterialStock', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-material-stock')) ? 'active' : '' ?>"
                         href="<?php echo $_ENV['URL_ADM'] ?>list-material-stock">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-warehouse"></i></div>
@@ -52,11 +72,19 @@
                     </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListSuppliers', $this->data['menuPermission'])) : ?>
+                <?php if (in_array('ListSuppliers', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-suppliers')) ? 'active' : '' ?>"
                         href="<?php echo $_ENV['URL_ADM'] ?>list-suppliers">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-industry"></i></div>
                         Fornecedores
+                    </a>
+                <?php endif; ?>
+
+                <?php if (in_array('ListBudgets', $menuPermission)) : ?>
+                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-budgets')) ? 'active' : '' ?>"
+                        href="<?php echo $_ENV['URL_ADM'] ?>list-budgets">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-sack-dollar text-muted"></i></div>
+                        Orçamentos
                     </a>
                 <?php endif; ?>
 
@@ -73,12 +101,13 @@
                 // Verifica se o usuário tem permissão em pelo menos um item do grupo
                 $showConfigGroup = array_intersect(
                     ['ListAccessLevels', 'ListCategories', 'ListPackages', 'ListGroupsPages', 'ListPages'],
-                    $this->data['menuPermission']
+                    $menuPermission
                 );
                 ?>
 
                 <?php if (!empty($showConfigGroup)) : ?>
-                   <?php // Botão do grupo pai ?>
+                    <?php // Botão do grupo pai 
+                    ?>
                     <a class="nav-link collapsed <?= $configMenuActive ? 'active' : '' ?>"
                         href="#collapseConfiguracoes"
                         data-bs-toggle="collapse"
@@ -89,11 +118,12 @@
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
 
-                    <?php // Sub-itens ?>
+                    <?php // Sub-itens 
+                    ?>
                     <div class="collapse <?= $configMenuActive ? 'show' : '' ?>" id="collapseConfiguracoes">
                         <nav class="sb-sidenav-menu-nested nav">
 
-                            <?php if (in_array('ListAccessLevels', $this->data['menuPermission'])) : ?>
+                            <?php if (in_array('ListAccessLevels', $menuPermission)) : ?>
                                 <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-access-levels') ? 'active' : '' ?>"
                                     href="<?= $_ENV['URL_ADM'] ?>list-access-levels">
                                     <div class="sb-nav-link-icon"><i class="fa-solid fa-network-wired"></i></div>
@@ -101,7 +131,7 @@
                                 </a>
                             <?php endif; ?>
 
-                            <?php if (in_array('ListCategories', $this->data['menuPermission'])) : ?>
+                            <?php if (in_array('ListCategories', $menuPermission)) : ?>
                                 <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-categories') ? 'active' : '' ?>"
                                     href="<?= $_ENV['URL_ADM'] ?>list-categories">
                                     <div class="sb-nav-link-icon"><i class="fa-solid fa-tags"></i></div>
@@ -109,7 +139,7 @@
                                 </a>
                             <?php endif; ?>
 
-                            <?php if (in_array('ListPackages', $this->data['menuPermission'])) : ?>
+                            <?php if (in_array('ListPackages', $menuPermission)) : ?>
                                 <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-packages') ? 'active' : '' ?>"
                                     href="<?= $_ENV['URL_ADM'] ?>list-packages">
                                     <div class="sb-nav-link-icon"><i class="fa-solid fa-cubes"></i></div>
@@ -117,7 +147,7 @@
                                 </a>
                             <?php endif; ?>
 
-                            <?php if (in_array('ListGroupsPages', $this->data['menuPermission'])) : ?>
+                            <?php if (in_array('ListGroupsPages', $menuPermission)) : ?>
                                 <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-groups-pages') ? 'active' : '' ?>"
                                     href="<?= $_ENV['URL_ADM'] ?>list-groups-pages">
                                     <div class="sb-nav-link-icon"><i class="fa-solid fa-layer-group"></i></div>
@@ -125,7 +155,7 @@
                                 </a>
                             <?php endif; ?>
 
-                            <?php if (in_array('ListPages', $this->data['menuPermission'])) : ?>
+                            <?php if (in_array('ListPages', $menuPermission)) : ?>
                                 <a class="nav-link <?= (($this->data['menu'] ?? false) && $this->data['menu'] == 'list-pages') ? 'active' : '' ?>"
                                     href="<?= $_ENV['URL_ADM'] ?>list-pages">
                                     <div class="sb-nav-link-icon"><i class="fa-regular fa-file"></i></div>

@@ -50,6 +50,12 @@
 .sb-sidenav-five .sb-sidenav-menu .nav-link.active {
     color: #181818;
     background-color: #f0efef;
+    font-weight: bold;
+}
+
+/* Ao ser clicado e está ativo o icone aumenta de tamanho*/
+.sb-sidenav-five .sb-sidenav-menu .nav-link.active .svg-inline--fa {
+    font-size: 1.5em;
 }
 
 .sb-sidenav-five .sb-sidenav-menu .nav-link.active .sb-nav-link-icon {
@@ -59,6 +65,9 @@
 
 .sb-sidenav-five .sb-sidenav-footer {
     background-color: #eeeded;
+}
+footer {
+    background-color: #f8f9fa;
 }
 
 .loading-overlay {

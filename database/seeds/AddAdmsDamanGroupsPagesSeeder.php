@@ -21,7 +21,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
         // Variável para receber os dados a serem inseridos
         $data = [];
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 1 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Dashboard'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -33,7 +33,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 2 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Usuários'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -45,7 +45,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        //  3 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Nível de Acesso'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -57,10 +57,10 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 4 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Pacote de Páginas'])->fetch();
 
-        // Se o usuário não existir, adiciona seus dados ao array $data
+        //  Se o usuário não existir, adiciona seus dados ao array $data
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'Pacote de Páginas',
@@ -69,7 +69,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 5 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Grupo de Páginas'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -81,10 +81,10 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 6 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Páginas'])->fetch();
 
-        // Se o usuário não existir, adiciona seus dados ao array $data
+        //  Se o usuário não existir, adiciona seus dados ao array $data
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'Páginas',
@@ -93,7 +93,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 7 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Login'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -105,7 +105,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 8 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Erros'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -117,7 +117,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 9 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Fornecedores'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -129,7 +129,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 10 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Pedidos de Compra'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -141,7 +141,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 11 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Categoria'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -153,7 +153,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 12 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Obras'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -165,7 +165,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 13 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Compras'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -177,7 +177,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 14 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Permissões'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -189,7 +189,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 15 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Pdfs'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -201,7 +201,7 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 16 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Estoque'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
@@ -213,13 +213,49 @@ class AddAdmsDamanGroupsPagesSeeder extends AbstractSeed
             ];
         }
 
-        // Verifica se o grupo de página com o name especificado já existe
+        // 17 Verifica se o grupo de página com o name especificado já existe
         $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Conteúdo'])->fetch();
 
         // Se o usuário não existir, adiciona seus dados ao array $data
         if (!$existingRecord) {
             $data[] = [
                 'name' => 'Conteúdo',
+                'obs' => '',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        // 18 Verifica se o grupo de página com o name especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Orçamentos'])->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Orçamentos',
+                'obs' => '',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        // 19 Verifica se o grupo de página com o name especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Nfes'])->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Nfes',
+                'obs' => '',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
+        // 20 Verifica se o grupo de página com o name especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_groups_pages WHERE name=:name', ['name' => 'Pagamentos'])->fetch();
+
+        // Se o usuário não existir, adiciona seus dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Pagamentos',
                 'obs' => '',
                 'created_at' => date("Y-m-d H:i:s"),
             ];

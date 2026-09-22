@@ -196,6 +196,14 @@ if (!file_exists($logoPath)) {
             padding-top: 40px;
         }
 
+        .assinaturas td.autorized {
+            font-weight: bold;
+            padding: 0;
+            background-color: #ccc;
+            vertical-align: middle;
+            height: 20px;
+        }
+
         .footer {
             text-align: center;
             font-size: 11px;
@@ -445,9 +453,11 @@ if (!file_exists($logoPath)) {
 
     <table class="assinaturas">
         <tr>
-            <td>__________________________<br>Solicitado por</td>
-            <td>__________________________<br>Conferido por</td>
-            <td>__________________________<br>Recebido por</td>
+            <td class="autorized" colspan="2">Autorizado por</td>
+        </tr>
+        <tr>
+            <td>__________________________<br>Davi Costa</td>
+            <td>__________________________<br>Emanoel Duarte</td>
         </tr>
     </table>
 

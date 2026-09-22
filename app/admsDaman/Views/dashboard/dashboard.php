@@ -23,7 +23,7 @@
                 <div class="col-xl-12 col-md-12">
                     <div class="card mb-4">
                         <div
-                            class="card-header fw-semibold bg-white justify-content-between d-flex align-items-center py-3">
+                            class="card-header fw-semibold justify-content-between d-flex align-items-center py-3">
                             <div>
                                 <i class="fas fa-chart-line me-2 text-primary"></i>
                                 Status de Pedidos
@@ -71,7 +71,7 @@
                     <div class="col-xl-6 col-md-12">
                         <div class="card mb-4 shadow-sm border-0">
                             <div
-                                class="card-header fw-semibold bg-white justify-content-between d-flex align-items-center py-3">
+                                class="card-header fw-semibold justify-content-between d-flex align-items-center py-3">
                                 <div>
                                     <i class="fas fa-building me-2 text-primary"></i>
                                     Pedidos em análise por obra
@@ -115,7 +115,7 @@
                     <div class="col-xl-6 col-md-12">
                         <div class="card mb-4 shadow-sm border-0">
 
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                            <div class="card-header d-flex justify-content-between align-items-center py-3">
                                 <div class="fw-semibold">
                                     <i class="fas fa-cart-shopping text-primary me-2"></i>
                                     Últimas compras da semana

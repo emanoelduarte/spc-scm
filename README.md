@@ -46,6 +46,10 @@ Instalar a biblioteca gerenciar variáveis de ambiente
 ```
 composer require vlucas/phpdotenv
 ```
+Instalar a biblioteca responsável pela comunicação com a Sefaz.
+```
+composer require nfephp-org/sped-nfe
+```
 
 Instalar a biblioteca para criar/executar migrations e seed.
 ```

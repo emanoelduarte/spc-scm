@@ -3,48 +3,76 @@
 namespace App\admsDaman\Models\Services;
 
 use App\admsDaman\Helpers\GenerateLog;
-use Exception;
 use PDO;
+use Throwable;
 
 /**
- * Conexão com o banco de dados
- * 
- * @author Emanoel Duarte <emanoel.c.duarte@hotmail.com>
+ * Conexão com o banco de dados.
+ *
+ * Mantém uma única instância PDO compartilhada entre
+ * os repositories durante a execução da aplicação.
+ *
+ * @author Emanoel Duarte
  */
 abstract class DbConnection
 {
-    /** @var object $connect Recebe a conexão com o banco de dados */
-    private object $connect;
+    /**
+     * Conexão compartilhada com o banco de dados.
+     *
+     * O uso de static garante que todos os repositories
+     * utilizem a mesma instância PDO.
+     */
+    private static ?PDO $connect = null;
+
 
     /**
-     * Realiza a conexão com o banco de dados.
-     * Não realizando a conexão corretamente, para o processamento da página é apresentada a mensagem de erro de conexão com o e-mail do administrador do sistema
-     * 
-     * @return object $connect retorna a conxão com o banco de dados
+     * Retornar conexão com o banco de dados.
+     *
+     * Caso a conexão ainda não exista, ela será criada.
+     * Nas próximas chamadas, a mesma conexão será retornada.
+     *
+     * @return PDO
      */
-    public function getConnection(): object
+    public function getConnection(): PDO
     {
         try {
 
-         $dbname = "spcdaman";
-            // Conexão com a porta
-            //$this->connect = new PDO("mysql:host=localhost;port=3306;dbname=" . $dbname, "root", "");
-            // $this->connect = new PDO("mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname=" . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
+            // Criar conexão somente se ainda não existir.
+            if (self::$connect === null) {
 
-            //Conexão sem a porta
-            // Conexão com a porta
-             if (!isset($this->connect)) {
-                $this->connect = new PDO("mysql:host={$_ENV['DB_HOST']};dbname=" . $_ENV['DB_NAME'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
+                self::$connect = new PDO(
+                    "mysql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']};charset=utf8mb4",
+                    $_ENV['DB_USER'],
+                    $_ENV['DB_PASS'],
+                    [
+                        // Fazer o PDO lançar exceção quando ocorrer erro.
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 
-            // echo "Conexão com o banco de dados realizada com sucesso!<br>";
-             }
+                        // Utilizar prepared statements nativos do MySQL.
+                        PDO::ATTR_EMULATE_PREPARES => false,
+                    ]
+                );
+            }
 
-            return $this->connect;
-        }catch(Exception $err) {
-            GenerateLog::generateLog("alert", "Falha na conexão com o banco de dados.", ['error' => $err->getMessage()]);
 
-            die("Erro 001: Tente novamente, caso o erro persista entre em contato com o administrador Emanoel Duarte {$_ENV['EMAIL_ADM']}");
+            // Retornar sempre a mesma conexão.
+            return self::$connect;
 
+        } catch (Throwable $err) {
+
+            GenerateLog::generateLog(
+                "alert",
+                "Falha na conexão com o banco de dados.",
+                [
+                    'error' => $err->getMessage()
+                ]
+            );
+
+            die(
+                "Erro 001: Tente novamente, caso o erro persista "
+                . "entre em contato com o administrador "
+                . "{$_ENV['EMAIL_ADM']}"
+            );
         }
     }
 }

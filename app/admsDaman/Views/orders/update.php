@@ -225,11 +225,11 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_order');
                 <?php
                 // Se encontrar o array de itens exibir para edição:
                 $items = $this->data['form']['items'] ?? $this->data['items'] ?? [];
-
-                if ($items): ?>
+                ?>
 
                 <div id="items-container" class="row g-3 ">
                     <?php
+                    if ($items): 
                         // Percorre o array form até encontrar o elemento 'description', existindo ele continua a executar para mostrar ao menos um campo inicial, para o usuário.
                         foreach ($items as $index => $item):
 

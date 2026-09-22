@@ -246,6 +246,22 @@ class SuppliersRepository extends DbConnection
         }
     }
 
+    public function getAllSuppliersSelect(): array|bool
+    {
+
+        $sql = 'SELECT id, legal_name, cnpj, contact_name, phone
+        FROM adms_daman_suppliers
+        ORDER BY legal_name ASC';
+
+        // Preparar a query
+        $stmt = $this->getConnection()->prepare($sql);
+
+        // Executar a Query
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getAllSuppliersSelectActive(): array|bool
     {
 

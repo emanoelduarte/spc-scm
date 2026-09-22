@@ -207,61 +207,295 @@ if (openBtn && sidebar && overlay) {
 /**
  * Mostrar modal de saída e entrada de material
  */
-modalMovement.addEventListener('show.bs.modal', function (event) {
+const modalMovement = document.getElementById('modalMovement');
 
-    const button = event.relatedTarget;
-    const type = button.getAttribute('data-type');
-    const projectId = button.getAttribute('data-project');
-    const isEncarregado = document.querySelector('.modal-body').getAttribute('data-is-encarregado') === '1';
+if (modalMovement) {
 
-    const reasonField = document.getElementById('reasonField');
-    const projectField = document.getElementById('projectField');
-    const projectFixed = document.getElementById('projectFixed');
+    modalMovement.addEventListener(
+        'show.bs.modal',
+        function (event) {
 
-    if (type === 'input') {
+            const button = event.relatedTarget;
 
-        if (reasonField) reasonField.classList.add('d-none');
-        if (projectField) projectField.classList.add('d-none');
-        if (projectField) projectField.querySelector('select').removeAttribute('required');
-
-        projectFixed.value = projectId;
-        projectFixed.removeAttribute('disabled');
-
-        const reasonSelect = document.querySelector('[name="reason"]');
-        if (reasonSelect) reasonSelect.removeAttribute('required');
-
-        document.getElementById('modalTitle').textContent = 'Registrar Entrada';
-        document.getElementById('modalBtn').className = 'btn btn-success';
-
-    } else {
-
-        if (isEncarregado) {
-            // Encarregado — obra e motivo fixos, não mostra campos
-            projectFixed.value = projectId;
-            projectFixed.removeAttribute('disabled');
-        } else {
-            // Outros níveis — mostra campos normalmente
-            if (reasonField) reasonField.classList.remove('d-none');
-            if (projectField) {
-                projectField.classList.remove('d-none');
-                projectField.querySelector('select').setAttribute('required', 'required');
-                projectField.querySelector('select').removeAttribute('disabled');
+            if (!button) {
+                return;
             }
 
-            projectFixed.setAttribute('disabled', 'disabled');
-            projectFixed.value = '';
+            const type =
+                button.getAttribute('data-type');
 
-            const reasonSelect = document.querySelector('[name="reason"]');
-            if (reasonSelect) reasonSelect.setAttribute('required', 'required');
+            const projectId =
+                button.getAttribute('data-project');
+
+            const modalBody =
+                modalMovement.querySelector('.modal-body');
+
+            const isEncarregado =
+                modalBody?.getAttribute(
+                    'data-is-encarregado'
+                ) === '1';
+
+
+            const reasonField =
+                document.getElementById(
+                    'reasonField'
+                );
+
+            const projectField =
+                document.getElementById(
+                    'projectField'
+                );
+
+            const projectFixed =
+                document.getElementById(
+                    'projectFixed'
+                );
+
+            const reasonSelect =
+                document.querySelector(
+                    '[name="reason"]'
+                );
+
+            const modalTitle =
+                document.getElementById(
+                    'modalTitle'
+                );
+
+            const modalBtn =
+                document.getElementById(
+                    'modalBtn'
+                );
+
+
+            /*
+             * ENTRADA
+             */
+            if (type === 'input') {
+
+                if (reasonField) {
+                    reasonField.classList.add(
+                        'd-none'
+                    );
+                }
+
+                if (projectField) {
+
+                    projectField.classList.add(
+                        'd-none'
+                    );
+
+                    const projectSelect =
+                        projectField.querySelector(
+                            'select'
+                        );
+
+                    if (projectSelect) {
+
+                        projectSelect.removeAttribute(
+                            'required'
+                        );
+                    }
+                }
+
+
+                if (projectFixed) {
+
+                    projectFixed.value =
+                        projectId ?? '';
+
+                    projectFixed.removeAttribute(
+                        'disabled'
+                    );
+                }
+
+
+                if (reasonSelect) {
+
+                    reasonSelect.removeAttribute(
+                        'required'
+                    );
+                }
+
+
+                if (modalTitle) {
+
+                    modalTitle.textContent =
+                        'Registrar Entrada';
+                }
+
+
+                if (modalBtn) {
+
+                    modalBtn.className =
+                        'btn btn-success';
+                }
+
+            } else {
+
+                /*
+                 * SAÍDA
+                 */
+                if (isEncarregado) {
+
+                    /*
+                     * Encarregado:
+                     * obra e motivo fixos.
+                     */
+                    if (projectFixed) {
+
+                        projectFixed.value =
+                            projectId ?? '';
+
+                        projectFixed.removeAttribute(
+                            'disabled'
+                        );
+                    }
+
+                } else {
+
+                    /*
+                     * Outros níveis:
+                     * mostrar campos normalmente.
+                     */
+                    if (reasonField) {
+
+                        reasonField.classList.remove(
+                            'd-none'
+                        );
+                    }
+
+
+                    if (projectField) {
+
+                        projectField.classList.remove(
+                            'd-none'
+                        );
+
+                        const projectSelect =
+                            projectField.querySelector(
+                                'select'
+                            );
+
+                        if (projectSelect) {
+
+                            projectSelect.setAttribute(
+                                'required',
+                                'required'
+                            );
+
+                            projectSelect.removeAttribute(
+                                'disabled'
+                            );
+                        }
+                    }
+
+
+                    if (projectFixed) {
+
+                        projectFixed.setAttribute(
+                            'disabled',
+                            'disabled'
+                        );
+
+                        projectFixed.value = '';
+                    }
+
+
+                    if (reasonSelect) {
+
+                        reasonSelect.setAttribute(
+                            'required',
+                            'required'
+                        );
+                    }
+                }
+
+
+                if (modalTitle) {
+
+                    modalTitle.textContent =
+                        'Registrar Saída';
+                }
+
+
+                if (modalBtn) {
+
+                    modalBtn.className =
+                        'btn btn-danger';
+                }
+            }
+
+
+            /*
+             * Dados do item.
+             */
+            const stockId =
+                document.getElementById(
+                    'stockId'
+                );
+
+            const movementType =
+                document.getElementById(
+                    'movementType'
+                );
+
+            const itemName =
+                document.getElementById(
+                    'itemName'
+                );
+
+            const itemNameHidden =
+                document.getElementById(
+                    'itemNameHidden'
+                );
+
+            const categoryIdHidden =
+                document.getElementById(
+                    'categoryIdHidden'
+                );
+
+
+            if (stockId) {
+
+                stockId.value =
+                    button.getAttribute(
+                        'data-id'
+                    ) ?? '';
+            }
+
+
+            if (movementType) {
+
+                movementType.value =
+                    type ?? '';
+            }
+
+
+            if (itemName) {
+
+                itemName.textContent =
+                    button.getAttribute(
+                        'data-name'
+                    ) ?? '';
+            }
+
+
+            if (itemNameHidden) {
+
+                itemNameHidden.value =
+                    button.getAttribute(
+                        'data-name'
+                    ) ?? '';
+            }
+
+
+            if (categoryIdHidden) {
+
+                categoryIdHidden.value =
+                    button.getAttribute(
+                        'data-category'
+                    ) ?? '';
+            }
         }
-
-        document.getElementById('modalTitle').textContent = 'Registrar Saída';
-        document.getElementById('modalBtn').className = 'btn btn-danger';
-    }
-
-    document.getElementById('stockId').value = button.getAttribute('data-id');
-    document.getElementById('movementType').value = type;
-    document.getElementById('itemName').textContent = button.getAttribute('data-name');
-    document.getElementById('itemNameHidden').value = button.getAttribute('data-name');
-    document.getElementById('categoryIdHidden').value = button.getAttribute('data-category');
-});
+    );
+}
