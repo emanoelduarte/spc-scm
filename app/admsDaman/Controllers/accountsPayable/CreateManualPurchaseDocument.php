@@ -7,6 +7,7 @@ use App\admsDaman\Controllers\Services\Validation\ValidationManualPurchaseDocume
 use App\admsDaman\Controllers\Services\Validation\ValidationManualPurchaseInstallmentsService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
+use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
@@ -166,6 +167,22 @@ class CreateManualPurchaseDocument
         $this->data['getAllPaymentSelect'] =
             $paymentMethodsRepository
             ->getAllPaymentSelect();
+
+
+        /*
+         * =====================================================
+         * FORMAS DE PAGAMENTO DA BAIXA
+         * =====================================================
+         *
+         * Esta lista representa como o pagamento efetivamente
+         * saiu do caixa: PIX, boleto, transferência etc.
+         */
+        $financialPaymentMethodsRepository =
+            new FinancialPaymentMethodsRepository();
+
+        $this->data['getAllFinancialPaymentMethodsSelect'] =
+            $financialPaymentMethodsRepository
+            ->getAllActiveSelect();
 
 
         /*

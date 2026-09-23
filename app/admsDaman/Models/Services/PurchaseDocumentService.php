@@ -590,6 +590,21 @@ class PurchaseDocumentService extends DbConnection
 
 
             /*
+             * Forma de pagamento utilizada na baixa automática.
+             *
+             * Este campo representa como o pagamento efetivamente
+             * saiu do caixa, e não a condição comercial da compra.
+             */
+            $financialPaymentMethodId =
+                (int) (
+                    $installment[
+                        'adms_daman_financial_payment_method_id'
+                    ]
+                    ?? 0
+                );
+
+
+            /*
          * Número da parcela.
          */
             if ($installmentNumber <= 0) {
@@ -655,6 +670,22 @@ class PurchaseDocumentService extends DbConnection
             }
 
 
+            /*
+             * Toda baixa automática precisa informar
+             * a forma real pela qual o pagamento ocorreu.
+             */
+            if (
+                $payOnSave
+                &&
+                $financialPaymentMethodId <= 0
+            ) {
+
+                throw new RuntimeException(
+                    "Selecione a forma de pagamento da parcela {$installmentNumber}."
+                );
+            }
+
+
             $totalInstallmentsCents += $amountCents;
 
 
@@ -689,6 +720,15 @@ class PurchaseDocumentService extends DbConnection
                  */
                 'pay_on_save' =>
                 $payOnSave,
+
+                /*
+                 * Necessário somente quando a parcela será
+                 * baixada automaticamente ao salvar.
+                 */
+                'adms_daman_financial_payment_method_id' =>
+                $payOnSave
+                    ? $financialPaymentMethodId
+                    : null,
             ];
         }
 
@@ -1335,6 +1375,14 @@ class PurchaseDocumentService extends DbConnection
 
                 'payment_date' =>
                     $paymentDate,
+
+                'adms_daman_financial_payment_method_id' =>
+                    (int) (
+                        $installment[
+                            'adms_daman_financial_payment_method_id'
+                        ]
+                        ?? 0
+                    ),
 
                 'principal_amount' =>
                     (string) $installment['original_amount'],

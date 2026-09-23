@@ -194,6 +194,45 @@
     );
 
 
+
+    /*
+     * ==========================================================
+     * FORMAS DE PAGAMENTO DA BAIXA AUTOMÁTICA
+     * ==========================================================
+     */
+    const financialPaymentMethodsData =
+        document.getElementById(
+            'financialPaymentMethodsData'
+        );
+
+    let financialPaymentMethods = [];
+
+    if (financialPaymentMethodsData) {
+
+        try {
+
+            const parsedPaymentMethods =
+                JSON.parse(
+                    financialPaymentMethodsData.textContent
+                    || '[]'
+                );
+
+            financialPaymentMethods =
+                Array.isArray(parsedPaymentMethods)
+                    ? parsedPaymentMethods
+                    : [];
+
+        } catch (error) {
+
+            console.error(
+                'Erro ao recuperar formas de pagamento.',
+                error
+            );
+
+            financialPaymentMethods = [];
+        }
+    }
+
     /*
      * Se algum elemento essencial estiver ausente,
      * não executar o módulo.
@@ -388,7 +427,10 @@
                                  * disponível em qualquer parcela.
                                  * Parcela recém-gerada inicia desmarcada.
                                  */
-                                payOnSave: false
+                                payOnSave: false,
+
+                                financialPaymentMethodId:
+                                    0
                             });
 
 
@@ -445,7 +487,8 @@
         dueDate,
         amountCents,
         status,
-        payOnSave = false
+        payOnSave = false,
+        financialPaymentMethodId = 0
     }) {
 
         const safeInstallmentNumber =
@@ -639,6 +682,39 @@
                             junto com o lançamento.
                         </div>
 
+
+                        <div
+                            class="mt-3 financial-payment-method-wrapper
+                            ${payOnSave && safeStatus !== 'AP' ? '' : 'd-none'}">
+
+                            <label
+                                class="form-label"
+                                for="installment_financial_payment_method_${index}">
+
+                                Forma de pagamento
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <select
+                                class="form-select installment-financial-payment-method"
+                                form="purchaseDocumentForm"
+                                name="installments[${index}][adms_daman_financial_payment_method_id]"
+                                id="installment_financial_payment_method_${index}"
+                                ${payOnSave && safeStatus !== 'AP' ? 'required' : 'disabled'}>
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                            </select>
+
+                            <div class="form-text">
+                                Informe como esta parcela foi efetivamente paga.
+                            </div>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -668,9 +744,135 @@
         }
 
 
+        const financialPaymentMethodSelect =
+            card.querySelector(
+                '.installment-financial-payment-method'
+            );
+
+
+        if (financialPaymentMethodSelect) {
+
+            financialPaymentMethods.forEach(
+                method => {
+
+                    const methodId =
+                        Number(
+                            method.id
+                            ?? 0
+                        );
+
+
+                    if (methodId <= 0) {
+                        return;
+                    }
+
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+                    option.value =
+                        String(methodId);
+
+                    option.textContent =
+                        String(
+                            method.name
+                            ?? ''
+                        );
+
+                    option.selected =
+                        methodId
+                        === Number(
+                            financialPaymentMethodId
+                        );
+
+
+                    financialPaymentMethodSelect
+                        .appendChild(
+                            option
+                        );
+                }
+            );
+        }
+
+
+        updateAutomaticPaymentMethodState(
+            card
+        );
+
+
         return card;
     }
 
+
+
+    /*
+     * Mostrar e exigir a forma de pagamento somente
+     * quando a baixa automática estiver marcada.
+     */
+    function updateAutomaticPaymentMethodState(card) {
+
+        if (!card) {
+            return;
+        }
+
+
+        const payOnSaveInput =
+            card.querySelector(
+                '.installment-pay-on-save'
+            );
+
+        const statusSelect =
+            card.querySelector(
+                '.installment-status'
+            );
+
+        const wrapper =
+            card.querySelector(
+                '.financial-payment-method-wrapper'
+            );
+
+        const paymentMethodSelect =
+            card.querySelector(
+                '.installment-financial-payment-method'
+            );
+
+
+        if (
+            !payOnSaveInput
+            ||
+            !wrapper
+            ||
+            !paymentMethodSelect
+        ) {
+            return;
+        }
+
+
+        const enabled =
+            payOnSaveInput.checked
+            &&
+            !payOnSaveInput.disabled
+            &&
+            (
+                !statusSelect
+                ||
+                statusSelect.value !== 'AP'
+            );
+
+
+        wrapper.classList.toggle(
+            'd-none',
+            !enabled
+        );
+
+        paymentMethodSelect.disabled =
+            !enabled;
+
+        paymentMethodSelect.required =
+            enabled;
+    }
 
     // ==========================================================
     // VINCULAR EVENTOS DOS CAMPOS
@@ -928,6 +1130,11 @@
                             }
 
 
+                            updateAutomaticPaymentMethodState(
+                                card
+                            );
+
+
                             return;
                         }
 
@@ -959,6 +1166,11 @@
                         }
 
 
+                        updateAutomaticPaymentMethodState(
+                            card
+                        );
+
+
                         /*
                         * AV, AT e ON são determinados
                         * pelo vencimento.
@@ -982,6 +1194,45 @@
                             }
                         }
                     }
+                );
+            });
+
+
+        container
+            .querySelectorAll(
+                '.installment-pay-on-save'
+            )
+            .forEach(input => {
+
+                if (
+                    input.dataset.paymentMethodEventBound
+                    === '1'
+                ) {
+                    return;
+                }
+
+
+                input.dataset.paymentMethodEventBound =
+                    '1';
+
+
+                input.addEventListener(
+                    'change',
+                    function () {
+
+                        updateAutomaticPaymentMethodState(
+                            this.closest(
+                                '.card'
+                            )
+                        );
+                    }
+                );
+
+
+                updateAutomaticPaymentMethodState(
+                    input.closest(
+                        '.card'
+                    )
                 );
             });
     }
@@ -1104,6 +1355,14 @@
                         payOnSave:
                             normalizeBooleanFlag(
                                 installment.pay_on_save
+                            ),
+
+                        financialPaymentMethodId:
+                            Number(
+                                installment[
+                                    'adms_daman_financial_payment_method_id'
+                                ]
+                                ?? 0
                             )
                     });
 
@@ -1755,6 +2014,47 @@
              * LANÇAMENTO COM PARCELAS CONFIRMADAS
              * =====================================================
              */
+
+            const payOnSaveInputs =
+                container.querySelectorAll(
+                    '.installment-pay-on-save:checked'
+                );
+
+
+            for (const payOnSaveInput of payOnSaveInputs) {
+
+                const card =
+                    payOnSaveInput.closest(
+                        '.card'
+                    );
+
+                const financialPaymentMethodSelect =
+                    card?.querySelector(
+                        '.installment-financial-payment-method'
+                    );
+
+
+                if (
+                    !financialPaymentMethodSelect
+                    ||
+                    !financialPaymentMethodSelect.value
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        'Selecione a forma de pagamento da parcela marcada para baixa automática.'
+                    );
+
+
+                    financialPaymentMethodSelect
+                        ?.focus();
+
+                    return;
+                }
+            }
+
+
             const amountInputs =
                 container.querySelectorAll(
                     '.installment-amount'

@@ -8,6 +8,10 @@ $projects = $this->data['getAllProjectsSelectActive'] ?? [];
 $buyers = $this->data['getPurchaseUsersSelect'] ?? [];
 $paymentMethods = $this->data['getAllPaymentSelect'] ?? [];
 
+$financialPaymentMethods =
+    $this->data['getAllFinancialPaymentMethodsSelect']
+    ?? [];
+
 $issueDate = !empty($nfe['issue_date'])
     ? date('d/m/Y H:i', strtotime($nfe['issue_date']))
     : '-';
@@ -837,6 +841,20 @@ $purchaseDate =
         id="purchaseAllocationsOldData">
         <?= json_encode(
             $oldAllocations,
+            JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+                | JSON_HEX_TAG
+                | JSON_HEX_AMP
+                | JSON_HEX_APOS
+                | JSON_HEX_QUOT
+        ); ?>
+    </script>
+
+    <script
+        type="application/json"
+        id="financialPaymentMethodsData">
+        <?= json_encode(
+            $financialPaymentMethods,
             JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_HEX_TAG

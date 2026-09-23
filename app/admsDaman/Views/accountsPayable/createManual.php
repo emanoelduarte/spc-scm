@@ -17,6 +17,10 @@ $suppliers =
 $paymentMethods =
     $this->data['getAllPaymentSelect'] ?? [];
 
+$financialPaymentMethods =
+    $this->data['getAllFinancialPaymentMethodsSelect']
+    ?? [];
+
 
 /*
  * Manter as datas preenchidas após erro.
@@ -950,6 +954,20 @@ $purchaseDate =
         id="purchaseAllocationsOldData">
         <?= json_encode(
             $oldAllocations,
+            JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+                | JSON_HEX_TAG
+                | JSON_HEX_AMP
+                | JSON_HEX_APOS
+                | JSON_HEX_QUOT
+        ); ?>
+    </script>
+
+    <script
+        type="application/json"
+        id="financialPaymentMethodsData">
+        <?= json_encode(
+            $financialPaymentMethods,
             JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_HEX_TAG

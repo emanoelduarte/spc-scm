@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\accountsPayable;
 use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Models\Repository\NfeRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
+use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\PurchaseDocumentsRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
@@ -185,6 +186,17 @@ class CreatePurchaseDocument
 
         $this->data['getAllPaymentSelect'] =
             $paymentMethodsRepository->getAllPaymentSelect();
+
+
+        /*
+         * Formas de pagamento utilizadas na baixa efetiva.
+         */
+        $financialPaymentMethodsRepository =
+            new FinancialPaymentMethodsRepository();
+
+        $this->data['getAllFinancialPaymentMethodsSelect'] =
+            $financialPaymentMethodsRepository
+            ->getAllActiveSelect();
 
 
         /*
