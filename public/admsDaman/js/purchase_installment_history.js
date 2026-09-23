@@ -201,6 +201,26 @@
         }
 
 
+        const paymentMethodName =
+            payment.financial_payment_method_name
+            ?? 'Não informado';
+
+
+        const paymentMethod = `
+            <div class="small mt-2">
+                <span class="text-muted">
+                    Forma de pagamento:
+                </span>
+
+                <strong>
+                    ${escapeHtml(
+                        paymentMethodName
+                    )}
+                </strong>
+            </div>
+        `;
+
+
         let observation = '';
 
 
@@ -354,6 +374,8 @@
                     ${extras}
 
                 </div>
+
+                ${paymentMethod}
 
                 ${observation}
 

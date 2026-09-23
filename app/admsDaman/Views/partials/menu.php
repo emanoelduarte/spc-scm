@@ -34,18 +34,165 @@
 
                 <?php if (in_array('ListPurchasings', $menuPermission)) : ?>
                     <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-purchasings')) ? 'active' : '' ?>"
-                    href="<?php echo $_ENV['URL_ADM'] ?>list-purchasings">
-                    <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
-                    Compras
-                </a>
+                        href="<?php echo $_ENV['URL_ADM'] ?>list-purchasings">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-basket-shopping"></i></div>
+                        Compras
+                    </a>
                 <?php endif; ?>
 
-                <?php if (in_array('ListPurchaseDocuments', $menuPermission)) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-purchase-documents')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-purchase-documents">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                <?php
+
+                /*
+                * Verificar se alguma página financeira
+                * está ativa para manter o menu aberto.
+                */
+                $financeMenuActive = in_array(
+                    $this->data['menu'] ?? '',
+                    [
+                        'list-purchase-documents',
+                        'list-direct-expenses',
+                        'create-direct-expense',
+                        'list-financial-disbursements',
+                    ]
+                );
+
+
+                /*
+                * Exibir o grupo financeiro somente se o usuário
+                * possuir acesso a pelo menos uma página do módulo.
+                */
+                $showFinanceGroup = array_intersect(
+                    [
+                        'ListPurchaseDocuments',
+                        'ListDirectExpenses',
+                        'CreateDirectExpense',
+                        'ListFinancialDisbursements',
+                    ],
+                    $menuPermission
+                );
+
+                ?>
+
+
+                <?php if (!empty($showFinanceGroup)) : ?>
+
+                    <!-- MENU PAI -->
+                    <a
+                        class="nav-link collapsed <?= $financeMenuActive ? 'active' : ''; ?>"
+                        href="#collapseFinanceiro"
+                        data-bs-toggle="collapse"
+                        aria-expanded="<?= $financeMenuActive ? 'true' : 'false'; ?>"
+                        aria-controls="collapseFinanceiro">
+
+                        <div class="sb-nav-link-icon">
+
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+
+                        </div>
+
                         Financeiro
+
+                        <div class="sb-sidenav-collapse-arrow">
+
+                            <i class="fas fa-angle-down"></i>
+
+                        </div>
+
                     </a>
+
+
+                    <!-- SUBITENS -->
+                    <div
+                        class="collapse <?= $financeMenuActive ? 'show' : ''; ?>"
+                        id="collapseFinanceiro">
+
+                        <nav class="sb-sidenav-menu-nested nav">
+
+
+                            <?php if (
+                                in_array(
+                                    'ListPurchaseDocuments',
+                                    $menuPermission
+                                )
+                            ) : ?>
+
+                                <a
+                                    class="nav-link <?= (
+                                                        ($this->data['menu'] ?? '')
+                                                        === 'list-purchase-documents'
+                                                    )
+                                                        ? 'active'
+                                                        : ''; ?>"
+                                    href="<?= $_ENV['URL_ADM']; ?>list-purchase-documents">
+
+                                    <div class="sb-nav-link-icon">
+
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                                    </div>
+
+                                    Compras / Contas a Pagar
+
+                                </a>
+
+                            <?php endif; ?>
+
+
+                            <?php if (
+                                in_array(
+                                    'ListDirectExpenses',
+                                    $menuPermission
+                                )
+                            ) : ?>
+
+                                <a
+                                    class="nav-link <?= (
+                                                        ($this->data['menu'] ?? '')
+                                                        === 'list-direct-expenses'
+                                                    )
+                                                        ? 'active'
+                                                        : ''; ?>"
+                                    href="<?= $_ENV['URL_ADM']; ?>list-direct-expenses">
+
+                                    <div class="sb-nav-link-icon">
+
+                                        <i class="fa-solid fa-money-bill-transfer"></i>
+
+                                    </div>
+
+                                    Despesas Diretas
+
+                                </a>
+
+                            <?php endif; ?>
+
+
+                            <?php if (in_array('ListFinancialDisbursements', $menuPermission)) : ?>
+
+                                <a
+                                    class="nav-link <?= (
+                                                        ($this->data['menu'] ?? '')
+                                                        === 'list-financial-disbursements'
+                                                    )
+                                                        ? 'active'
+                                                        : ''; ?>"
+                                    href="<?= $_ENV['URL_ADM']; ?>list-financial-disbursements">
+
+                                    <div class="sb-nav-link-icon">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                    </div>
+
+                                    Desembolso de Obras
+
+                                </a>
+
+                            <?php endif; ?>
+
+
+                        </nav>
+
+                    </div>
+
                 <?php endif; ?>
 
                 <?php if (in_array('ListNfes', $menuPermission)) : ?>

@@ -31,6 +31,7 @@ class PurchaseInstallmentPaymentsRepository extends DbConnection
                 (
                     adms_daman_purchase_installment_id,
                     payment_date,
+                    adms_daman_financial_payment_method_id,
                     principal_amount,
                     interest_amount,
                     penalty_amount,
@@ -45,6 +46,7 @@ class PurchaseInstallmentPaymentsRepository extends DbConnection
                 (
                     :adms_daman_purchase_installment_id,
                     :payment_date,
+                    :adms_daman_financial_payment_method_id,
                     :principal_amount,
                     :interest_amount,
                     :penalty_amount,
@@ -80,6 +82,16 @@ class PurchaseInstallmentPaymentsRepository extends DbConnection
                 ':payment_date',
                 $data['payment_date'],
                 PDO::PARAM_STR
+            );
+
+
+            /*
+             * Forma utilizada no pagamento efetivo.
+             */
+            $stmt->bindValue(
+                ':adms_daman_financial_payment_method_id',
+                (int) $data['adms_daman_financial_payment_method_id'],
+                PDO::PARAM_INT
             );
 
 
@@ -395,27 +407,38 @@ class PurchaseInstallmentPaymentsRepository extends DbConnection
 
             $sql = "
                 SELECT
-                    id,
-                    adms_daman_purchase_installment_id,
-                    payment_date,
-                    principal_amount,
-                    interest_amount,
-                    penalty_amount,
-                    discount_amount,
-                    total_paid,
-                    status,
-                    observation,
-                    created_by,
-                    created_at,
-                    reversed_by,
-                    reversed_at,
-                    reversal_reason
+                    payment.id,
+                    payment.adms_daman_purchase_installment_id,
+                    payment.payment_date,
+                    payment.adms_daman_financial_payment_method_id,
+                    payment.principal_amount,
+                    payment.interest_amount,
+                    payment.penalty_amount,
+                    payment.discount_amount,
+                    payment.total_paid,
+                    payment.status,
+                    payment.observation,
+                    payment.created_by,
+                    payment.created_at,
+                    payment.reversed_by,
+                    payment.reversed_at,
+                    payment.reversal_reason,
+
+                    financial_payment_method.name
+                        AS financial_payment_method_name
 
                 FROM
                     adms_daman_purchase_installment_payments
+                        AS payment
+
+                LEFT JOIN
+                    adms_daman_financial_payment_methods
+                        AS financial_payment_method
+                    ON financial_payment_method.id =
+                        payment.adms_daman_financial_payment_method_id
 
                 WHERE
-                    id = :id
+                    payment.id = :id
 
                 LIMIT 1
             ";
@@ -582,33 +605,44 @@ class PurchaseInstallmentPaymentsRepository extends DbConnection
 
             $sql = "
                 SELECT
-                    id,
-                    adms_daman_purchase_installment_id,
-                    payment_date,
-                    principal_amount,
-                    interest_amount,
-                    penalty_amount,
-                    discount_amount,
-                    total_paid,
-                    status,
-                    observation,
-                    created_by,
-                    created_at,
-                    reversed_by,
-                    reversed_at,
-                    reversal_reason
+                    payment.id,
+                    payment.adms_daman_purchase_installment_id,
+                    payment.payment_date,
+                    payment.adms_daman_financial_payment_method_id,
+                    payment.principal_amount,
+                    payment.interest_amount,
+                    payment.penalty_amount,
+                    payment.discount_amount,
+                    payment.total_paid,
+                    payment.status,
+                    payment.observation,
+                    payment.created_by,
+                    payment.created_at,
+                    payment.reversed_by,
+                    payment.reversed_at,
+                    payment.reversal_reason,
+
+                    financial_payment_method.name
+                        AS financial_payment_method_name
 
                 FROM
                     adms_daman_purchase_installment_payments
+                        AS payment
+
+                LEFT JOIN
+                    adms_daman_financial_payment_methods
+                        AS financial_payment_method
+                    ON financial_payment_method.id =
+                        payment.adms_daman_financial_payment_method_id
 
                 WHERE
-                    adms_daman_purchase_installment_id
+                    payment.adms_daman_purchase_installment_id
                     IN (" . implode(',', $placeholders) . ")
 
                 ORDER BY
-                    adms_daman_purchase_installment_id ASC,
-                    payment_date ASC,
-                    id ASC
+                    payment.adms_daman_purchase_installment_id ASC,
+                    payment.payment_date ASC,
+                    payment.id ASC
             ";
 
 

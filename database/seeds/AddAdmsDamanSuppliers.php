@@ -627,6 +627,7 @@ class AddAdmsDamanSuppliers extends AbstractSeed
                 'contact_name' => 'OLINDA/DIEGO',
                 'phone' => '9183591000',
                 'email' => 'exemple@exemple.com.br',
+                'accepted_payments' => 'BOLETO',
                 'adms_daman_suppliers_types_id' => 2,
                 'supplier_status' => 1,
                 'created_at' => date('Y-m-d H:i:s'),

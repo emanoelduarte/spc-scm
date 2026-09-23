@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Phinx\Seed\AbstractSeed;
-use RuntimeException;
 
 final class AddAdmsDamanPaymentMethodItemsSeeder extends AbstractSeed
 {

@@ -64,6 +64,11 @@
             'payment_total_paid'
         );
 
+    const financialPaymentMethod =
+        document.getElementById(
+            'payment_financial_payment_method_id'
+        );
+
 
     /*
      * Converter valor para centavos.
@@ -248,6 +253,15 @@
 
             discountAmount.value =
                 '0,00';
+
+
+            /*
+             * Evitar reaproveitar a forma selecionada
+             * ao abrir o modal para outra parcela.
+             */
+            if (financialPaymentMethod) {
+                financialPaymentMethod.value = '';
+            }
 
 
             recalculateTotal();

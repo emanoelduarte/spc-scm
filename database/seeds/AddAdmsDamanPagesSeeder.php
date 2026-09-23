@@ -157,6 +157,11 @@ class AddAdmsDamanPagesSeeder extends AbstractSeed
             ['name' => 'Confirmar Cronograma de Compra FB', 'controller' => 'ConfirmPurchasePaymentSchedule', 'controller_url' => 'confirm-purchase-payment-schedule', 'directory' => 'accountsPayable', 'obs' => 'Página para confirmar o cronograma de compras que estavam como FB.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
             ['name' => 'Editar Lançamentos', 'controller' => 'EditPurchaseDocument', 'controller_url' => 'dit-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página para editar os lançamentos para pagamento.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
             ['name' => 'Página Deletar Lançamentos', 'controller' => 'DeletePurchaseDocument', 'controller_url' => 'delete-purchase-document', 'directory' => 'accountsPayable', 'obs' => 'Página para deletar lançamentos.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            //financial desembolso
+            ['name' => 'Criar Despesa Direta', 'controller' => 'CreateDirectExpense', 'controller_url' => 'create-direct-expense', 'directory' => 'financial', 'obs' => 'Página para cadastrar despesas diretas realizadas pela obra.', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Listar Despesas Diretas', 'controller' => 'ListDirectExpenses', 'controller_url' => 'list-direct-expenses', 'directory' => 'financial', 'obs' => 'Página para listar despesas diretas realizadas pelas obras', 'public_page' => 0, 'page_status' => 1, 'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20],
+            ['name' => 'Listar Desembolsos de Obras', 'controller' => 'ListFinancialDisbursements', 'controller_url' => 'list-financial-disbursements', 'directory' => 'financial', 'obs' => 'Visão consolidada dos desembolsos efetivamente realizados nas obras', 'public_page' => 0, 'page_status' => 1,  'adms_daman_packages_page_id' => 1, 'adms_daman_groups_page_id' => 20
+            ],
 
         ];
 

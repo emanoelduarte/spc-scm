@@ -4,7 +4,6 @@ namespace App\admsDaman\Models\Services;
 
 use App\admsDaman\Models\Repository\PurchaseInstallmentsRepository;
 use App\admsDaman\Models\Repository\PurchaseInstallmentPaymentsRepository;
-use App\admsDaman\Models\Repository\PurchaseDocumentsRepository;
 use DateTime;
 use InvalidArgumentException;
 use Throwable;
@@ -48,6 +47,12 @@ class PurchaseInstallmentPaymentService extends DbConnection
                 ?? 0
             );
 
+        $financialPaymentMethodId =
+            (int) (
+                $data['adms_daman_financial_payment_method_id']
+                ?? 0
+            );
+
         $paymentDate =
             trim(
                 (string) (
@@ -69,6 +74,14 @@ class PurchaseInstallmentPaymentService extends DbConnection
 
             throw new InvalidArgumentException(
                 'Usuário responsável pela baixa não informado.'
+            );
+        }
+
+
+        if ($financialPaymentMethodId <= 0) {
+
+            throw new InvalidArgumentException(
+                'Selecione a forma de pagamento.'
             );
         }
 
@@ -242,9 +255,6 @@ class PurchaseInstallmentPaymentService extends DbConnection
             $paymentsRepository =
                 new PurchaseInstallmentPaymentsRepository();
 
-            $purchaseDocumentsRepository =
-                new PurchaseDocumentsRepository();
-
 
             /*
              * =================================================
@@ -377,6 +387,9 @@ class PurchaseInstallmentPaymentService extends DbConnection
                 'payment_date'
                 => $paymentDate,
 
+                'adms_daman_financial_payment_method_id'
+                => $financialPaymentMethodId,
+
                 /*
                  * principal_amount representa quanto
                  * do principal da dívida está sendo
@@ -476,84 +489,6 @@ class PurchaseInstallmentPaymentService extends DbConnection
                         'Não foi possível atualizar o status da parcela.'
                     );
                 }
-            }
-
-            /*
-            * =========================================================
-            * ATUALIZAR STATUS DO LANÇAMENTO PRINCIPAL
-            * =========================================================
-            *
-            * O status do documento é determinado pelo saldo real
-            * de principal de todas as suas parcelas.
-            *
-            * Se não existir mais saldo:
-            *     open -> closed
-            *
-            * Se ainda existir saldo:
-            *     permanece open.
-            */
-
-            $purchaseDocumentId =
-                (int) (
-                    $installment['adms_daman_purchase_document_id']
-                    ?? 0
-                );
-
-
-            if ($purchaseDocumentId <= 0) {
-
-                throw new InvalidArgumentException(
-                    'Lançamento financeiro relacionado à parcela não encontrado.'
-                );
-            }
-
-
-            /*
-            * Recuperar o saldo total restante do documento.
-            *
-            * Esse cálculo considera:
-            *
-            * valor original das parcelas
-            * -
-            * pagamentos ativos
-            */
-            $remainingDocumentPrincipal =
-                $installmentsRepository
-                ->getRemainingPrincipalByDocumentId(
-                    $purchaseDocumentId
-                );
-
-
-            /*
-            * Converter novamente para centavos antes da comparação.
-            *
-            * Assim evitamos comparar valores financeiros usando float.
-            */
-            $remainingDocumentPrincipalCents =
-                $this->moneyToCents(
-                    $remainingDocumentPrincipal
-                );
-
-
-            $documentStatus =
-                $remainingDocumentPrincipalCents === 0
-                ? 'closed'
-                : 'open';
-
-
-            $documentUpdated =
-                $purchaseDocumentsRepository
-                ->updateStatus(
-                    $purchaseDocumentId,
-                    $documentStatus
-                );
-
-
-            if (!$documentUpdated) {
-
-                throw new InvalidArgumentException(
-                    'Não foi possível atualizar o status do lançamento financeiro.'
-                );
             }
 
 
@@ -965,71 +900,6 @@ class PurchaseInstallmentPaymentService extends DbConnection
                 $installmentRepository->updateStatus(
                     $installmentId,
                     $newStatus
-                );
-            }
-
-            /*
-            * =========================================================
-            * RECALCULAR STATUS DO LANÇAMENTO APÓS ESTORNO
-            * =========================================================
-            *
-            * O estorno pode fazer o documento voltar a possuir
-            * saldo principal em aberto.
-            */
-
-            $purchaseDocumentId =
-                (int) (
-                    $installment['adms_daman_purchase_document_id']
-                    ?? 0
-                );
-
-
-            if ($purchaseDocumentId <= 0) {
-
-                throw new InvalidArgumentException(
-                    'Lançamento financeiro relacionado à parcela não encontrado.'
-                );
-            }
-
-
-            /*
-            * Recalcular o saldo total do documento após o estorno.
-            */
-            $remainingDocumentPrincipal =
-                $installmentRepository
-                ->getRemainingPrincipalByDocumentId(
-                    $purchaseDocumentId
-                );
-
-
-            $remainingDocumentPrincipalCents =
-                $this->moneyToCents(
-                    $remainingDocumentPrincipal
-                );
-
-
-            $documentStatus =
-                $remainingDocumentPrincipalCents === 0
-                ? 'closed'
-                : 'open';
-
-
-            $purchaseDocumentsRepository =
-                new PurchaseDocumentsRepository();
-
-
-            $documentUpdated =
-                $purchaseDocumentsRepository
-                ->updateStatus(
-                    $purchaseDocumentId,
-                    $documentStatus
-                );
-
-
-            if (!$documentUpdated) {
-
-                throw new InvalidArgumentException(
-                    'Não foi possível atualizar o status do lançamento financeiro.'
                 );
             }
 

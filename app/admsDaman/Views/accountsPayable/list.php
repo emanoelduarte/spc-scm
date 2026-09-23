@@ -1,12 +1,28 @@
 <?php
 
 use App\admsDaman\Helpers\CSRFHelper;
+use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 
 $purchaseDocuments =
     $this->data['purchaseDocuments'] ?? [];
 
 $paymentsByInstallment =
     $this->data['paymentsByInstallment'] ?? [];
+
+
+/*
+ * Formas do pagamento efetivamente realizado.
+ *
+ * Carregamos este catálogo aqui para manter a alteração
+ * restrita aos arquivos enviados e não substituir Controllers
+ * que podem possuir mudanças mais recentes em produção.
+ */
+$financialPaymentMethodsRepository =
+    new FinancialPaymentMethodsRepository();
+
+$financialPaymentMethods =
+    $financialPaymentMethodsRepository
+        ->getAllActiveSelect();
 
 
 /*
@@ -2024,6 +2040,47 @@ $statusMeta = [
 
                             </div>
 
+
+
+                            <div class="col-md-4">
+
+                                <label
+                                    for="payment_financial_payment_method_id"
+                                    class="form-label">
+
+                                    Forma de pagamento
+
+                                </label>
+
+                                <select
+                                    name="adms_daman_financial_payment_method_id"
+                                    id="payment_financial_payment_method_id"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">
+                                        Selecione
+                                    </option>
+
+                                    <?php foreach (
+                                        $financialPaymentMethods
+                                        as $financialPaymentMethod
+                                    ): ?>
+
+                                        <option
+                                            value="<?= (int) $financialPaymentMethod['id']; ?>">
+
+                                            <?= htmlspecialchars(
+                                                $financialPaymentMethod['name']
+                                            ); ?>
+
+                                        </option>
+
+                                    <?php endforeach; ?>
+
+                                </select>
+
+                            </div>
 
                             <div class="col-md-4">
 

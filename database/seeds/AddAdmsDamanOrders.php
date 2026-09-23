@@ -23,6 +23,7 @@ class AddAdmsDamanOrders extends AbstractSeed
         // Variável para receber os dados que devem ser validados antes de cadastrar
         $orders = [
             [
+                'adms_daman_supplier_id' => 5, //Id do fornecedor
                 'adms_daman_acquisition_types_id' => 1, //Compra
                 'adms_daman_category_id' => 4, // Eletrica/Logica
                 'adms_daman_user_id' => 4,
@@ -54,6 +55,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             ],
 
             [
+                'adms_daman_supplier_id' => 5, //Id do fornecedor
                 'adms_daman_acquisition_types_id' => 1, //Compra
                 'adms_daman_category_id' => 4, // Eletrica/Logica
                 'adms_daman_user_id' => 4,
@@ -69,6 +71,7 @@ class AddAdmsDamanOrders extends AbstractSeed
             ],
 
             [
+                'adms_daman_supplier_id' => 5, //Id do fornecedor
                 'adms_daman_acquisition_types_id' => 1, //Compra
                 'adms_daman_category_id' => 2, // Civil
                 'adms_daman_user_id' => 4,
