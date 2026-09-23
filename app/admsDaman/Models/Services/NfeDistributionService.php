@@ -98,7 +98,7 @@ class NfeDistributionService
                 'message' => 'Sincronização de NF-e desabilitada neste ambiente.',
             ];
         }
-        
+
         // Verificar proteção de intervalo entre consultas.
         if (!$this->canSynchronize()) {
             return [
@@ -176,6 +176,39 @@ class NfeDistributionService
                         "Não foi possível salvar a NF-e do NSU {$nsu}."
                     );
                 }
+
+                $savedCount++;
+
+                continue;
+            }
+
+
+            // --------------------------------------------------
+            // XML COMPLETO / PROTOCOLADO DA NF-e
+            // --------------------------------------------------
+
+            if (
+                str_starts_with(
+                    $schema,
+                    'procNFe_'
+                )
+            ) {
+
+                $saved =
+                    $this->saveNfeFullXml(
+                        $xml,
+                        $nsu,
+                        $schema
+                    );
+
+
+                if (!$saved) {
+
+                    throw new \RuntimeException(
+                        "Não foi possível salvar o XML completo da NF-e do NSU {$nsu}."
+                    );
+                }
+
 
                 $savedCount++;
 
@@ -291,54 +324,792 @@ class NfeDistributionService
     }
 
     /**
-     * Recuperar e salvar uma NF-e através de um NSU específico.
+     * Registrar Ciência da Emissão de uma NF-e.
+     *
+     * Evento:
+     * 210210 - Ciência da Emissão
+     *
+     * Este evento NÃO confirma o recebimento da mercadoria.
+     * Apenas informa à SEFAZ que o destinatário tomou
+     * ciência da existência da NF-e.
+     *
+     * @param string $accessKey Chave de acesso da NF-e
+     * @return array
      */
-    public function importNsu(int $nsu): bool
-    {
-        $tools = $this->createTools();
+    public function manifestAwareness(
+        string $accessKey
+    ): array {
 
-        // Consulta pontual pelo NSU.
-        $response = $tools->sefazDistDFe(0, $nsu);
+        /*
+        * Validar chave de acesso.
+        */
+        if (
+            !preg_match(
+                '/^\d{44}$/',
+                $accessKey
+            )
+        ) {
 
-        $dom = new \DOMDocument();
-        $dom->loadXML($response);
+            return [
+                'success' => false,
+                'registered' => false,
+                'already_registered' => false,
+                'cStat' => null,
+                'message' => 'Chave de acesso da NF-e inválida.',
+            ];
+        }
 
-        $documents = $dom->getElementsByTagName('docZip');
+
+        /*
+        * Criar comunicação com a SEFAZ.
+        */
+        $tools =
+            $this->createTools();
+
+
+        /*
+        * Registrar Ciência da Emissão.
+        *
+        * 210210 = Ciência da Emissão
+        * justificativa = não necessária
+        * sequência = 1
+        */
+        $response =
+            $tools->sefazManifesta(
+                $accessKey,
+                '210210',
+                '',
+                1
+            );
+
+
+        /*
+        * Padronizar retorno da SEFAZ.
+        */
+        $standardize =
+            new Standardize();
+
+
+        $result =
+            $standardize->toStd(
+                $response
+            );
+
+
+        /*
+        * O retorno externo normalmente possui:
+        *
+        * cStat = 128
+        * Lote de Evento Processado
+        *
+        * Mas o resultado que realmente interessa
+        * está dentro de:
+        *
+        * retEvento -> infEvento -> cStat
+        */
+        $eventInfo =
+            $result->retEvento
+            ->infEvento
+            ?? null;
+
+
+        $eventCStat =
+            isset($eventInfo->cStat)
+            ? (string) $eventInfo->cStat
+            : null;
+
+
+        $eventMessage =
+            isset($eventInfo->xMotivo)
+            ? (string) $eventInfo->xMotivo
+            : (
+                isset($result->xMotivo)
+                ? (string) $result->xMotivo
+                : null
+            );
+
+        $protocol =
+            isset($eventInfo->nProt)
+            ? (string) $eventInfo->nProt
+            : null;
+
+
+        $registeredAt =
+            null;
+
+
+        if (
+            isset($eventInfo->dhRegEvento)
+            &&
+            !empty((string) $eventInfo->dhRegEvento)
+        ) {
+
+            try {
+
+                $registeredAt =
+                    (
+                        new \DateTimeImmutable(
+                            (string) $eventInfo->dhRegEvento
+                        )
+                    )->format(
+                        'Y-m-d H:i:s'
+                    );
+            } catch (\Throwable) {
+
+                $registeredAt =
+                    null;
+            }
+        }
+
+
+        /*
+        * 135:
+        * Evento registrado e vinculado à NF-e.
+        *
+        * 573:
+        * Duplicidade de Evento.
+        *
+        * Para o nosso fluxo, 573 significa que
+        * a Ciência provavelmente já havia sido
+        * registrada anteriormente e não devemos
+        * tentar registrá-la novamente.
+        */
+        $success =
+            $eventCStat === '135';
+
+
+        $alreadyRegistered =
+            $eventCStat === '573';
+
+
+        return [
+            'success' =>
+            $success,
+
+            'registered' =>
+            $success
+                || $alreadyRegistered,
+
+            'already_registered' =>
+            $alreadyRegistered,
+
+            'cStat' =>
+            $eventCStat,
+
+            'message' =>
+            $eventMessage,
+
+            'batch_cStat' =>
+            isset($result->cStat)
+                ? (string) $result->cStat
+                : null,
+
+            'protocol' =>
+            $protocol,
+
+            'registered_at' =>
+            $registeredAt,
+        ];
+    }
+
+    /**
+     * Recuperar o XML completo de uma NF-e pela chave de acesso.
+     *
+     * Esta consulta usa consChNFe através do sefazDownload().
+     *
+     * IMPORTANTE:
+     * - deve ser usada apenas de forma pontual;
+     * - não deve ser executada em loop para várias NF-e;
+     * - consChNFe e consNSU estão sujeitos às regras de consumo
+     *   indevido do NFeDistribuicaoDFe.
+     *
+     * @param string $accessKey Chave de acesso com 44 dígitos
+     * @return array
+     */
+    public function downloadByAccessKey(
+        string $accessKey
+    ): array {
+
+        /*
+         * Validar chave.
+         */
+        if (
+            !preg_match(
+                '/^\d{44}$/',
+                $accessKey
+            )
+        ) {
+
+            return [
+                'success' => false,
+                'blocked' => false,
+                'has_xml' => false,
+                'cStat' => null,
+                'message' => 'Chave de acesso da NF-e inválida.',
+                'schema' => null,
+            ];
+        }
+
+
+        /*
+         * Consulta PONTUAL pela chave de acesso.
+         *
+         * O NFePHP gera consChNFe neste método.
+         * Não existe repetição automática aqui.
+         */
+        $tools =
+            $this->createTools();
+
+
+        $response =
+            $tools->sefazDownload(
+                $accessKey
+            );
+
+
+        /*
+         * Ler cStat/xMotivo antes de processar docZip.
+         */
+        $standardize =
+            new Standardize();
+
+
+        $result =
+            $standardize->toStd(
+                $response
+            );
+
+
+        $cStat =
+            isset($result->cStat)
+            ? (string) $result->cStat
+            : null;
+
+
+        $message =
+            isset($result->xMotivo)
+            ? (string) $result->xMotivo
+            : null;
+
+
+        /*
+         * 656 = Consumo indevido.
+         *
+         * Neste caso o método apenas informa o bloqueio.
+         * Não existe retry automático.
+         */
+        if ($cStat === '656') {
+
+            return [
+                'success' => false,
+                'blocked' => true,
+                'has_xml' => false,
+                'cStat' => $cStat,
+                'message' => $message
+                    ?? 'Consumo indevido informado pela SEFAZ.',
+                'schema' => null,
+            ];
+        }
+
+
+        /*
+         * 138 = Documento localizado.
+         *
+         * Outros retornos não devem ser interpretados
+         * como XML completo disponível.
+         */
+        if ($cStat !== '138') {
+
+            return [
+                'success' => false,
+                'blocked' => false,
+                'has_xml' => false,
+                'cStat' => $cStat,
+                'message' => $message
+                    ?? 'Documento não localizado pela SEFAZ.',
+                'schema' => null,
+            ];
+        }
+
+
+        /*
+         * Processar os documentos retornados.
+         */
+        $dom =
+            new \DOMDocument();
+
+
+        if (
+            !$dom->loadXML(
+                $response,
+                LIBXML_NONET
+            )
+        ) {
+
+            return [
+                'success' => false,
+                'blocked' => false,
+                'has_xml' => false,
+                'cStat' => $cStat,
+                'message' => 'Não foi possível interpretar o retorno da SEFAZ.',
+                'schema' => null,
+            ];
+        }
+
+
+        $documents =
+            $dom->getElementsByTagName(
+                'docZip'
+            );
+
 
         foreach ($documents as $document) {
 
-            $documentNsu = $document->getAttribute('NSU');
-            $schema = $document->getAttribute('schema');
+            $nsu =
+                $document->getAttribute(
+                    'NSU'
+                );
 
-            // Neste momento tratamos apenas resumo de NF-e.
-            if ($schema !== 'resNFe_v1.01.xsd') {
-                continue;
-            }
 
-            $compressed = base64_decode(
-                trim($document->nodeValue),
-                true
-            );
+            $schema =
+                $document->getAttribute(
+                    'schema'
+                );
+
+
+            $compressed =
+                base64_decode(
+                    trim(
+                        $document->nodeValue
+                    ),
+                    true
+                );
+
 
             if ($compressed === false) {
                 continue;
             }
 
-            $xml = gzdecode($compressed);
+
+            $xml =
+                gzdecode(
+                    $compressed
+                );
+
 
             if ($xml === false) {
                 continue;
             }
 
-            return $this->saveNfeSummary(
-                $xml,
-                $documentNsu,
-                $schema
-            );
+
+            /*
+             * Queremos especificamente o XML
+             * completo/protocolado da NF-e.
+             */
+            if (
+                str_starts_with(
+                    $schema,
+                    'procNFe_'
+                )
+            ) {
+
+                $saved =
+                    $this->saveNfeFullXml(
+                        $xml,
+                        $nsu,
+                        $schema
+                    );
+
+
+                return [
+                    'success' => $saved,
+                    'blocked' => false,
+                    'has_xml' => $saved,
+                    'cStat' => $cStat,
+                    'message' => $saved
+                        ? 'XML completo localizado e salvo.'
+                        : 'O XML foi localizado, mas não pôde ser salvo.',
+                    'schema' => $schema,
+                ];
+            }
         }
+
+
+        /*
+         * A SEFAZ localizou um documento, porém ainda
+         * não retornou procNFe. Pode ter retornado
+         * somente resumo/evento.
+         */
+        return [
+            'success' => false,
+            'blocked' => false,
+            'has_xml' => false,
+            'cStat' => $cStat,
+            'message' => $message
+                ?? 'Documento localizado, mas o XML completo ainda não está disponível.',
+            'schema' => null,
+        ];
+    }
+
+
+    /**
+     * Recuperar e salvar um documento através de um NSU específico.
+     *
+     * Pode tratar:
+     * - resNFe: resumo da NF-e;
+     * - procNFe: XML completo/protocolado.
+     */
+    public function importNsu(int $nsu): bool
+    {
+        $tools =
+            $this->createTools();
+
+
+        $response =
+            $tools->sefazDistDFe(
+                0,
+                $nsu
+            );
+
+
+        $dom =
+            new \DOMDocument();
+
+
+        if (!$dom->loadXML($response)) {
+            return false;
+        }
+
+
+        $documents =
+            $dom->getElementsByTagName(
+                'docZip'
+            );
+
+
+        foreach ($documents as $document) {
+
+            $documentNsu =
+                $document->getAttribute(
+                    'NSU'
+                );
+
+
+            $schema =
+                $document->getAttribute(
+                    'schema'
+                );
+
+
+            $compressed =
+                base64_decode(
+                    trim(
+                        $document->nodeValue
+                    ),
+                    true
+                );
+
+
+            if ($compressed === false) {
+                continue;
+            }
+
+
+            $xml =
+                gzdecode(
+                    $compressed
+                );
+
+
+            if ($xml === false) {
+                continue;
+            }
+
+
+            if (
+                $schema ===
+                'resNFe_v1.01.xsd'
+            ) {
+
+                return $this->saveNfeSummary(
+                    $xml,
+                    $documentNsu,
+                    $schema
+                );
+            }
+
+
+            if (
+                str_starts_with(
+                    $schema,
+                    'procNFe_'
+                )
+            ) {
+
+                return $this->saveNfeFullXml(
+                    $xml,
+                    $documentNsu,
+                    $schema
+                );
+            }
+        }
+
 
         return false;
     }
+
+
+    /**
+     * Processar e salvar o XML completo/protocolado da NF-e.
+     *
+     * O XML é preservado exatamente como foi recebido da SEFAZ.
+     */
+    private function saveNfeFullXml(
+        string $xml,
+        string $nsu,
+        string $schema
+    ): bool {
+
+        $dom =
+            new \DOMDocument();
+
+
+        if (
+            !$dom->loadXML(
+                $xml,
+                LIBXML_NONET
+            )
+        ) {
+
+            return false;
+        }
+
+
+        $xpath =
+            new \DOMXPath(
+                $dom
+            );
+
+
+        $idNode =
+            $xpath->query(
+                '//*[local-name()="infNFe"]/@Id'
+            )
+            ?->item(0);
+
+
+        $accessKey =
+            '';
+
+
+        if ($idNode) {
+
+            $accessKey =
+                preg_replace(
+                    '/^NFe/',
+                    '',
+                    trim(
+                        $idNode->nodeValue
+                    )
+                )
+                ?? '';
+        }
+
+
+        if (
+            strlen($accessKey)
+            !== 44
+        ) {
+
+            $keyNode =
+                $xpath->query(
+                    '//*[local-name()="protNFe"]'
+                        . '//*[local-name()="chNFe"]'
+                )
+                ?->item(0);
+
+
+            $accessKey =
+                $keyNode
+                ? trim(
+                    $keyNode->nodeValue
+                )
+                : '';
+        }
+
+
+        if (
+            !preg_match(
+                '/^\d{44}$/',
+                $accessKey
+            )
+        ) {
+
+            return false;
+        }
+
+
+        $value =
+            static function (
+                \DOMXPath $xpath,
+                string $query
+            ): ?string {
+
+                $node =
+                    $xpath->query(
+                        $query
+                    )
+                    ?->item(0);
+
+
+                if (!$node) {
+                    return null;
+                }
+
+
+                $result =
+                    trim(
+                        $node->nodeValue
+                    );
+
+
+                return
+                    $result !== ''
+                    ? $result
+                    : null;
+            };
+
+
+        $number =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="ide"]'
+                    . '/*[local-name()="nNF"]'
+            );
+
+
+        $series =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="ide"]'
+                    . '/*[local-name()="serie"]'
+            );
+
+
+        $issuerCnpj =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="emit"]'
+                    . '/*[local-name()="CNPJ"]'
+            );
+
+
+        $issuerName =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="emit"]'
+                    . '/*[local-name()="xNome"]'
+            );
+
+
+        $totalValue =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="total"]'
+                    . '/*[local-name()="ICMSTot"]'
+                    . '/*[local-name()="vNF"]'
+            );
+
+
+        $issueDateRaw =
+            $value(
+                $xpath,
+                '//*[local-name()="infNFe"]'
+                    . '/*[local-name()="ide"]'
+                    . '/*[local-name()="dhEmi"]'
+            );
+
+
+        $issueDate =
+            null;
+
+
+        if ($issueDateRaw) {
+
+            try {
+
+                $issueDate =
+                    (
+                        new \DateTimeImmutable(
+                            $issueDateRaw
+                        )
+                    )->format(
+                        'Y-m-d H:i:s'
+                    );
+            } catch (\Throwable) {
+
+                $issueDate =
+                    null;
+            }
+        }
+
+
+        $protocolStatus =
+            $value(
+                $xpath,
+                '//*[local-name()="protNFe"]'
+                    . '//*[local-name()="cStat"]'
+            );
+
+
+        $status =
+            $protocolStatus === '100'
+            ? 'authorized'
+            : 'unknown';
+
+
+        return $this->nfeRepository
+            ->saveFullNfe([
+                'nsu' =>
+                $nsu,
+
+                'access_key' =>
+                $accessKey,
+
+                'nfe_number' =>
+                $number,
+
+                'series' =>
+                $series,
+
+                'issuer_cnpj' =>
+                $issuerCnpj,
+
+                'issuer_name' =>
+                $issuerName,
+
+                'issue_date' =>
+                $issueDate,
+
+                'total_value' =>
+                $totalValue,
+
+                'status' =>
+                $status,
+
+                'xml_content' =>
+                $xml,
+
+                'xml_schema_name' =>
+                $schema,
+            ]);
+    }
+
 
     /**
      * Processar evento relacionado à NF-e.

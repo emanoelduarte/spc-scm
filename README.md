@@ -46,9 +46,23 @@ Instalar a biblioteca gerenciar variáveis de ambiente
 ```
 composer require vlucas/phpdotenv
 ```
-Instalar a biblioteca responsável pela comunicação com a Sefaz.
+Instalar a biblioteca responsável pela comunicação com a SEFAZ e operações relacionadas à NF-e:
 ```
 composer require nfephp-org/sped-nfe
+```
+
+### Instalar biblioteca para geração do DANFE
+Verificar se as extensões PHP necessárias estão habilitadas: 
+````
+php -m | findstr /I "dom gd mbstring"
+```
+Verificar a versão do pacote comum utilizado pelo NFePHP:
+```
+composer show nfephp-org/sped-common
+```
+Instalar a biblioteca responsável pela geração de DANFE e outros documentos auxiliares do SPED:
+```
+composer require nfephp-org/sped-da:^1.1
 ```
 
 Instalar a biblioteca para criar/executar migrations e seed.

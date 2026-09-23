@@ -2,6 +2,7 @@
 
 namespace App\admsDaman\Controllers\nfes;
 
+use App\admsDaman\Models\Repository\NfeRepository;
 use App\admsDaman\Models\Services\NfeDistributionService;
 use Throwable;
 
@@ -20,6 +21,19 @@ class SyncNfes
     {
         try {
 
+            /*
+             * Contar as NF-e existentes antes da sincronização.
+             *
+             * O serviço pode processar resNFe, procNFe e eventos.
+             * Para a interface, porém, queremos avisar apenas
+             * quando uma nova NF-e for efetivamente cadastrada.
+             */
+            $nfeRepository = new NfeRepository();
+
+            $nfeCountBefore =
+                $nfeRepository->countNfes();
+
+
             $service = new NfeDistributionService();
 
             $result = $service->synchronize();
@@ -34,20 +48,41 @@ class SyncNfes
                 $_SESSION['warning'] = $message;
             } elseif (($result['cStat'] ?? '') == '138') {
 
-                $savedCount = (int) ($result['saved_count'] ?? 0);
+                /*
+                 * Comparar a quantidade antes/depois.
+                 *
+                 * procNFe e eventos podem ser processados sem
+                 * significar que existe uma NF-e nova na listagem.
+                 */
+                $nfeCountAfter =
+                    $nfeRepository->countNfes();
 
-                $_SESSION['success'] = "
-                        
-                        Sincronização realizada.
-                        {$savedCount} NF-e(s) localizada(s) e processada(s).
-                ";
+
+                $newNfesCount =
+                    max(
+                        0,
+                        $nfeCountAfter - $nfeCountBefore
+                    );
+
+
+                if ($newNfesCount > 0) {
+
+                    $_SESSION['success'] =
+                        $newNfesCount === 1
+                            ? '1 nova NF-e recebida.'
+                            : "{$newNfesCount} novas NF-e recebidas.";
+
+                } else {
+
+                    $_SESSION['info'] =
+                        'Sincronização concluída. Nenhuma nova NF-e encontrada.';
+                }
 
                 // Nenhum documento novo.
             } elseif (($result['cStat'] ?? '') == '137') {
 
-                $_SESSION['info'] = "
-                        Sincronização realizada.
-                        Nenhuma nova NF-e encontrada.";
+                $_SESSION['info'] =
+                    'Sincronização concluída. Nenhuma nova NF-e encontrada.';
             } else {
 
                 $_SESSION['error'] = "Não foi possível concluir a sincronização com a SEFAZ.";

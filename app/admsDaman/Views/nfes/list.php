@@ -1,7 +1,177 @@
 <?php
 
+use App\admsDaman\Helpers\CSRFHelper;
+
 $nfesPending = $this->data['nfes_pending'] ?? [];
 $nfesChecked = $this->data['nfes_checked'] ?? [];
+
+
+/*
+ * ================================================================
+ * PAGINAÇÃO INDEPENDENTE DOS ACCORDIONS
+ * ================================================================
+ */
+$pendingPagination =
+    $this->data['pagination_pending']
+    ?? [
+        'current_page' => 1,
+        'total_pages' => 1,
+        'total_records' => count($nfesPending),
+        'limit' => 10,
+    ];
+
+
+$checkedPagination =
+    $this->data['pagination_checked']
+    ?? [
+        'current_page' => 1,
+        'total_pages' => 1,
+        'total_records' => count($nfesChecked),
+        'limit' => 10,
+    ];
+
+
+$activeSection =
+    $this->data['active_section']
+    ?? 'pending';
+
+
+$pendingPage =
+    (int) (
+        $pendingPagination['current_page']
+        ?? 1
+    );
+
+
+$checkedPage =
+    (int) (
+        $checkedPagination['current_page']
+        ?? 1
+    );
+
+
+$pendingTotal =
+    (int) (
+        $pendingPagination['total_records']
+        ?? count($nfesPending)
+    );
+
+
+$checkedTotal =
+    (int) (
+        $checkedPagination['total_records']
+        ?? count($nfesChecked)
+    );
+
+
+/*
+ * Montar URL preservando a página do outro accordion.
+ */
+$buildNfePaginationUrl =
+    static function (
+        string $section,
+        int $targetPage
+    ) use (
+        $pendingPage,
+        $checkedPage
+    ): string {
+
+        $params = [
+            'pending_page' =>
+                $section === 'pending'
+                    ? $targetPage
+                    : $pendingPage,
+
+            'checked_page' =>
+                $section === 'checked'
+                    ? $targetPage
+                    : $checkedPage,
+
+            'section' =>
+                $section,
+        ];
+
+
+        $anchor =
+            $section === 'checked'
+                ? '#collapseChecked'
+                : '#collapsePending';
+
+
+        return
+            $_ENV['URL_ADM']
+            . 'list-nfes?'
+            . http_build_query($params)
+            . $anchor;
+    };
+
+
+/*
+ * Exibir no máximo cinco números de página.
+ */
+$getPaginationPages =
+    static function (
+        int $currentPage,
+        int $totalPages
+    ): array {
+
+        if ($totalPages <= 1) {
+            return [];
+        }
+
+
+        $start =
+            max(
+                1,
+                $currentPage - 2
+            );
+
+
+        $end =
+            min(
+                $totalPages,
+                $currentPage + 2
+            );
+
+
+        if ($currentPage <= 3) {
+
+            $end =
+                min(
+                    $totalPages,
+                    5
+                );
+        }
+
+
+        if (
+            $currentPage
+            >= $totalPages - 2
+        ) {
+
+            $start =
+                max(
+                    1,
+                    $totalPages - 4
+                );
+        }
+
+
+        return range(
+            $start,
+            $end
+        );
+    };
+
+
+/*
+ * Token utilizado exclusivamente para
+ * Ciência da Emissão da NF-e.
+ */
+$csrfManifestNfe =
+    CSRFHelper::generateCSRFToken(
+        'form_manifest_nfe_awareness'
+    );
 
 $nfeSync = $this->data['nfe_sync'] ?? null;
 
@@ -184,11 +354,11 @@ $financialStatusMeta = [
                 id="headingPending">
 
                 <button
-                    class="accordion-button"
+                    class="accordion-button<?= $activeSection === 'pending' ? '' : ' collapsed'; ?>"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapsePending"
-                    aria-expanded="true"
+                    aria-expanded="<?= $activeSection === 'pending' ? 'true' : 'false'; ?>"
                     aria-controls="collapsePending">
 
                     <div
@@ -207,7 +377,7 @@ $financialStatusMeta = [
 
                         <span class="badge bg-warning text-dark">
 
-                            <?= count($nfesPending); ?>
+                            <?= $pendingTotal; ?>
 
                         </span>
 
@@ -220,7 +390,7 @@ $financialStatusMeta = [
 
             <div
                 id="collapsePending"
-                class="accordion-collapse collapse show"
+                class="accordion-collapse collapse<?= $activeSection === 'pending' ? ' show' : ''; ?>"
                 aria-labelledby="headingPending">
 
                 <div class="accordion-body">
@@ -386,15 +556,120 @@ $financialStatusMeta = [
                                 <!-- Ação -->
                                 <div class="col-lg-2 text-lg-end">
 
-                                    <a
-                                        href="<?= $_ENV['URL_ADM']; ?>check-nfe/<?= (int) $nfe['id']; ?>"
-                                        class="btn btn-success btn-sm">
+                                    <div
+                                        class="d-flex flex-column align-items-lg-end gap-2">
 
-                                        <i class="fa-solid fa-check me-1"></i>
 
-                                        Conferir
+                                        <?php if ((int) ($nfe['has_xml'] ?? 0) === 0): ?>
 
-                                    </a>
+                                            <!--
+                                                Primeiro podemos tentar consultar
+                                                novamente o documento sem manifestação.
+                                            -->
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>request-nfe-xml/<?= (int) $nfe['id']; ?>"
+                                                class="btn btn-outline-primary btn-sm">
+
+                                                <i class="fa-solid fa-file-arrow-down me-1"></i>
+
+                                                Solicitar XML
+
+                                            </a>
+
+
+                                            <?php if ((int) ($nfe['has_awareness'] ?? 0) === 1): ?>
+
+                                                <span
+                                                    class="badge bg-info text-dark">
+
+                                                    <i class="fa-solid fa-circle-check me-1"></i>
+
+                                                    Ciência registrada
+
+                                                </span>
+
+                                            <?php elseif (($nfe['status'] ?? '') === 'authorized'): ?>
+
+                                                <form
+                                                    action="<?= $_ENV['URL_ADM']; ?>manifest-nfe-awareness"
+                                                    method="POST"
+                                                    class="d-inline">
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="csrf_token"
+                                                        value="<?= htmlspecialchars(
+                                                                    $csrfManifestNfe
+                                                                ); ?>">
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="nfe_id"
+                                                        value="<?= (int) $nfe['id']; ?>">
+
+
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-warning btn-sm"
+                                                        onclick="return confirm(
+                                                                'Registrar Ciência da Emissão desta NF-e?\n\n'
+                                                                + 'Esta ação informa à SEFAZ que a empresa tomou ciência da existência da nota. '
+                                                                + 'Ela não confirma o recebimento da mercadoria nem a realização da operação.'
+                                                            );">
+
+                                                        <i class="fa-solid fa-file-signature me-1"></i>
+
+                                                        Ciência da Emissão
+
+                                                    </button>
+
+                                                </form>
+
+                                            <?php endif; ?>
+
+                                        <?php else: ?>
+
+                                            <!-- =============================================== -->
+                                            <!-- XML COMPLETO DISPONÍVEL                         -->
+                                            <!-- =============================================== -->
+
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>view-nfe-danfe/<?= (int) $nfe['id']; ?>"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="btn btn-outline-success btn-sm">
+
+                                                <i class="fa-solid fa-file-pdf me-1"></i>
+
+                                                Visualizar DANFE
+
+                                            </a>
+
+
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>download-nfe-xml/<?= (int) $nfe['id']; ?>"
+                                                class="btn btn-outline-secondary btn-sm">
+
+                                                <i class="fa-solid fa-file-code me-1"></i>
+
+                                                Baixar XML
+
+                                            </a>
+
+                                        <?php endif; ?>
+
+
+                                        <a
+                                            href="<?= $_ENV['URL_ADM']; ?>check-nfe/<?= (int) $nfe['id']; ?>"
+                                            class="btn btn-success btn-sm">
+
+                                            <i class="fa-solid fa-check me-1"></i>
+
+                                            Conferir
+
+                                        </a>
+
+                                    </div>
 
                                 </div>
 
@@ -402,6 +677,113 @@ $financialStatusMeta = [
 
 
                         <?php endforeach; ?>
+
+
+                        <?php
+
+                        $pendingTotalPages =
+                            (int) (
+                                $pendingPagination['total_pages']
+                                ?? 1
+                            );
+
+                        ?>
+
+
+                        <?php if ($pendingTotalPages > 1): ?>
+
+                            <nav
+                                class="mt-3"
+                                aria-label="Paginação das NF-e pendentes">
+
+                                <ul
+                                    class="pagination pagination-sm
+                                           justify-content-end mb-0">
+
+                                    <li
+                                        class="page-item
+                                        <?= $pendingPage <= 1
+                                            ? 'disabled'
+                                            : ''; ?>">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= $pendingPage > 1
+                                                ? htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'pending',
+                                                        $pendingPage - 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
+
+                                            Anterior
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <?php foreach (
+                                        $getPaginationPages(
+                                            $pendingPage,
+                                            $pendingTotalPages
+                                        )
+                                        as $pageNumber
+                                    ): ?>
+
+                                        <li
+                                            class="page-item
+                                            <?= $pageNumber === $pendingPage
+                                                ? 'active'
+                                                : ''; ?>">
+
+                                            <a
+                                                class="page-link"
+                                                href="<?= htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'pending',
+                                                        $pageNumber
+                                                    )
+                                                ); ?>">
+
+                                                <?= $pageNumber; ?>
+
+                                            </a>
+
+                                        </li>
+
+                                    <?php endforeach; ?>
+
+
+                                    <li
+                                        class="page-item
+                                        <?= $pendingPage >= $pendingTotalPages
+                                            ? 'disabled'
+                                            : ''; ?>">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= $pendingPage < $pendingTotalPages
+                                                ? htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'pending',
+                                                        $pendingPage + 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
+
+                                            Próxima
+
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </nav>
+
+                        <?php endif; ?>
 
 
                     <?php else: ?>
@@ -439,11 +821,11 @@ $financialStatusMeta = [
                 id="headingChecked">
 
                 <button
-                    class="accordion-button collapsed"
+                    class="accordion-button<?= $activeSection === 'checked' ? '' : ' collapsed'; ?>"
                     type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapseChecked"
-                    aria-expanded="false"
+                    aria-expanded="<?= $activeSection === 'checked' ? 'true' : 'false'; ?>"
                     aria-controls="collapseChecked">
 
                     <div
@@ -462,7 +844,7 @@ $financialStatusMeta = [
 
                         <span class="badge bg-success">
 
-                            <?= count($nfesChecked); ?>
+                            <?= $checkedTotal; ?>
 
                         </span>
 
@@ -475,7 +857,7 @@ $financialStatusMeta = [
 
             <div
                 id="collapseChecked"
-                class="accordion-collapse collapse"
+                class="accordion-collapse collapse<?= $activeSection === 'checked' ? ' show' : ''; ?>"
                 aria-labelledby="headingChecked">
 
                 <div class="accordion-body">
@@ -592,10 +974,7 @@ $financialStatusMeta = [
                             ?>
 
 
-                            <div
-                                class="row align-items-center
-                                       border-bottom py-3">
-
+                            <div class="row align-items-center border-bottom py-3">
 
                                 <!-- Emissão -->
                                 <div class="col-lg-2 mb-3 mb-lg-0">
@@ -860,69 +1239,276 @@ $financialStatusMeta = [
                                 <!-- Ação -->
                                 <div class="col-lg-2 text-lg-end">
 
-
-                                    <?php if ($purchaseDocumentId > 0): ?>
-
-                                        <a
-                                            href="<?= $_ENV['URL_ADM']; ?>view-purchase-document/<?= $purchaseDocumentId; ?>"
-                                            class="btn btn-outline-primary btn-sm">
-
-                                            <i class="fa-solid fa-eye me-1"></i>
-
-                                            Ver lançamento
-
-                                        </a>
+                                    <div
+                                        class="d-flex flex-column align-items-lg-end gap-2">
 
 
-                                    <?php else: ?>
+                                        <!-- =============================================== -->
+                                        <!-- AÇÕES FISCAIS DA NF-e                          -->
+                                        <!-- =============================================== -->
 
-                                        <div
-                                            class="d-flex flex-column
-                                                   align-items-lg-end gap-2">
+                                        <?php if ((int) ($nfe['has_xml'] ?? 0) === 0): ?>
 
                                             <a
-                                                href="<?= $_ENV['URL_ADM']; ?>create-purchase-document/<?= (int) $nfe['id']; ?>"
-                                                class="btn btn-primary btn-sm">
+                                                href="<?= $_ENV['URL_ADM']; ?>request-nfe-xml/<?= (int) $nfe['id']; ?>"
+                                                class="btn btn-outline-primary btn-sm">
 
-                                                <i
-                                                    class="fa-solid
-                                                           fa-dollar-sign
-                                                           me-1">
-                                                </i>
+                                                <i class="fa-solid fa-file-arrow-down me-1"></i>
 
-                                                Lançar Compra
+                                                Solicitar XML
+
+                                            </a>
+
+
+                                            <?php if ((int) ($nfe['has_awareness'] ?? 0) === 1): ?>
+
+                                                <span
+                                                    class="badge bg-info text-dark">
+
+                                                    <i class="fa-solid fa-circle-check me-1"></i>
+
+                                                    Ciência registrada
+
+                                                </span>
+
+                                            <?php elseif (($nfe['status'] ?? '') === 'authorized'): ?>
+
+                                                <form
+                                                    action="<?= $_ENV['URL_ADM']; ?>manifest-nfe-awareness"
+                                                    method="POST"
+                                                    class="d-inline">
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="csrf_token"
+                                                        value="<?= htmlspecialchars(
+                                                                    $csrfManifestNfe
+                                                                ); ?>">
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="nfe_id"
+                                                        value="<?= (int) $nfe['id']; ?>">
+
+
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-warning btn-sm"
+                                                        onclick="return confirm(
+                                                            'Registrar Ciência da Emissão desta NF-e?\n\n'
+                                                            + 'Esta ação informa à SEFAZ que a empresa tomou ciência da existência da nota. '
+                                                            + 'Ela não confirma o recebimento da mercadoria nem a realização da operação.'
+                                                        );">
+
+                                                        <i class="fa-solid fa-file-signature me-1"></i>
+
+                                                        Ciência da Emissão
+
+                                                    </button>
+
+                                                </form>
+
+                                            <?php endif; ?>
+
+
+                                        <?php else: ?>
+
+                                            <!-- =============================================== -->
+                                            <!-- XML COMPLETO DISPONÍVEL                         -->
+                                            <!-- =============================================== -->
+
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>view-nfe-danfe/<?= (int) $nfe['id']; ?>"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="btn btn-outline-success btn-sm">
+
+                                                <i class="fa-solid fa-file-pdf me-1"></i>
+
+                                                Visualizar DANFE
 
                                             </a>
 
 
                                             <a
-                                                href="<?= $_ENV['URL_ADM']; ?>uncheck-nfe/<?= (int) $nfe['id']; ?>"
+                                                href="<?= $_ENV['URL_ADM']; ?>download-nfe-xml/<?= (int) $nfe['id']; ?>"
                                                 class="btn btn-outline-secondary btn-sm">
 
-                                                <i
-                                                    class="fa-solid
-                                                           fa-rotate-left
-                                                           me-1">
-                                                </i>
+                                                <i class="fa-solid fa-file-code me-1"></i>
 
-                                                Desfazer conferência
+                                                Baixar XML
 
                                             </a>
 
-                                        </div>
+                                        <?php endif; ?>
 
-                                    <?php endif; ?>
 
+                                        <!-- =============================================== -->
+                                        <!-- AÇÕES FINANCEIRAS EXISTENTES                   -->
+                                        <!-- =============================================== -->
+
+
+                                        <?php if ($purchaseDocumentId > 0): ?>
+
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>view-purchase-document/<?= $purchaseDocumentId; ?>"
+                                                class="btn btn-outline-primary btn-sm">
+
+                                                <i class="fa-solid fa-eye me-1"></i>
+
+                                                Ver lançamento
+
+                                            </a>
+
+                                        <?php else: ?>
+
+                                            <div
+                                                class="d-flex flex-column align-items-lg-end gap-2">
+
+                                                <a
+                                                    href="<?= $_ENV['URL_ADM']; ?>create-purchase-document/<?= (int) $nfe['id']; ?>"
+                                                    class="btn btn-primary btn-sm">
+
+                                                    <i
+                                                        class="fa-solid fa-dollar-sign me-1">
+                                                    </i>
+
+                                                    Lançar Compra
+
+                                                </a>
+
+
+                                                <a
+                                                    href="<?= $_ENV['URL_ADM']; ?>uncheck-nfe/<?= (int) $nfe['id']; ?>"
+                                                    class="btn btn-outline-secondary btn-sm">
+
+                                                    <i
+                                                        class="fa-solid fa-rotate-left me-1">
+                                                    </i>
+
+                                                    Desfazer conferência
+
+                                                </a>
+
+                                            </div>
+
+                                        <?php endif; ?>
+
+                                    </div>
                                 </div>
-
                             </div>
-
 
                         <?php endforeach; ?>
 
 
-                    <?php else: ?>
+                        <?php
 
+                        $checkedTotalPages =
+                            (int) (
+                                $checkedPagination['total_pages']
+                                ?? 1
+                            );
+
+                        ?>
+
+
+                        <?php if ($checkedTotalPages > 1): ?>
+
+                            <nav
+                                class="mt-3"
+                                aria-label="Paginação das NF-e conferidas">
+
+                                <ul
+                                    class="pagination pagination-sm
+                                           justify-content-end mb-0">
+
+                                    <li
+                                        class="page-item
+                                        <?= $checkedPage <= 1
+                                            ? 'disabled'
+                                            : ''; ?>">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= $checkedPage > 1
+                                                ? htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'checked',
+                                                        $checkedPage - 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
+
+                                            Anterior
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <?php foreach (
+                                        $getPaginationPages(
+                                            $checkedPage,
+                                            $checkedTotalPages
+                                        )
+                                        as $pageNumber
+                                    ): ?>
+
+                                        <li
+                                            class="page-item
+                                            <?= $pageNumber === $checkedPage
+                                                ? 'active'
+                                                : ''; ?>">
+
+                                            <a
+                                                class="page-link"
+                                                href="<?= htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'checked',
+                                                        $pageNumber
+                                                    )
+                                                ); ?>">
+
+                                                <?= $pageNumber; ?>
+
+                                            </a>
+
+                                        </li>
+
+                                    <?php endforeach; ?>
+
+
+                                    <li
+                                        class="page-item
+                                        <?= $checkedPage >= $checkedTotalPages
+                                            ? 'disabled'
+                                            : ''; ?>">
+
+                                        <a
+                                            class="page-link"
+                                            href="<?= $checkedPage < $checkedTotalPages
+                                                ? htmlspecialchars(
+                                                    $buildNfePaginationUrl(
+                                                        'checked',
+                                                        $checkedPage + 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
+
+                                            Próxima
+
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </nav>
+
+                        <?php endif; ?>
+
+
+                    <?php else: ?>
 
                         <div
                             class="alert alert-secondary mb-0"
@@ -931,7 +1517,6 @@ $financialStatusMeta = [
                             Nenhuma NF-e conferida até o momento.
 
                         </div>
-
 
                     <?php endif; ?>
 

@@ -37,6 +37,31 @@ class NfeRepository extends DbConnection
             nfe.status,
             nfe.cancelled_at,
             nfe.is_checked,
+            nfe.xml_schema_name,
+            nfe.xml_received_at,
+
+            CASE
+                WHEN nfe.xml_content IS NOT NULL
+                THEN 1
+                ELSE 0
+            END AS has_xml,
+
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+
+                    FROM adms_daman_nfe_manifestations AS manifestation
+
+                    WHERE
+                        manifestation.adms_daman_nfe_id = nfe.id
+
+                        AND manifestation.event_type = '210210'
+
+                        AND manifestation.status = 'registered'
+                )
+                THEN 1
+                ELSE 0
+            END AS has_awareness,
 
             pd.id AS purchase_document_id
 
@@ -52,6 +77,179 @@ class NfeRepository extends DbConnection
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    /**
+     * Listar NF-e paginadas por situação de conferência.
+     *
+     * @param int $isChecked 0 = pendente | 1 = conferida
+     * @param int $page Página atual
+     * @param int $limitResult Registros por página
+     * @return array
+     */
+    public function getNfesByCheckedStatus(
+        int $isChecked,
+        int $page = 1,
+        int $limitResult = 10
+    ): array {
+
+        $page = max(1, $page);
+        $limitResult = max(1, $limitResult);
+
+        $offset =
+            ($page - 1)
+            * $limitResult;
+
+
+        $sql = "
+            SELECT
+                nfe.id,
+                nfe.nsu,
+                nfe.access_key,
+                nfe.nfe_number,
+                nfe.series,
+                nfe.issuer_cnpj,
+                nfe.issuer_name,
+                nfe.issue_date,
+                nfe.total_value,
+                nfe.status,
+                nfe.cancelled_at,
+                nfe.is_checked,
+                nfe.xml_schema_name,
+                nfe.xml_received_at,
+
+                CASE
+                    WHEN nfe.xml_content IS NOT NULL
+                    THEN 1
+                    ELSE 0
+                END AS has_xml,
+
+                CASE
+                    WHEN EXISTS (
+                        SELECT 1
+
+                        FROM adms_daman_nfe_manifestations AS manifestation
+
+                        WHERE
+                            manifestation.adms_daman_nfe_id = nfe.id
+
+                            AND manifestation.event_type = '210210'
+
+                            AND manifestation.status = 'registered'
+                    )
+                    THEN 1
+                    ELSE 0
+                END AS has_awareness,
+
+                pd.id AS purchase_document_id
+
+            FROM adms_daman_nfes AS nfe
+
+            LEFT JOIN adms_daman_purchase_documents AS pd
+                ON pd.adms_daman_nfe_id = nfe.id
+
+            WHERE
+                nfe.is_checked = :is_checked
+
+            ORDER BY
+                nfe.issue_date DESC,
+                nfe.id DESC
+
+            LIMIT :limit_result
+            OFFSET :offset
+        ";
+
+
+        $stmt =
+            $this->getConnection()
+                ->prepare($sql);
+
+
+        $stmt->bindValue(
+            ':is_checked',
+            $isChecked,
+            PDO::PARAM_INT
+        );
+
+        $stmt->bindValue(
+            ':limit_result',
+            $limitResult,
+            PDO::PARAM_INT
+        );
+
+        $stmt->bindValue(
+            ':offset',
+            $offset,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->execute();
+
+
+        return $stmt->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+    }
+
+
+    /**
+     * Contar NF-e por situação de conferência.
+     *
+     * @param int $isChecked 0 = pendente | 1 = conferida
+     * @return int
+     */
+    public function countNfesByCheckedStatus(
+        int $isChecked
+    ): int {
+
+        $sql = "
+            SELECT COUNT(id)
+            FROM adms_daman_nfes
+            WHERE is_checked = :is_checked
+        ";
+
+
+        $stmt =
+            $this->getConnection()
+                ->prepare($sql);
+
+
+        $stmt->bindValue(
+            ':is_checked',
+            $isChecked,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->execute();
+
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Contar a quantidade total de NF-e cadastradas.
+     *
+     * Utilizado pela sincronização para distinguir
+     * documentos DF-e processados de NF-e realmente novas.
+     *
+     * @return int
+     */
+    public function countNfes(): int
+    {
+        $conn = $this->getConnection();
+
+        $sql = "
+            SELECT COUNT(*)
+            FROM adms_daman_nfes
+        ";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
     }
 
     /**
@@ -328,7 +526,14 @@ class NfeRepository extends DbConnection
                     total_value,
                     status,
                     cancelled_at,
-                    is_checked
+                    is_checked,
+                    xml_schema_name,
+                    xml_received_at,
+                    CASE
+                        WHEN xml_content IS NOT NULL
+                        THEN 1
+                        ELSE 0
+                    END AS has_xml
                 FROM adms_daman_nfes
                 WHERE id = :id
                 LIMIT 1';
@@ -354,6 +559,359 @@ class NfeRepository extends DbConnection
                     'error' => $err->getMessage(),
                 ]
             );
+
+            throw $err;
+        }
+    }
+
+
+    /**
+     * Salvar o XML completo/protocolado de uma NF-e.
+     *
+     * A chave de acesso é a identidade fiscal da nota.
+     * Se o resumo já existir, o mesmo registro é atualizado.
+     * Se o XML completo chegar antes do resumo, o registro
+     * também pode ser criado com os dados do próprio procNFe.
+     *
+     * Em registro já existente não sobrescrevemos status,
+     * is_checked ou cancelled_at.
+     */
+    public function saveFullNfe(array $data): bool
+    {
+        try {
+
+            $sql = "
+                INSERT INTO adms_daman_nfes
+                (
+                    nsu,
+                    access_key,
+                    nfe_number,
+                    series,
+                    issuer_cnpj,
+                    issuer_name,
+                    issue_date,
+                    total_value,
+                    schema_name,
+                    status,
+                    xml_content,
+                    xml_schema_name,
+                    xml_received_at
+                )
+                VALUES
+                (
+                    :nsu,
+                    :access_key,
+                    :nfe_number,
+                    :series,
+                    :issuer_cnpj,
+                    :issuer_name,
+                    :issue_date,
+                    :total_value,
+                    :schema_name,
+                    :status,
+                    :xml_content,
+                    :xml_schema_name,
+                    NOW()
+                )
+
+                ON DUPLICATE KEY UPDATE
+
+                    nfe_number =
+                        VALUES(nfe_number),
+
+                    series =
+                        VALUES(series),
+
+                    issuer_cnpj =
+                        VALUES(issuer_cnpj),
+
+                    issuer_name =
+                        VALUES(issuer_name),
+
+                    issue_date =
+                        VALUES(issue_date),
+
+                    total_value =
+                        VALUES(total_value),
+
+                    xml_content =
+                        VALUES(xml_content),
+
+                    xml_schema_name =
+                        VALUES(xml_schema_name),
+
+                    xml_received_at =
+                        COALESCE(
+                            xml_received_at,
+                            NOW()
+                        )
+            ";
+
+
+            $stmt =
+                $this->getConnection()
+                ->prepare($sql);
+
+
+            return $stmt->execute([
+                ':nsu' =>
+                $data['nsu']
+                    ?? null,
+
+                ':access_key' =>
+                $data['access_key'],
+
+                ':nfe_number' =>
+                $data['nfe_number']
+                    ?? null,
+
+                ':series' =>
+                $data['series']
+                    ?? null,
+
+                ':issuer_cnpj' =>
+                $data['issuer_cnpj']
+                    ?? null,
+
+                ':issuer_name' =>
+                $data['issuer_name']
+                    ?? null,
+
+                ':issue_date' =>
+                $data['issue_date']
+                    ?? null,
+
+                ':total_value' =>
+                $data['total_value']
+                    ?? null,
+
+                ':schema_name' =>
+                $data['xml_schema_name']
+                    ?? null,
+
+                ':status' =>
+                $data['status']
+                    ?? 'authorized',
+
+                ':xml_content' =>
+                $data['xml_content'],
+
+                ':xml_schema_name' =>
+                $data['xml_schema_name']
+                    ?? null,
+            ]);
+        } catch (PDOException $err) {
+
+            GenerateLog::generateLog(
+                'error',
+                'Erro ao salvar XML completo da NF-e.',
+                [
+                    'access_key' =>
+                    $data['access_key']
+                        ?? null,
+
+                    'nsu' =>
+                    $data['nsu']
+                        ?? null,
+
+                    'error' =>
+                    $err->getMessage(),
+                ]
+            );
+
+
+            throw $err;
+        }
+    }
+
+
+    /**
+     * Recuperar somente o XML completo de uma NF-e.
+     *
+     * Esta consulta fica separada de getNfeById()
+     * para não carregar LONGTEXT nas telas comuns.
+     */
+    public function getNfeXmlById(
+        int $id
+    ): array|bool {
+
+        try {
+
+            $sql = "
+                SELECT
+                    id,
+                    access_key,
+                    nfe_number,
+                    xml_content,
+                    xml_schema_name,
+                    xml_received_at
+
+                FROM
+                    adms_daman_nfes
+
+                WHERE
+                    id = :id
+
+                LIMIT 1
+            ";
+
+
+            $stmt =
+                $this->getConnection()
+                ->prepare($sql);
+
+
+            $stmt->bindValue(
+                ':id',
+                $id,
+                PDO::PARAM_INT
+            );
+
+
+            $stmt->execute();
+
+
+            return $stmt->fetch(
+                PDO::FETCH_ASSOC
+            );
+        } catch (PDOException $err) {
+
+            GenerateLog::generateLog(
+                'error',
+                'Erro ao recuperar XML da NF-e.',
+                [
+                    'nfe_id' =>
+                    $id,
+
+                    'error' =>
+                    $err->getMessage(),
+                ]
+            );
+
+
+            throw $err;
+        }
+    }
+
+    /**
+     * Salvar uma manifestação do destinatário.
+     *
+     * A combinação NF-e + tipo do evento é única.
+     * Caso já exista, os dados retornados pela SEFAZ
+     * são atualizados.
+     *
+     * @param int $nfeId
+     * @param array $data
+     * @return bool
+     */
+    public function saveManifestation(
+        int $nfeId,
+        array $data
+    ): bool {
+
+        try {
+
+            $sql = "
+            INSERT INTO adms_daman_nfe_manifestations
+            (
+                adms_daman_nfe_id,
+                event_type,
+                status,
+                cstat,
+                message,
+                protocol,
+                registered_at,
+                created_at,
+                updated_at
+            )
+            VALUES
+            (
+                :adms_daman_nfe_id,
+                :event_type,
+                :status,
+                :cstat,
+                :message,
+                :protocol,
+                :registered_at,
+                NOW(),
+                NOW()
+            )
+
+            ON DUPLICATE KEY UPDATE
+
+                status =
+                    VALUES(status),
+
+                cstat =
+                    VALUES(cstat),
+
+                message =
+                    VALUES(message),
+
+                protocol =
+                    COALESCE(
+                        VALUES(protocol),
+                        protocol
+                    ),
+
+                registered_at =
+                    COALESCE(
+                        VALUES(registered_at),
+                        registered_at
+                    ),
+
+                updated_at =
+                    NOW()
+        ";
+
+
+            $stmt =
+                $this->getConnection()
+                ->prepare($sql);
+
+
+            return $stmt->execute([
+                ':adms_daman_nfe_id' =>
+                $nfeId,
+
+                ':event_type' =>
+                $data['event_type'],
+
+                ':status' =>
+                $data['status']
+                    ?? 'registered',
+
+                ':cstat' =>
+                $data['cstat']
+                    ?? null,
+
+                ':message' =>
+                $data['message']
+                    ?? null,
+
+                ':protocol' =>
+                $data['protocol']
+                    ?? null,
+
+                ':registered_at' =>
+                $data['registered_at']
+                    ?? null,
+            ]);
+        } catch (PDOException $err) {
+
+            GenerateLog::generateLog(
+                'error',
+                'Erro ao salvar manifestação da NF-e.',
+                [
+                    'nfe_id' => $nfeId,
+                    'event_type' =>
+                    $data['event_type']
+                        ?? null,
+                    'error' =>
+                    $err->getMessage(),
+                ]
+            );
+
 
             throw $err;
         }
