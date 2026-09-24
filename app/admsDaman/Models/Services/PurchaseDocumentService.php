@@ -874,6 +874,47 @@ class PurchaseDocumentService extends DbConnection
 
         /*
         * =====================================================
+        * NATUREZA DO LANÇAMENTO FINANCEIRO
+        * =====================================================
+        *
+        * purchase:
+        * compra manual / avulsa.
+        *
+        * financial_obligation:
+        * obrigação financeira, como impostos, taxas e guias.
+        *
+        * O padrão permanece "purchase" para preservar todos
+        * os fluxos existentes que ainda não enviam este campo.
+        */
+        $financialEntryType =
+            strtolower(
+                trim(
+                    (string) (
+                        $data['financial_entry_type']
+                        ?? 'purchase'
+                    )
+                )
+            );
+
+        $allowedFinancialEntryTypes = [
+            'purchase',
+            'financial_obligation',
+        ];
+
+        if (
+            !in_array(
+                $financialEntryType,
+                $allowedFinancialEntryTypes,
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                'Tipo de lançamento financeiro inválido.'
+            );
+        }
+
+        /*
+        * =====================================================
         * SITUAÇÃO DO PARCELAMENTO
         * =====================================================
         *
@@ -1049,6 +1090,9 @@ class PurchaseDocumentService extends DbConnection
          * Dados preparados para o Repository.
          */
             $purchaseData = [
+
+                'financial_entry_type' =>
+                $financialEntryType,
 
                 'adms_daman_supplier_id' =>
                 $supplierId,

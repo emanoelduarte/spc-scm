@@ -53,25 +53,25 @@ $totalFiltered =
 
 $purchasePercentage =
     $totalFiltered > 0
-        ? (
-            (float) (
-                $summary['purchase_amount']
-                ?? 0
-            )
-            / $totalFiltered
-        ) * 100
-        : 0;
+    ? (
+        (float) (
+            $summary['purchase_amount']
+            ?? 0
+        )
+        / $totalFiltered
+    ) * 100
+    : 0;
 
 $directPercentage =
     $totalFiltered > 0
-        ? (
-            (float) (
-                $summary['direct_amount']
-                ?? 0
-            )
-            / $totalFiltered
-        ) * 100
-        : 0;
+    ? (
+        (float) (
+            $summary['direct_amount']
+            ?? 0
+        )
+        / $totalFiltered
+    ) * 100
+    : 0;
 
 
 $maxMonthlyAmount = 0;
@@ -124,11 +124,10 @@ $formatMonth =
         ];
 
 
-        return
-            (
-                $months[$parts[1]]
-                ?? $parts[1]
-            )
+        return (
+            $months[$parts[1]]
+            ?? $parts[1]
+        )
             . '/'
             . $parts[0];
     };
@@ -175,35 +174,35 @@ $buildPaginationUrl =
                     'page' => $page,
 
                     'project_id' =>
-                        $filters['project_id']
+                    $filters['project_id']
                         ?? null,
 
                     'origin' =>
-                        $filters['origin']
+                    $filters['origin']
                         ?? null,
 
                     'category_key' =>
-                        $filters['category_key']
+                    $filters['category_key']
                         ?? null,
 
                     'payment_method_id' =>
-                        $filters['payment_method_id']
+                    $filters['payment_method_id']
                         ?? null,
 
                     'date_start' =>
-                        $filters['date_start']
+                    $filters['date_start']
                         ?? null,
 
                     'date_end' =>
-                        $filters['date_end']
+                    $filters['date_end']
                         ?? null,
 
                     'search' =>
-                        $filters['search']
+                    $filters['search']
                         ?? null,
                 ],
                 static fn($value): bool =>
-                    $value !== null
+                $value !== null
                     &&
                     $value !== ''
             );
@@ -421,6 +420,19 @@ $getPaginationPages =
                         </option>
 
                         <option
+                            value="financial_obligation"
+                            <?= (
+                                ($filters['origin'] ?? '')
+                                === 'financial_obligation'
+                            )
+                                ? 'selected'
+                                : ''; ?>>
+
+                            Obrigações Financeiras
+
+                        </option>
+
+                        <option
                             value="direct"
                             <?= (
                                 ($filters['origin'] ?? '')
@@ -482,8 +494,8 @@ $getPaginationPages =
 
                             <option
                                 value="<?= htmlspecialchars(
-                                    $categoryValue
-                                ); ?>"
+                                            $categoryValue
+                                        ); ?>"
                                 <?= (
                                     ($filters['category_key'] ?? '')
                                     === $categoryValue
@@ -571,9 +583,9 @@ $getPaginationPages =
                         class="form-control"
                         placeholder="Descrição, documento, fornecedor..."
                         value="<?= htmlspecialchars(
-                            $filters['search']
-                            ?? ''
-                        ); ?>">
+                                    $filters['search']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -594,9 +606,9 @@ $getPaginationPages =
                         id="date_start"
                         class="form-control"
                         value="<?= htmlspecialchars(
-                            $filters['date_start']
-                            ?? ''
-                        ); ?>">
+                                    $filters['date_start']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -617,9 +629,9 @@ $getPaginationPages =
                         id="date_end"
                         class="form-control"
                         value="<?= htmlspecialchars(
-                            $filters['date_end']
-                            ?? ''
-                        ); ?>">
+                                    $filters['date_end']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -868,11 +880,11 @@ $getPaginationPages =
 
                                 $monthWidth =
                                     $maxMonthlyAmount > 0
-                                        ? (
-                                            $monthTotal
-                                            / $maxMonthlyAmount
-                                        ) * 100
-                                        : 0;
+                                    ? (
+                                        $monthTotal
+                                        / $maxMonthlyAmount
+                                    ) * 100
+                                    : 0;
 
                                 ?>
 
@@ -924,11 +936,11 @@ $getPaginationPages =
                                         <div
                                             class="progress-bar"
                                             style="width: <?= number_format(
-                                                $monthWidth,
-                                                2,
-                                                '.',
-                                                ''
-                                            ); ?>%">
+                                                                $monthWidth,
+                                                                2,
+                                                                '.',
+                                                                ''
+                                                            ); ?>%">
                                         </div>
 
                                     </div>
@@ -1029,11 +1041,11 @@ $getPaginationPages =
 
                                 $categoryPercentage =
                                     $totalFiltered > 0
-                                        ? (
-                                            $categoryAmount
-                                            / $totalFiltered
-                                        ) * 100
-                                        : 0;
+                                    ? (
+                                        $categoryAmount
+                                        / $totalFiltered
+                                    ) * 100
+                                    : 0;
 
                                 ?>
 
@@ -1048,7 +1060,7 @@ $getPaginationPages =
 
                                             <?= htmlspecialchars(
                                                 $category['label']
-                                                ?? '-'
+                                                    ?? '-'
                                             ); ?>
 
                                         </span>
@@ -1069,16 +1081,16 @@ $getPaginationPages =
 
 
                                     <div class="progress mt-1"
-                                         style="height: 6px;">
+                                        style="height: 6px;">
 
                                         <div
                                             class="progress-bar"
                                             style="width: <?= number_format(
-                                                $categoryPercentage,
-                                                2,
-                                                '.',
-                                                ''
-                                            ); ?>%">
+                                                                $categoryPercentage,
+                                                                2,
+                                                                '.',
+                                                                ''
+                                                            ); ?>%">
                                         </div>
 
                                     </div>
@@ -1141,9 +1153,7 @@ $getPaginationPages =
                 <div class="card-body">
 
                     <?php if (
-                        !empty(
-                            $paymentMethodBreakdown
-                        )
+                        !empty($paymentMethodBreakdown)
                     ): ?>
 
                         <div class="table-responsive">
@@ -1192,11 +1202,11 @@ $getPaginationPages =
 
                                         $paymentPercentage =
                                             $totalFiltered > 0
-                                                ? (
-                                                    $paymentAmount
-                                                    / $totalFiltered
-                                                ) * 100
-                                                : 0;
+                                            ? (
+                                                $paymentAmount
+                                                / $totalFiltered
+                                            ) * 100
+                                            : 0;
 
                                         ?>
 
@@ -1206,7 +1216,7 @@ $getPaginationPages =
 
                                                 <?= htmlspecialchars(
                                                     $paymentMethod['label']
-                                                    ?? '-'
+                                                        ?? '-'
                                                 ); ?>
 
                                             </td>
@@ -1327,11 +1337,11 @@ $getPaginationPages =
 
                                         $projectPercentage =
                                             $totalFiltered > 0
-                                                ? (
-                                                    $projectAmount
-                                                    / $totalFiltered
-                                                ) * 100
-                                                : 0;
+                                            ? (
+                                                $projectAmount
+                                                / $totalFiltered
+                                            ) * 100
+                                            : 0;
 
                                         ?>
 
@@ -1341,7 +1351,7 @@ $getPaginationPages =
 
                                                 <?= htmlspecialchars(
                                                     $projectItem['label']
-                                                    ?? '-'
+                                                        ?? '-'
                                                 ); ?>
 
                                             </td>
@@ -1492,9 +1502,7 @@ $getPaginationPages =
 
                                     <td class="text-nowrap">
 
-                                        <?= !empty(
-                                            $entry['event_date']
-                                        )
+                                        <?= !empty($entry['event_date'])
                                             ? date(
                                                 'd/m/Y',
                                                 strtotime(
@@ -1510,7 +1518,7 @@ $getPaginationPages =
 
                                         <?= htmlspecialchars(
                                             $entry['project_name']
-                                            ?? '-'
+                                                ?? '-'
                                         ); ?>
 
                                     </td>
@@ -1518,17 +1526,31 @@ $getPaginationPages =
 
                                     <td>
 
-                                        <?php if ($isPurchase): ?>
+                                        <?php if (($entry['origin'] ?? '') === 'purchase'): ?>
 
                                             <span class="badge bg-primary">
 
                                                 <i
                                                     class="fa-solid
-                                                           fa-cart-shopping
-                                                           me-1">
+                       fa-cart-shopping
+                       me-1">
                                                 </i>
 
                                                 Compra
+
+                                            </span>
+
+                                        <?php elseif (($entry['origin'] ?? '') === 'financial_obligation'): ?>
+
+                                            <span class="badge bg-warning text-dark">
+
+                                                <i
+                                                    class="fa-solid
+                       fa-file-invoice-dollar
+                       me-1">
+                                                </i>
+
+                                                Obrigação Financeira
 
                                             </span>
 
@@ -1538,8 +1560,8 @@ $getPaginationPages =
 
                                                 <i
                                                     class="fa-solid
-                                                           fa-money-bill-transfer
-                                                           me-1">
+                       fa-money-bill-transfer
+                       me-1">
                                                 </i>
 
                                                 Despesa Direta
@@ -1555,7 +1577,7 @@ $getPaginationPages =
 
                                         <?= htmlspecialchars(
                                             $entry['category_name']
-                                            ?? '-'
+                                                ?? '-'
                                         ); ?>
 
                                     </td>
@@ -1572,15 +1594,13 @@ $getPaginationPages =
                                                         $entry['document_type']
                                                         ?? 'Documento'
                                                     )
-                                                    .
-                                                    (
-                                                        !empty(
-                                                            $entry['document_number']
-                                                        )
+                                                        .
+                                                        (
+                                                            !empty($entry['document_number'])
                                                             ? ' '
-                                                                . $entry['document_number']
+                                                            . $entry['document_number']
                                                             : ''
-                                                    )
+                                                        )
                                                 ); ?>
 
                                             </div>
@@ -1590,18 +1610,16 @@ $getPaginationPages =
 
                                                 <?= htmlspecialchars(
                                                     $entry['counterparty']
-                                                    ?? 'Fornecedor não informado'
+                                                        ?? 'Fornecedor não informado'
                                                 ); ?>
 
                                                 <?php if (
-                                                    !empty(
-                                                        $entry['installment_number']
-                                                    )
+                                                    !empty($entry['installment_number'])
                                                 ): ?>
 
                                                     —
                                                     <?= (int)
-                                                        $entry['installment_number']; ?>ª parcela
+                                                    $entry['installment_number']; ?>ª parcela
 
                                                 <?php endif; ?>
 
@@ -1613,16 +1631,14 @@ $getPaginationPages =
 
                                                 <?= htmlspecialchars(
                                                     $entry['description']
-                                                    ?? '-'
+                                                        ?? '-'
                                                 ); ?>
 
                                             </div>
 
 
                                             <?php if (
-                                                !empty(
-                                                    $entry['observation']
-                                                )
+                                                !empty($entry['observation'])
                                             ): ?>
 
                                                 <div class="small text-muted">
@@ -1644,7 +1660,7 @@ $getPaginationPages =
 
                                         <?= htmlspecialchars(
                                             $entry['payment_method_name']
-                                            ?? 'Não informado'
+                                                ?? 'Não informado'
                                         ); ?>
 
                                     </td>
@@ -1675,11 +1691,11 @@ $getPaginationPages =
                                                     $entry['amount']
                                                     ?? 0
                                                 )
-                                                -
-                                                (float) (
-                                                    $entry['source_total_paid']
-                                                    ?? 0
-                                                )
+                                                    -
+                                                    (float) (
+                                                        $entry['source_total_paid']
+                                                        ?? 0
+                                                    )
                                             ) > 0.004
                                         ): ?>
 
@@ -1729,12 +1745,12 @@ $getPaginationPages =
                                 <a
                                     class="page-link"
                                     href="<?= $currentPage > 1
-                                        ? htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $currentPage - 1
-                                            )
-                                        )
-                                        : '#'; ?>">
+                                                ? htmlspecialchars(
+                                                    $buildPaginationUrl(
+                                                        $currentPage - 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
 
                                     Anterior
 
@@ -1760,10 +1776,10 @@ $getPaginationPages =
                                     <a
                                         class="page-link"
                                         href="<?= htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $pageNumber
-                                            )
-                                        ); ?>">
+                                                    $buildPaginationUrl(
+                                                        $pageNumber
+                                                    )
+                                                ); ?>">
 
                                         <?= $pageNumber; ?>
 
@@ -1783,12 +1799,12 @@ $getPaginationPages =
                                 <a
                                     class="page-link"
                                     href="<?= $currentPage < $totalPages
-                                        ? htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $currentPage + 1
-                                            )
-                                        )
-                                        : '#'; ?>">
+                                                ? htmlspecialchars(
+                                                    $buildPaginationUrl(
+                                                        $currentPage + 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
 
                                     Próxima
 

@@ -56,6 +56,18 @@ class AddAdmsDamanSuppliersTypes extends AbstractSeed
             ];
         }
 
+        ## OBRIGAÇÃO FINANCEIRA
+        // Verificar se a natureza de negócio com o nome especificado já existe
+        $existingRecord = $this->query('SELECT id FROM adms_daman_suppliers_types WHERE name=:name', ['name' => 'Obrigação Financeira'])->fetch();
+
+        // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
+        if (!$existingRecord) {
+            $data[] = [
+                'name' => 'Obrigação Financeira',
+                'created_at' => date("Y-m-d H:i:s"),
+            ];
+        }
+
         // Obter a tabela 'adms_access_levels' para inserir os registros
         $adms_daman_suppliers_types = $this->table('adms_daman_suppliers_types');
 

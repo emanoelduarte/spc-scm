@@ -119,6 +119,7 @@ $errors =
         <div class="card-body">
 
             <form
+                id="directExpenseForm"
                 action=""
                 method="POST"
                 class="row g-3">
@@ -210,6 +211,28 @@ $errors =
                         <?php endforeach; ?>
 
                     </select>
+
+                    <div class="form-check mt-2">
+
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="has_proration"
+                            name="has_proration"
+                            value="1"
+                            <?= !empty($form['has_proration'])
+                                ? 'checked'
+                                : ''; ?>>
+
+                        <label
+                            class="form-check-label"
+                            for="has_proration">
+
+                            Existe rateio entre obras
+
+                        </label>
+
+                    </div>
 
                 </div>
 
@@ -384,6 +407,79 @@ $errors =
                 </div>
 
 
+                <!-- ====================================================== -->
+                <!-- RATEIO ENTRE OBRAS                                    -->
+                <!-- ====================================================== -->
+                <div
+                    id="directExpenseAllocationSection"
+                    class="col-12 <?= !empty($form['has_proration'])
+                                        ? ''
+                                        : 'd-none'; ?>">
+
+                    <div class="border rounded p-3">
+
+                        <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+
+                            <div>
+
+                                <div class="fw-semibold">
+                                    <i class="fa-solid fa-code-branch me-1"></i>
+                                    Rateio entre obras
+                                </div>
+
+                                <div class="small text-muted">
+                                    Distribua o valor total da despesa entre as obras participantes.
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                id="btnAddDirectExpenseAllocation"
+                                class="btn btn-outline-primary btn-sm ms-md-auto">
+
+                                <i class="fa-solid fa-plus me-1"></i>
+                                Adicionar obra
+
+                            </button>
+
+                        </div>
+
+                        <div
+                            id="directExpenseAllocationRows"
+                            class="d-flex flex-column gap-2">
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="row">
+
+                            <div class="col-md-6 col-lg-5 ms-auto">
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Valor da Despesa:</span>
+                                    <strong id="directExpenseAllocationDocumentTotal">R$ 0,00</strong>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Total Rateado:</span>
+                                    <strong id="directExpenseAllocationTotal" class="text-success">R$ 0,00</strong>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Diferença:</span>
+                                    <strong id="directExpenseAllocationDifference" class="text-danger">R$ 0,00</strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
                 <div class="col-12">
 
                     <label
@@ -432,3 +528,52 @@ $errors =
     </div>
 
 </div>
+
+
+<?php
+$oldDirectExpenseAllocations =
+    $form['allocations']
+    ?? [];
+
+$directExpenseProjectsJson =
+    json_encode(
+        $projects,
+        JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+            | JSON_HEX_TAG
+            | JSON_HEX_AMP
+            | JSON_HEX_APOS
+            | JSON_HEX_QUOT
+    );
+
+$directExpenseAllocationsJson =
+    json_encode(
+        $oldDirectExpenseAllocations,
+        JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+            | JSON_HEX_TAG
+            | JSON_HEX_AMP
+            | JSON_HEX_APOS
+            | JSON_HEX_QUOT
+    );
+?>
+
+<input
+    type="hidden"
+    id="directExpenseProjectsData"
+    value="<?= htmlspecialchars(
+        $directExpenseProjectsJson ?: '[]',
+        ENT_QUOTES,
+        'UTF-8'
+    ); ?>">
+
+<input
+    type="hidden"
+    id="directExpenseAllocationsOldData"
+    value="<?= htmlspecialchars(
+        $directExpenseAllocationsJson ?: '[]',
+        ENT_QUOTES,
+        'UTF-8'
+    ); ?>">
+
+<script src="<?= $_ENV['URL_ADM']; ?>js/direct_expense_allocations.js"></script>

@@ -991,6 +991,15 @@ $statusMeta = [
 
             </a>
 
+            <a
+                href="<?= $_ENV['URL_ADM']; ?>create-financial-obligation"
+                class="btn btn-warning btn-sm">
+
+                <i class="fa-solid fa-file-circle-plus me-1"></i>
+                Nova Obrigação Financeira
+
+            </a>
+
         </div>
 
         <div class="card-body">
@@ -1318,9 +1327,19 @@ $statusMeta = [
 
                                         <?php
 
+                                        $documentOrigin =
+                                            strtoupper(
+                                                (string) (
+                                                    $purchaseDocument['document_origin']
+                                                    ?? ''
+                                                )
+                                            );
+
                                         $isManual =
-                                            ($purchaseDocument['document_origin'] ?? '')
-                                            === 'MANUAL';
+                                            $documentOrigin === 'MANUAL';
+
+                                        $isFinancialObligation =
+                                            $documentOrigin === 'FINANCIAL_OBLIGATION';
 
 
                                         $viewPurchaseDocumentUrl =
@@ -1337,7 +1356,31 @@ $statusMeta = [
                                             title="Abrir lançamento">
 
 
-                                            <?php if ($isManual): ?>
+                                            <?php if ($isFinancialObligation): ?>
+
+                                                <div class="fw-semibold text-primary">
+
+                                                    <?= htmlspecialchars(
+                                                        $purchaseDocument['document_number']
+                                                            ?? '-'
+                                                    ); ?>
+
+                                                </div>
+
+                                                <small class="text-muted">
+
+                                                    Obrigação Financeira
+
+                                                    <i
+                                                        class="fa-solid
+                           fa-arrow-up-right-from-square
+                           ms-1">
+                                                    </i>
+
+                                                </small>
+
+
+                                            <?php elseif ($isManual): ?>
 
                                                 <div class="fw-semibold text-primary">
 

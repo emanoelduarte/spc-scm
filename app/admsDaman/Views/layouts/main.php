@@ -111,6 +111,10 @@
     ?>
     <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/edit_purchase_document.js" defer></script>
 
+    <?php // Inclui o script de direct_expense_allocations.js
+    ?>
+    <script src="<?= $_ENV['URL_ADM']; ?>public/admsDaman/js/direct_expense_allocations.js" defer></script>
+
 </body>
 
 </html>

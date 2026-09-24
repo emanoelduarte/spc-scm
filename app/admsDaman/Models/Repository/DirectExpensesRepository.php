@@ -19,7 +19,14 @@ class DirectExpensesRepository extends DbConnection
      */
     public function create(array $data): int
     {
+        $connection = $this->getConnection();
+        $startedTransaction = !$connection->inTransaction();
+
         try {
+            if ($startedTransaction) {
+                $connection->beginTransaction();
+            }
+
             $sql = "
                 INSERT INTO adms_daman_direct_expenses
                 (
@@ -47,7 +54,7 @@ class DirectExpensesRepository extends DbConnection
                 )
             ";
 
-            $stmt = $this->getConnection()->prepare($sql);
+            $stmt = $connection->prepare($sql);
 
             $stmt->execute([
                 ':adms_daman_project_id' =>
@@ -77,8 +84,80 @@ class DirectExpensesRepository extends DbConnection
                     (int) $data['created_by'],
             ]);
 
-            return (int) $this->getConnection()->lastInsertId();
+            $directExpenseId =
+                (int) $connection->lastInsertId();
+
+            if ($directExpenseId <= 0) {
+                throw new PDOException(
+                    'Não foi possível recuperar o ID da despesa direta.'
+                );
+            }
+
+            $allocations = $data['allocations'] ?? [];
+
+            if (empty($allocations)) {
+                $allocations = [[
+                    'adms_daman_project_id' =>
+                        (int) $data['adms_daman_project_id'],
+
+                    'allocated_amount' =>
+                        (string) $data['amount'],
+                ]];
+            }
+
+            $allocationSql = "
+                INSERT INTO adms_daman_direct_expense_allocations
+                (
+                    adms_daman_direct_expense_id,
+                    adms_daman_project_id,
+                    allocated_amount,
+                    created_by,
+                    created_at,
+                    updated_at
+                )
+                VALUES
+                (
+                    :direct_expense_id,
+                    :project_id,
+                    :allocated_amount,
+                    :created_by,
+                    NOW(),
+                    NOW()
+                )
+            ";
+
+            $allocationStmt =
+                $connection->prepare($allocationSql);
+
+            foreach ($allocations as $allocation) {
+                $allocationStmt->execute([
+                    ':direct_expense_id' =>
+                        $directExpenseId,
+
+                    ':project_id' =>
+                        (int) $allocation['adms_daman_project_id'],
+
+                    ':allocated_amount' =>
+                        (string) $allocation['allocated_amount'],
+
+                    ':created_by' =>
+                        (int) $data['created_by'],
+                ]);
+            }
+
+            if ($startedTransaction) {
+                $connection->commit();
+            }
+
+            return $directExpenseId;
         } catch (PDOException $err) {
+            if (
+                $startedTransaction
+                && $connection->inTransaction()
+            ) {
+                $connection->rollBack();
+            }
+
             GenerateLog::generateLog(
                 'error',
                 'Erro ao cadastrar despesa direta.',
@@ -95,6 +174,10 @@ class DirectExpensesRepository extends DbConnection
                         $data['amount']
                         ?? null,
 
+                    'allocations' =>
+                        $data['allocations']
+                        ?? [],
+
                     'error' =>
                         $err->getMessage(),
                 ]
@@ -103,6 +186,7 @@ class DirectExpensesRepository extends DbConnection
             throw $err;
         }
     }
+
 
 
     /**

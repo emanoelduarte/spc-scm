@@ -367,6 +367,7 @@ class PurchaseDocumentsRepository extends DbConnection
                     pd.id,
                     pd.adms_daman_nfe_id,
                     pd.adms_daman_supplier_id,
+                    pd.financial_entry_type,
                     pd.purchase_date,
                     pd.status,
                     pd.payment_schedule_status,
@@ -380,6 +381,8 @@ class PurchaseDocumentsRepository extends DbConnection
                     CASE
                         WHEN pd.adms_daman_nfe_id IS NOT NULL
                             THEN 'NFE'
+                        WHEN pd.financial_entry_type = 'financial_obligation'
+                            THEN 'FINANCIAL_OBLIGATION'
                         ELSE 'MANUAL'
                     END AS document_origin,
 
@@ -502,6 +505,7 @@ class PurchaseDocumentsRepository extends DbConnection
                     pd.id,
                     pd.adms_daman_nfe_id,
                     pd.adms_daman_supplier_id,
+                    pd.financial_entry_type,
                     pd.purchase_date,
                     pd.status,
                     pd.payment_schedule_status,
@@ -1205,6 +1209,8 @@ class PurchaseDocumentsRepository extends DbConnection
                 CASE
                     WHEN pd.adms_daman_nfe_id IS NOT NULL
                         THEN 'NFE'
+                    WHEN pd.financial_entry_type = 'financial_obligation'
+                        THEN 'FINANCIAL_OBLIGATION'
                     ELSE 'MANUAL'
                 END AS document_origin,
 
@@ -1256,6 +1262,7 @@ class PurchaseDocumentsRepository extends DbConnection
                  */
                 pd.id,
                 pd.adms_daman_nfe_id,
+                pd.financial_entry_type,
                 pd.adms_daman_project_id,
                 pd.adms_daman_user_id,
                 pd.adms_daman_payment_method_id,
@@ -1448,6 +1455,34 @@ class PurchaseDocumentsRepository extends DbConnection
         try {
 
             /*
+             * Natureza do lançamento financeiro.
+             *
+             * Mantemos "purchase" como padrão para preservar
+             * compatibilidade com todos os fluxos atuais.
+             */
+            $financialEntryType =
+                strtolower(
+                    trim(
+                        (string) (
+                            $data['financial_entry_type']
+                            ?? 'purchase'
+                        )
+                    )
+                );
+
+            if (
+                !in_array(
+                    $financialEntryType,
+                    ['purchase', 'financial_obligation'],
+                    true
+                )
+            ) {
+                throw new \InvalidArgumentException(
+                    'Tipo de lançamento financeiro inválido.'
+                );
+            }
+
+            /*
          * Inserir o lançamento avulso.
          *
          * Não utilizamos adms_daman_nfe_id porque
@@ -1457,6 +1492,7 @@ class PurchaseDocumentsRepository extends DbConnection
             INSERT INTO adms_daman_purchase_documents
             (
                 adms_daman_nfe_id,
+                financial_entry_type,
                 adms_daman_supplier_id,
                 document_type,
                 document_number,
@@ -1479,6 +1515,7 @@ class PurchaseDocumentsRepository extends DbConnection
             VALUES
             (
                 NULL,
+                :financial_entry_type,
                 :adms_daman_supplier_id,
                 :document_type,
                 :document_number,
@@ -1507,6 +1544,16 @@ class PurchaseDocumentsRepository extends DbConnection
             $stmt =
                 $this->getConnection()
                 ->prepare($sql);
+
+
+            /*
+             * Natureza do lançamento financeiro.
+             */
+            $stmt->bindValue(
+                ':financial_entry_type',
+                $financialEntryType,
+                \PDO::PARAM_STR
+            );
 
 
             /*

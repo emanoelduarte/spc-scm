@@ -16,6 +16,7 @@ class FinancialDisbursementsRepository extends DbConnection
      *
      * Fontes:
      * - pagamentos ativos de parcelas de compras;
+     * - pagamentos ativos de obrigações financeiras;
      * - despesas diretas.
      *
      * Compras rateadas entre obras são apropriadas proporcionalmente
@@ -168,7 +169,10 @@ class FinancialDisbursementsRepository extends DbConnection
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN entry.origin = 'purchase'
+                            WHEN entry.origin IN (
+                                    'purchase',
+                                    'financial_obligation'
+                                )
                                 THEN entry.amount
                             ELSE 0
                         END
@@ -243,7 +247,8 @@ class FinancialDisbursementsRepository extends DbConnection
     /**
      * Recuperar composição do desembolso por categoria.
      *
-     * Compras são apresentadas como a categoria sintética "Compra".
+     * Compras são apresentadas como "Compra".
+     * Obrigações financeiras são apresentadas como "Obrigação Financeira".
      * Despesas diretas preservam suas categorias cadastradas.
      */
     public function getCategoryBreakdown(
@@ -342,7 +347,10 @@ class FinancialDisbursementsRepository extends DbConnection
                 COALESCE(
                     SUM(
                         CASE
-                            WHEN entry.origin = 'purchase'
+                            WHEN entry.origin IN (
+                                    'purchase',
+                                    'financial_obligation'
+                                )
                                 THEN entry.amount
                             ELSE 0
                         END
@@ -564,7 +572,7 @@ class FinancialDisbursementsRepository extends DbConnection
         return "
             /*
              * =====================================================
-             * PAGAMENTOS DE COMPRAS
+             * PAGAMENTOS DE COMPRAS E OBRIGAÇÕES FINANCEIRAS
              * =====================================================
              */
             SELECT
@@ -586,12 +594,43 @@ class FinancialDisbursementsRepository extends DbConnection
 
                 project.name AS project_name,
 
-                'purchase' AS origin,
-                'Compra' AS origin_label,
+                CASE
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'financial_obligation'
+                        THEN 'financial_obligation'
+                    ELSE 'purchase'
+                END AS origin,
 
-                'purchase' AS category_key,
+                CASE
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'financial_obligation'
+                        THEN 'Obrigação Financeira'
+                    ELSE 'Compra'
+                END AS origin_label,
+
+                CASE
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'financial_obligation'
+                        THEN 'financial_obligation'
+                    ELSE 'purchase'
+                END AS category_key,
+
                 NULL AS category_id,
-                'Compra' AS category_name,
+
+                CASE
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'financial_obligation'
+                        THEN 'Obrigação Financeira'
+                    ELSE 'Compra'
+                END AS category_name,
 
                 payment.adms_daman_financial_payment_method_id
                     AS payment_method_id,
@@ -602,6 +641,11 @@ class FinancialDisbursementsRepository extends DbConnection
                 ) AS payment_method_name,
 
                 CASE
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'financial_obligation'
+                        THEN 'Obrigação Financeira'
                     WHEN purchase_document.adms_daman_nfe_id IS NOT NULL
                         THEN 'NF-e'
                     ELSE COALESCE(
@@ -737,15 +781,19 @@ class FinancialDisbursementsRepository extends DbConnection
             SELECT
                 CONCAT(
                     'direct:',
-                    direct_expense.id
+                    direct_expense.id,
+                    ':',
+                    COALESCE(allocation.id, 0)
                 ) AS row_key,
 
                 direct_expense.id AS source_sort_id,
 
                 direct_expense.expense_date AS event_date,
 
-                direct_expense.adms_daman_project_id
-                    AS project_id,
+                COALESCE(
+                    allocation.adms_daman_project_id,
+                    direct_expense.adms_daman_project_id
+                ) AS project_id,
 
                 project.name AS project_name,
 
@@ -785,17 +833,29 @@ class FinancialDisbursementsRepository extends DbConnection
                 NULL AS discount_amount,
                 direct_expense.amount AS source_total_paid,
 
-                direct_expense.amount AS amount
+                COALESCE(
+                    allocation.allocated_amount,
+                    direct_expense.amount
+                ) AS amount
 
             FROM
                 adms_daman_direct_expenses
                     AS direct_expense
 
+            LEFT JOIN
+                adms_daman_direct_expense_allocations
+                    AS allocation
+                ON allocation.adms_daman_direct_expense_id =
+                    direct_expense.id
+
             INNER JOIN
                 adms_daman_projects
                     AS project
                 ON project.id =
-                    direct_expense.adms_daman_project_id
+                    COALESCE(
+                        allocation.adms_daman_project_id,
+                        direct_expense.adms_daman_project_id
+                    )
 
             INNER JOIN
                 adms_daman_expense_categories

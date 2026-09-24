@@ -10,6 +10,19 @@ use PDO;
 class SuppliersRepository extends DbConnection
 
 {
+    /*
+     * ==========================================================
+     * TIPOS DE FORNECEDOR
+     * ==========================================================
+     *
+     * Centralizar os IDs evita espalhar números "mágicos"
+     * pelos Controllers e pelas consultas.
+     */
+    public const TYPE_SALE = 1;
+    public const TYPE_RENTAL = 2;
+    public const TYPE_SERVICE = 3;
+    public const TYPE_FINANCIAL_OBLIGATION = 4;
+
     public function getAllSuppliers(int $page = 1, int $limitResult = 10, ?array $filters = []): array|bool
     {
         $offset = max(0, ($page - 1) * $limitResult);
@@ -182,21 +195,15 @@ class SuppliersRepository extends DbConnection
             $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
             $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
 
-            // Executar a Query
+            // Executar a Query.
+            //
+            // IMPORTANTE:
+            // rowCount() pode retornar 0 quando os dados gerais do
+            // fornecedor não mudam. Isso é válido, por exemplo, quando
+            // o usuário altera somente o endereço.
             $stmt->execute();
 
-            // Receber a quantidade de linhas que foram afetadas
-            $affectedRowns = $stmt->rowCount();
-
-            //Verificar a quantidade de linhas afetadas
-            if ($affectedRowns > 0) {
-                return true;
-            } else {
-                // Chamar método para salvar o log
-                GenerateLog::generateLog("error", "Fornecedor não editado.", ['id' => $data['id']]);
-
-                return false;
-            }
+            return true;
         } catch (Exception $e) { // Acessa o catch quando houver erro no try
             // Chamar método para salvar o log
             GenerateLog::generateLog("error", "Fornecedor não editado.", ['id' => $data['id'], 'error' => $e->getMessage()]);
@@ -262,26 +269,92 @@ class SuppliersRepository extends DbConnection
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllSuppliersSelectActive(): array|bool
-    {
+    /**
+     * Recuperar fornecedores por tipo.
+     *
+     * Este método passa a ser a fonte comum para os selects de
+     * fornecedores. O tipo é informado explicitamente pelo fluxo
+     * chamador, evitando IDs fixos escondidos nas consultas.
+     *
+     * @param int  $supplierTypeId ID do tipo de fornecedor.
+     * @param bool $onlyActive     Quando true, retorna somente ativos.
+     *
+     * @return array|bool
+     */
+    public function getAllSuppliersSelectByType(
+        int $supplierTypeId,
+        bool $onlyActive = true
+    ): array|bool {
 
-        $sql = 'SELECT id, legal_name, cnpj, contact_name, phone
-        FROM adms_daman_suppliers
-        WHERE supplier_status = :supplier_status AND adms_daman_suppliers_types_id = :adms_daman_suppliers_types_id
-        ORDER BY legal_name ASC';
+        $conditions = [
+            'adms_daman_suppliers_types_id = :supplier_type_id',
+        ];
 
-        // Preparar a query
-        $stmt = $this->getConnection()->prepare($sql);
+        if ($onlyActive) {
+            $conditions[] = 'supplier_status = :supplier_status';
+        }
 
-        // Substituir link pelo valores
-        $stmt->bindValue(':supplier_status', 1, PDO::PARAM_INT);
-        $stmt->bindValue(':adms_daman_suppliers_types_id', 1, PDO::PARAM_INT);
+        $sql = '
+            SELECT
+                id,
+                legal_name,
+                trade_name,
+                cnpj,
+                contact_name,
+                phone,
+                supplier_status,
+                adms_daman_suppliers_types_id
+            FROM
+                adms_daman_suppliers
+            WHERE
+                ' . implode(' AND ', $conditions) . '
+            ORDER BY
+                legal_name ASC
+        ';
 
-        // Executar a Query
+        $stmt =
+            $this->getConnection()
+            ->prepare(
+                $sql
+            );
+
+        $stmt->bindValue(
+            ':supplier_type_id',
+            $supplierTypeId,
+            PDO::PARAM_INT
+        );
+
+        if ($onlyActive) {
+
+            $stmt->bindValue(
+                ':supplier_status',
+                1,
+                PDO::PARAM_INT
+            );
+        }
+
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(
+            PDO::FETCH_ASSOC
+        );
     }
+
+
+    /**
+     * Recuperar fornecedores ativos utilizados no fluxo de compra.
+     *
+     * Mantido com o mesmo nome para preservar compatibilidade com
+     * os Controllers já existentes em produção.
+     */
+    public function getAllSuppliersSelectActive(): array|bool
+    {
+        return $this->getAllSuppliersSelectByType(
+            self::TYPE_SALE,
+            true
+        );
+    }
+
 
     public function getAllTypesSuppliersSelect(): array|bool
     {
@@ -299,33 +372,22 @@ class SuppliersRepository extends DbConnection
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     /**
-     * Recuperar apenas o fornecedor do tipo 2 ou seja do tipo locação para preencher os selects dinamicamente
-     * 
+     * Recuperar fornecedores utilizados no fluxo de locação.
+     *
+     * IMPORTANTE:
+     * O método legado não filtrava supplier_status.
+     * Para não alterar silenciosamente o comportamento atual da
+     * produção, esse detalhe foi preservado aqui.
+     *
      * @return array|bool Fornecedor recuperado do banco de dados
      */
     public function getSupplierTypeSelect(): array|bool
     {
-        try {
-            $sql = 'SELECT ads.id, ads.trade_name
-            FROM adms_daman_suppliers AS ads
-            INNER JOIN adms_daman_suppliers_types AS adst ON adst.id = ads.adms_daman_suppliers_types_id
-            WHERE adst.id = :adms_daman_suppliers_types_id';
-
-            // Preparar a Query
-            $stmt = $this->getConnection()->prepare($sql);
-
-            // Substiruir os links pelos valores 
-            $stmt->bindValue(':adms_daman_suppliers_types_id', 2, PDO::PARAM_INT);
-
-            // Executar a Query
-            $stmt->execute();
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $err) {
-            GenerateLog::generateLog("error", "Fornecedor não encontrado", []);
-            die("Fornecedor não encontrado " . $err->getMessage());
-        }
-        return false;
+        return $this->getAllSuppliersSelectByType(
+            self::TYPE_RENTAL,
+            false
+        );
     }
 }
