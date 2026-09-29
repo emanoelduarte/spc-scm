@@ -402,6 +402,64 @@
                     true;
 
 
+                /*
+                 * ======================================================
+                 * PERMUTA
+                 * ======================================================
+                 *
+                 * Permuta não depende de uma configuração em
+                 * adms_daman_payment_method_items, pois não existe
+                 * vencimento conhecido.
+                 *
+                 * Criamos uma única parcela de controle com o valor
+                 * total do lançamento, status AP e vencimento em branco.
+                 * O próprio card já bloqueia a data e a baixa financeira
+                 * quando o status é AP.
+                 */
+                const selectedPaymentMethodText =
+                    String(
+                        paymentMethod.options[
+                            paymentMethod.selectedIndex
+                        ]?.textContent
+                        ?? ''
+                    )
+                        .trim()
+                        .toUpperCase();
+
+
+                if (
+                    selectedPaymentMethodText === 'PERMUTA'
+                ) {
+
+                    renderInstallments(
+                        [
+                            {
+                                installment_number: 1,
+                                due_date: '',
+                                original_amount:
+                                    formatMoneyInput(
+                                        totalCents
+                                    ),
+                                status: 'AP',
+                                days_after_purchase: -1,
+                                pay_on_save: 0,
+                                adms_daman_financial_payment_method_id: 0
+                            }
+                        ],
+                        false
+                    );
+
+
+                    preview.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+
+                    return;
+                }
+
+
                 const response =
                     await fetch(
                         `${endpoint}/${encodeURIComponent(

@@ -83,10 +83,50 @@ $isProrated =
 
 /*
  * Identificar a origem do lançamento.
+ *
+ * A tela atende três naturezas:
+ * - NF-e;
+ * - compra avulsa/manual;
+ * - obrigação financeira.
  */
+$documentOrigin =
+    strtoupper(
+        trim(
+            (string) (
+                $purchaseDocument['document_origin']
+                ?? ''
+            )
+        )
+    );
+
+$financialEntryType =
+    strtolower(
+        trim(
+            (string) (
+                $purchaseDocument['financial_entry_type']
+                ?? 'purchase'
+            )
+        )
+    );
+
+$isFinancialObligation =
+    $financialEntryType === 'financial_obligation'
+    ||
+    $documentOrigin === 'FINANCIAL_OBLIGATION';
+
+$isNfe =
+    !$isFinancialObligation
+    &&
+    (
+        $documentOrigin === 'NFE'
+        ||
+        !empty($purchaseDocument['adms_daman_nfe_id'])
+    );
+
 $isManual =
-    ($purchaseDocument['document_origin'] ?? '')
-    === 'MANUAL';
+    !$isNfe
+    &&
+    !$isFinancialObligation;
 
 
 /*
@@ -272,13 +312,19 @@ $difference =
         <div>
 
             <h2 class="mt-3 mb-1">
-                Lançamento de Compra
+                <?= $isFinancialObligation
+                    ? 'Obrigação Financeira'
+                    : 'Lançamento de Compra'; ?>
             </h2>
 
             <p class="text-muted">
-                <?= $isManual
-                    ? 'Detalhes do lançamento financeiro da compra avulsa'
-                    : 'Detalhes do lançamento financeiro da NF-e'; ?>
+                <?php if ($isFinancialObligation): ?>
+                    Detalhes do lançamento da obrigação financeira
+                <?php elseif ($isManual): ?>
+                    Detalhes do lançamento financeiro da compra avulsa
+                <?php else: ?>
+                    Detalhes do lançamento financeiro da NF-e
+                <?php endif; ?>
             </p>
 
         </div>
@@ -299,15 +345,15 @@ $difference =
 
             </li>
 
-            <?php if ($isManual): ?>
+            <?php if ($isNfe): ?>
 
                 <li class="breadcrumb-item">
 
                     <a
                         class="text-decoration-none"
-                        href="<?= $_ENV['URL_ADM']; ?>list-purchase-documents">
+                        href="<?= $_ENV['URL_ADM']; ?>list-nfes">
 
-                        Compras
+                        NF-e Recebidas
 
                     </a>
 
@@ -319,9 +365,9 @@ $difference =
 
                     <a
                         class="text-decoration-none"
-                        href="<?= $_ENV['URL_ADM']; ?>list-nfes">
+                        href="<?= $_ENV['URL_ADM']; ?>list-purchase-documents">
 
-                        NF-e Recebidas
+                        Compras / Contas a Pagar
 
                     </a>
 
@@ -356,7 +402,157 @@ $difference =
     <!-- DADOS DA NF-e OU COMPRA                                -->
     <!-- ====================================================== -->
 
-    <?php if ($isManual): ?>
+    <?php if ($isFinancialObligation): ?>
+
+        <!-- Card Obrigação Financeira -->
+
+        <div class="card mb-4 border-light shadow">
+
+            <div class="card-header d-flex align-items-center">
+
+                <div>
+
+                    <i class="fa-solid fa-file-invoice-dollar me-2"></i>
+
+                    <strong>
+                        Dados da Obrigação Financeira
+                    </strong>
+
+                </div>
+
+                <span class="badge bg-warning text-dark ms-auto">
+
+                    <i class="fa-solid fa-file-invoice-dollar me-1"></i>
+
+                    Obrigação Financeira
+
+                </span>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="row g-4">
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <span class="text-muted d-block mb-1">
+                            Número / Referência
+                        </span>
+
+                        <strong class="fs-5">
+
+                            <?= !empty($purchaseDocument['document_number'])
+                                ? htmlspecialchars(
+                                    (string) $purchaseDocument['document_number']
+                                )
+                                : '-'; ?>
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="col-xl-4 col-md-6">
+
+                        <span class="text-muted d-block mb-1">
+                            Fornecedor / Credor
+                        </span>
+
+                        <strong>
+
+                            <?= htmlspecialchars(
+                                (string) (
+                                    $purchaseDocument['supplier_name']
+                                    ?? '-'
+                                )
+                            ); ?>
+
+                        </strong>
+
+                        <?php if (!empty($purchaseDocument['supplier_cnpj'])): ?>
+
+                            <div class="text-muted small mt-1">
+
+                                CNPJ:
+
+                                <?= htmlspecialchars(
+                                    (string) $purchaseDocument['supplier_cnpj']
+                                ); ?>
+
+                            </div>
+
+                        <?php endif; ?>
+
+                    </div>
+
+
+                    <div class="col-xl-3 col-md-6">
+
+                        <span class="text-muted d-block mb-1">
+                            Data de Geração
+                        </span>
+
+                        <strong>
+
+                            <?php
+
+                            $obligationGenerationDate =
+                                $purchaseDocument['document_date']
+                                ?? $purchaseDocument['purchase_date']
+                                ?? null;
+
+                            if (!empty($obligationGenerationDate)) {
+
+                                echo date(
+                                    'd/m/Y',
+                                    strtotime(
+                                        (string) $obligationGenerationDate
+                                    )
+                                );
+                            } else {
+
+                                echo '-';
+                            }
+
+                            ?>
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="col-xl-2 col-md-6 text-xl-end">
+
+                        <span class="text-muted d-block mb-1">
+                            Valor da Obrigação
+                        </span>
+
+                        <strong class="fs-4 text-success">
+
+                            R$
+                            <?= number_format(
+                                (float) (
+                                    $purchaseDocument['total_value']
+                                    ?? 0
+                                ),
+                                2,
+                                ',',
+                                '.'
+                            ); ?>
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    <?php elseif ($isManual): ?>
 
         <!-- Card Compra Avulsa -->
 
@@ -713,17 +909,21 @@ $difference =
 
 
     <!-- ====================================================== -->
-    <!-- DADOS DA COMPRA                                       -->
+    <!-- DADOS DO LANÇAMENTO                                    -->
     <!-- ====================================================== -->
 
     <div class="card mb-4 border-light shadow">
 
         <div class="card-header">
 
-            <i class="fa-solid fa-cart-shopping me-2"></i>
+            <i class="fa-solid <?= $isFinancialObligation
+                                    ? 'fa-file-invoice-dollar'
+                                    : 'fa-cart-shopping'; ?> me-2"></i>
 
             <strong>
-                Dados da Compra
+                <?= $isFinancialObligation
+                    ? 'Dados do Lançamento'
+                    : 'Dados da Compra'; ?>
             </strong>
 
         </div>
@@ -806,11 +1006,13 @@ $difference =
                 </div>
 
 
-                <!-- Data Compra -->
+                <!-- Data Compra / Geração -->
                 <div class="col-xl-2 col-md-6">
 
                     <span class="text-muted d-block mb-1">
-                        Data da Compra
+                        <?= $isFinancialObligation
+                            ? 'Data de Geração'
+                            : 'Data da Compra'; ?>
                     </span>
 
                     <strong>
@@ -1735,9 +1937,13 @@ $difference =
 
                         <span class="text-muted">
 
-                            <?= $isManual
-                                ? 'Valor do Documento:'
-                                : 'Valor da NF-e:'; ?>
+                            <?php if ($isFinancialObligation): ?>
+                                Valor da Obrigação:
+                            <?php elseif ($isManual): ?>
+                                Valor do Documento:
+                            <?php else: ?>
+                                Valor da NF-e:
+                            <?php endif; ?>
 
                         </span>
 
@@ -1827,21 +2033,28 @@ $difference =
 
         </a>
 
-        <a
-            href="<?= $_ENV['URL_ADM']; ?>list-nfes"
-            class="btn btn-outline-secondary">
+        <?php if ($isNfe): ?>
 
-            <i class="fa-solid fa-file-invoice me-1"></i>
-            NF-e Recebidas
+            <a
+                href="<?= $_ENV['URL_ADM']; ?>list-nfes"
+                class="btn btn-outline-secondary">
 
-        </a>
+                <i class="fa-solid fa-file-invoice me-1"></i>
+                NF-e Recebidas
+
+            </a>
+
+        <?php endif; ?>
 
         <a
             href="<?= $_ENV['URL_ADM']; ?>list-purchase-documents"
             class="btn btn-primary">
 
             <i class="fa-solid fa-list me-1"></i>
-            Lista de Compras
+
+            <?= $isFinancialObligation
+                ? 'Compras / Contas a Pagar'
+                : 'Lista de Compras'; ?>
 
         </a>
 
@@ -1922,7 +2135,7 @@ $difference =
                             </div>
 
 
-                            <?php if (!$isManual): ?>
+                            <?php if ($isNfe): ?>
 
                                 <div class="alert alert-info">
 
@@ -1931,6 +2144,19 @@ $difference =
                                     A NF-e não será excluída nem desconferida.
                                     Ela permanecerá conferida e poderá ser
                                     lançada novamente.
+
+                                </div>
+
+                            <?php elseif ($isFinancialObligation): ?>
+
+                                <div class="alert alert-warning">
+
+                                    <i class="fa-solid fa-file-invoice-dollar me-1"></i>
+
+                                    Esta obrigação financeira será removida
+                                    do contas a pagar juntamente com suas parcelas
+                                    e seus rateios. Se ainda for devida, será
+                                    necessário cadastrá-la novamente.
 
                                 </div>
 
@@ -1952,22 +2178,37 @@ $difference =
                             <div class="mb-3">
 
                                 <strong>
-                                    Documento:
+                                    <?= $isFinancialObligation
+                                        ? 'Número / Referência:'
+                                        : 'Documento:'; ?>
                                 </strong>
 
-                                <?= htmlspecialchars(
-                                    trim(
+                                <?php if ($isFinancialObligation): ?>
+
+                                    <?= htmlspecialchars(
                                         (string) (
-                                            $purchaseDocument['document_type']
-                                            ?? ''
-                                        )
-                                        . ' '
-                                        . (
                                             $purchaseDocument['document_number']
-                                            ?? ''
+                                            ?? '-'
                                         )
-                                    )
-                                ); ?>
+                                    ); ?>
+
+                                <?php else: ?>
+
+                                    <?= htmlspecialchars(
+                                        trim(
+                                            (string) (
+                                                $purchaseDocument['document_type']
+                                                ?? ''
+                                            )
+                                            . ' '
+                                            . (
+                                                $purchaseDocument['document_number']
+                                                ?? ''
+                                            )
+                                        )
+                                    ); ?>
+
+                                <?php endif; ?>
 
                             </div>
 

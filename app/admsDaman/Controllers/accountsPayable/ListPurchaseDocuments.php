@@ -117,7 +117,8 @@ class ListPurchaseDocuments
                     ),
                 $this->limitResult,
                 $page,
-                'list-purchase-documents'
+                'list-purchase-documents',
+                $filters
             );
 
         /*

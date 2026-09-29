@@ -319,7 +319,8 @@ class PurchaseDocumentsRepository extends DbConnection
 
                     ELSE 'AV'
 
-                END = :installment_status
+                END COLLATE utf8mb4_unicode_ci
+                    = :installment_status COLLATE utf8mb4_unicode_ci
             ";
 
                 $params['installment_status'] =
@@ -845,7 +846,8 @@ class PurchaseDocumentsRepository extends DbConnection
 
                     ELSE 'AV'
 
-                END = :installment_status
+                END COLLATE utf8mb4_unicode_ci
+                    = :installment_status COLLATE utf8mb4_unicode_ci
             ";
 
                 $params['installment_status'] =
@@ -2181,7 +2183,8 @@ class PurchaseDocumentsRepository extends DbConnection
 
                         ELSE 'AV'
 
-                    END = :installment_status
+                    END COLLATE utf8mb4_unicode_ci
+                    = :installment_status COLLATE utf8mb4_unicode_ci
                 ";
 
                 $params['installment_status'] =
@@ -2945,7 +2948,8 @@ class PurchaseDocumentsRepository extends DbConnection
 
                             ELSE 'AV'
 
-                        END = :installment_status
+                        END COLLATE utf8mb4_unicode_ci
+                    = :installment_status COLLATE utf8mb4_unicode_ci
                     ";
 
                     $params['installment_status'] =

@@ -128,7 +128,7 @@ class CreateManualPurchaseDocument
 
         $this->data['getAllSuppliersSelectActive'] =
             $suppliersRepository
-            ->getAllSuppliersSelectActive();
+            ->getAllSuppliersSelect();
 
         /*
          * =====================================================
