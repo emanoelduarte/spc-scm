@@ -13,71 +13,177 @@ class DirectExpenseService
     /**
      * Criar uma despesa direta já realizada.
      */
-    public function create(array $data): int
-    {
-        $expenseDate = trim((string) ($data['expense_date'] ?? ''));
+    public function create(
+        array $data
+    ): int {
 
-        if (!$this->isValidDate($expenseDate)) {
+        $data =
+            $this->prepareData(
+                $data
+            );
+
+
+        $repository =
+            new DirectExpensesRepository();
+
+
+        return
+            $repository->create(
+                $data
+            );
+    }
+
+    /**
+     * Preparar e validar os dados utilizados
+     * tanto na criação quanto na edição.
+     */
+    private function prepareData(
+        array $data
+    ): array {
+
+        /*
+     * =====================================================
+     * DATA
+     * =====================================================
+     */
+        $expenseDate =
+            trim(
+                (string) (
+                    $data['expense_date']
+                    ?? ''
+                )
+            );
+
+
+        if (
+            !$this->isValidDate(
+                $expenseDate
+            )
+        ) {
+
             throw new InvalidArgumentException(
                 'Informe uma data de desembolso válida.'
             );
         }
 
-        if ($expenseDate > date('Y-m-d')) {
+
+        if (
+            $expenseDate
+            >
+            date('Y-m-d')
+        ) {
+
             throw new InvalidArgumentException(
                 'A data do desembolso não pode ser futura.'
             );
         }
 
-        $projectId = (int) ($data['adms_daman_project_id'] ?? 0);
+
+        /*
+     * =====================================================
+     * OBRA
+     * =====================================================
+     */
+        $projectId =
+            (int) (
+                $data['adms_daman_project_id']
+                ?? 0
+            );
+
 
         if ($projectId <= 0) {
+
             throw new InvalidArgumentException(
                 'Selecione a obra.'
             );
         }
 
-        $amount = $this->normalizeMoney($data['amount'] ?? '');
-        $amountCents = $this->decimalToCents($amount);
+
+        /*
+     * =====================================================
+     * VALOR
+     * =====================================================
+     */
+        $amount =
+            $this->normalizeMoney(
+                $data['amount']
+                    ?? ''
+            );
+
+
+        $amountCents =
+            $this->decimalToCents(
+                $amount
+            );
+
 
         if ($amountCents <= 0) {
+
             throw new InvalidArgumentException(
                 'O valor da despesa deve ser maior que zero.'
             );
         }
 
-        $hasProration = !empty($data['has_proration']);
-
-        $allocations = $this->prepareAllocations(
-            $data['allocations'] ?? [],
-            $projectId,
-            $amount,
-            $hasProration
-        );
 
         /*
-         * O campo principal continua existindo por compatibilidade.
-         * Mesmo quando houver rateio, a obra escolhida no campo
-         * principal permanece como a obra de referência do lançamento.
-         * O rateio apenas distribui o valor entre as obras participantes.
-         */
-        $data['adms_daman_project_id'] = $projectId;
+     * =====================================================
+     * RATEIO
+     * =====================================================
+     */
+        $hasProration =
+            !empty($data['has_proration']);
 
-        $data['expense_date'] = $expenseDate;
-        $data['amount'] = $amount;
-        $data['allocations'] = $allocations;
 
-        $data['description'] = trim(
-            (string) ($data['description'] ?? '')
-        );
+        $allocations =
+            $this->prepareAllocations(
+                $data['allocations']
+                    ?? [],
+                $projectId,
+                $amount,
+                $hasProration
+            );
 
-        $data['observation'] = trim(
-            (string) ($data['observation'] ?? '')
-        );
 
-        $repository = new DirectExpensesRepository();
+        /*
+     * =====================================================
+     * DADOS NORMALIZADOS
+     * =====================================================
+     */
+        $data['adms_daman_project_id'] =
+            $projectId;
 
-        return $repository->create($data);
+
+        $data['expense_date'] =
+            $expenseDate;
+
+
+        $data['amount'] =
+            $amount;
+
+
+        $data['allocations'] =
+            $allocations;
+
+
+        $data['description'] =
+            trim(
+                (string) (
+                    $data['description']
+                    ?? ''
+                )
+            );
+
+
+        $data['observation'] =
+            trim(
+                (string) (
+                    $data['observation']
+                    ?? ''
+                )
+            );
+
+
+        return $data;
     }
 
 
@@ -168,8 +274,8 @@ class DirectExpenseService
 
             throw new InvalidArgumentException(
                 'A soma do rateio deve ser igual ao valor da despesa. '
-                . 'Diferença: R$ '
-                . number_format($difference, 2, ',', '.')
+                    . 'Diferença: R$ '
+                    . number_format($difference, 2, ',', '.')
             );
         }
 
@@ -228,5 +334,56 @@ class DirectExpenseService
         return
             $dateObject !== false
             && $dateObject->format('Y-m-d') === $date;
+    }
+
+    /**
+     * Atualizar uma despesa direta.
+     */
+    public function update(
+        int $directExpenseId,
+        array $data
+    ): bool {
+
+        if ($directExpenseId <= 0) {
+
+            throw new InvalidArgumentException(
+                'Despesa direta inválida.'
+            );
+        }
+
+
+        /*
+     * Reutilizar exatamente as mesmas regras
+     * aplicadas na criação.
+     */
+        $data =
+            $this->prepareData(
+                $data
+            );
+
+
+        $repository =
+            new DirectExpensesRepository();
+
+
+        if (
+            $repository->getById(
+                $directExpenseId
+            )
+            ===
+            null
+        ) {
+
+            throw new InvalidArgumentException(
+                'Despesa direta não encontrada.'
+            );
+        }
+
+
+        return
+            $repository->update(
+                $directExpenseId,
+                $data
+            );
     }
 }

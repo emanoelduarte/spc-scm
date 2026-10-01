@@ -40,6 +40,14 @@
                     </a>
                 <?php endif; ?>
 
+                <?php if (in_array('ListNfes', $menuPermission)) : ?>
+                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-nfes')) ? 'active' : '' ?>"
+                        href="<?php echo $_ENV['URL_ADM'] ?>list-nfes">
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-receipt"></i></div>
+                        NF-e
+                    </a>
+                <?php endif; ?>
+
                 <?php
 
                 /*
@@ -195,12 +203,79 @@
 
                 <?php endif; ?>
 
-                <?php if (in_array('ListNfes', $menuPermission)) : ?>
-                    <a class="nav-link <?= (($this->data['menu'] ?? false) and ($this->data['menu'] == 'list-nfes')) ? 'active' : '' ?>"
-                        href="<?php echo $_ENV['URL_ADM'] ?>list-nfes">
-                        <div class="sb-nav-link-icon"><i class="fa-solid fa-receipt"></i></div>
-                        NF-e
+                <?php
+
+                /*
+                * Verificar se alguma página de relatório financeiro
+                * está ativa para manter o menu aberto.
+                */
+                $financeReportsMenuActive = in_array(
+                    $this->data['menu'] ?? '',
+                    [
+                        'reports-accounts-payable',
+                        'payment-provision',
+                    ]
+                );
+
+
+                /*
+                * Exibir o grupo de relatório financeiro somente se o usuário
+                * possuir acesso a pelo menos uma página do módulo.
+                */
+                $showFinanceReportsGroup = array_intersect(
+                    [
+                        'ReportsAccountsPayable',
+                        'PaymentProvision',
+                    ],
+                    $menuPermission
+                );
+
+                ?>
+
+                <?php if (!empty($showFinanceReportsGroup)) : ?>
+
+                    <!-- MENU PAI -->
+                    <a
+                        class="nav-link collapsed <?= $financeReportsMenuActive ? 'active' : ''; ?>"
+                        href="#collapseReportsFinanceiro"
+                        data-bs-toggle="collapse"
+                        aria-expanded="<?= $financeReportsMenuActive ? 'true' : 'false'; ?>"
+                        aria-controls="collapseReportsFinanceiro">
+                        <div class="sb-nav-link-icon"> <i class="fa-solid fa-chart-simple"></i> </div>
+                        Relatórios
+                        <div class="sb-sidenav-collapse-arrow"> <i class="fas fa-angle-down"></i> </div>
                     </a>
+
+
+                    <!-- SUBITENS -->
+                    <div
+                        class="collapse <?= $financeReportsMenuActive ? 'show' : ''; ?>" id="collapseReportsFinanceiro">
+
+                        <nav class="sb-sidenav-menu-nested nav">
+
+                            <?php if (in_array('ReportsAccountsPayable', $menuPermission)) : ?>
+                                <a
+                                    class="nav-link <?= (($this->data['menu'] ?? '') === 'reports-accounts-payable') ? 'active' : ''; ?>"
+                                    href="<?= $_ENV['URL_ADM']; ?>reports-accounts-payable">
+                                    <div class="sb-nav-link-icon"> <i class="fa-solid fa-chart-pie"></i> </div>
+                                    Por Fornecedor / Obra
+                                </a>
+                            <?php endif; ?>
+
+                            <?php if (in_array('PaymentProvision', $menuPermission)) : ?>
+                                <a
+                                    class="nav-link <?= (($this->data['menu'] ?? '') === 'payment-provision') ? 'active' : ''; ?>"
+                                    href="<?= $_ENV['URL_ADM']; ?>payment-provision">
+                                    <div class="sb-nav-link-icon"> <i class="fa-solid fa-calendar-days"></i> </div>
+                                    Previsão de Pagamento
+                                </a>
+                            <?php endif; ?>
+                        </nav>
+                    </div>
+
+                    </a>
+
+
                 <?php endif; ?>
 
                 <?php if (in_array('ListProjects', $menuPermission)) : ?>

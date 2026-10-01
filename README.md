@@ -46,25 +46,6 @@ Instalar a biblioteca gerenciar variáveis de ambiente
 ```
 composer require vlucas/phpdotenv
 ```
-Instalar a biblioteca responsável pela comunicação com a SEFAZ e operações relacionadas à NF-e:
-```
-composer require nfephp-org/sped-nfe
-```
-
-### Instalar biblioteca para geração do DANFE
-Verificar se as extensões PHP necessárias estão habilitadas: 
-````
-php -m | findstr /I "dom gd mbstring"
-```
-Verificar a versão do pacote comum utilizado pelo NFePHP:
-```
-composer show nfephp-org/sped-common
-```
-Instalar a biblioteca responsável pela geração de DANFE e outros documentos auxiliares do SPED:
-```
-composer require nfephp-org/sped-da:^1.1
-```
-
 Instalar a biblioteca para criar/executar migrations e seed.
 ```
 composer require robmorgan/phinx
@@ -123,8 +104,29 @@ Instalar a biblioteca domPdf
 ```
 composer require dompdf/dompdf
 ```
+Instalar a biblioteca responsável pela comunicação com a SEFAZ e operações relacionadas à NF-e:
+```
+composer require nfephp-org/sped-nfe
+```
 
-## Como usar o GitHub
+### Instalar biblioteca para geração do DANFE
+Verificar se as extensões PHP necessárias estão habilitadas: 
+````
+php -m | findstr /I "dom gd mbstring"
+```
+Verificar a versão do pacote comum utilizado pelo NFePHP:
+```
+composer show nfephp-org/sped-common
+```
+Instalar a biblioteca responsável pela geração de DANFE e outros documentos auxiliares do SPED:
+```
+composer require nfephp-org/sped-da:^1.1
+```
+Instalar a biblioteca do php responsável por geração criação de arquivos de planilhas para gerar o relatório
+```
+composer require phpoffice/phpspreadsheet
+```
+### Como Usar o git
 Baixar os arquivos do Git.
 ```
 git clone --branch <branch_name> <repository_url> .

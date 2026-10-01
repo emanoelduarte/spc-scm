@@ -33,6 +33,104 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_access_level_permission
         <div class="card-body">
             <?php // Incluir arquivo rsponsável por alerta
             include './app/admsDaman/Views/partials/alerts.php';
+            ?>
+
+            <?php
+
+            $groups = [];
+
+            foreach (
+                $this->data['pages'] ?? []
+                as $page
+            ) {
+
+                if (
+                    !empty($page['group_id'])
+                    &&
+                    !empty($page['group_name'])
+                ) {
+
+                    $groups[(int) $page['group_id']] =
+                        $page['group_name'];
+                }
+            }
+
+            ?>
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-7">
+
+                    <label
+                        for="pagePermissionSearch"
+                        class="form-label">
+
+                        Pesquisar página
+
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                        </span>
+
+                        <input
+                            type="text"
+                            id="pagePermissionSearch"
+                            class="form-control"
+                            placeholder="Nome, controller, rota ou observação...">
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-5">
+
+                    <label
+                        for="pagePermissionGroup"
+                        class="form-label">
+
+                        Grupo
+
+                    </label>
+
+                    <select
+                        id="pagePermissionGroup"
+                        class="form-select">
+
+                        <option value="">
+
+                            Todos os grupos
+
+                        </option>
+
+                        <?php foreach (
+                            $groups
+                            as $groupId => $groupName
+                        ): ?>
+
+                            <option
+                                value="<?= (int) $groupId; ?>">
+
+                                <?= htmlspecialchars(
+                                    $groupName
+                                ); ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <?php
 
             // Acessa o IF quando encontrar páginas no array de pages
             if ($this->data['pages'] ?? false) {
@@ -44,51 +142,154 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_access_level_permission
                     <input type="hidden" name="adms_daman_access_level_id" value="<?= ($this->data['accessLevel']['id'] ?? '') ?>">
 
 
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-hover permission-table">
                         <thead>
+
                             <tr>
-                                <th scope="col">Liberado</th>
-                                <th scope="col">Página</th>
-                                <th scope="col">Nome</th>
-                                <th scope="col" class="d-none d-md-table-cell">Observação</th>
-                                <th scope="col" class="d-none d-md-table-cell">Pública / Privada</th>
+                                <th scope="col"> Liberado </th>
+                                <th scope="col"> ID </th>
+                                <th scope="col"> Página </th>
+                                <th scope="col"> Grupo </th>
+                                <th scope="col" class="d-none d-md-table-cell"> Observação </th>
+                                <th scope="col" class="d-none d-md-table-cell"> Pública / Privada </th>
                             </tr>
+
                         </thead>
                         <tbody>
 
                             <?php
-                            // Percorrer o array de páginas
-                            foreach ($this->data['pages'] as $page) {
-                                extract($page);
+
+                            $currentGroupId = null;
+
+                            $accessLevelsPages =
+                                $this->data['accessLevelsPages']
+                                ? $this->data['accessLevelsPages']
+                                : [];
+
+
+                            foreach ($this->data['pages'] as $page):
+                                $id = (int) $page['id'];
+                                $name = $page['name'] ?? '';
+                                $controller = $page['controller'] ?? '';
+                                $controllerUrl = $page['controller_url'] ?? '';
+                                $obs = $page['obs'] ?? '';
+                                $publicPage = (bool) ($page['public_page'] ?? false);
+                                $groupId = (int) ($page['group_id'] ?? 0);
+                                $groupName = $page['group_name'] ?? 'Sem Grupo';
+
+
+                                /*
+                                * =====================================================
+                                * CABEÇALHO DO GRUPO
+                                * =====================================================
+                                */
+                                if (
+                                    $currentGroupId
+                                    !==
+                                    $groupId
+                                ):
+
+                                    $currentGroupId =
+                                        $groupId;
+
                             ?>
-                                <tr>
+
+                                    <tr class="permission-group-row" data-group-header="<?= $groupId; ?>">
+
+                                        <td colspan="6" class="fw-bold">
+                                            <i class="fa-solid fa-folder-open me-2"> </i>
+                                            <?= htmlspecialchars($groupName); ?>
+                                        </td>
+                                    </tr>
+
+                                <?php
+
+                                endif;
+
+
+                                /*
+                                * =====================================================
+                                * PERMISSÃO
+                                * =====================================================
+                                */
+                                $checked = in_array($id, $accessLevelsPages) || $publicPage ? 'checked' : '';
+                                $disabled = $publicPage ? 'disabled' : '';
+
+                                ?>
+
+                                <tr class="permission-page-row" data-group="<?= $groupId; ?>" data-search="<?= htmlspecialchars(
+                                                                                                                strtolower($name . ' ' . $controller . ' ' . $controllerUrl . ' ' . $obs . ' ' . $groupName),
+                                                                                                                ENT_QUOTES,
+                                                                                                                'UTF-8'
+                                                                                                            ); ?>">
                                     <td>
 
-                                        <?php
-                                        // Sempre deve ser um array, caso retorne falso, ainda assim transforma em array vazio
-                                        $accessLevelsPages = $this->data['accessLevelsPages'] ? $this->data['accessLevelsPages'] : [];
+                                        <div class="form-check form-switch">
+                                            <input
+                                                type="checkbox"
+                                                name="accessLevelPage[<?= $id; ?>]"
+                                                class="form-check-input"
+                                                role="switch"
+                                                id="accessLevelPage<?= $id; ?>"
+                                                value="<?= $id; ?>"
+                                                <?= $checked; ?>
+                                                <?= $disabled; ?>>
 
-                                        // Verificar se a página Atual ($id) está no array de páginas
-                                        $checked = in_array($id, $accessLevelsPages) || $public_page ? 'checked' : '';
-
-                                        $disabled = $public_page ? 'disabled' : '';
-
-                                        echo "<div class='form-check form-switch'>";
-                                        echo "<input type='checkbox' name='accessLevelPage[$id]' class='form-check-input' role='switch' id='accessLevelPage$id' value='$id' {$checked} {$disabled}>";
-                                        echo " <label class='form-check-label' for='accessLevelPage$id'></label>";
-                                        echo "</div>";
-
-                                        ?>
-
+                                            <label
+                                                class="form-check-label"
+                                                for="accessLevelPage<?= $id; ?>">
+                                            </label>
+                                        </div>
                                     </td>
-                                    <td><?= $id ?></td>
-                                    <td><?= $name ?></td>
-                                    <td class="d-none d-md-table-cell"><?= $obs ?></td>
+
+
+                                    <td>
+                                        <?= $id; ?>
+                                    </td>
+
+
+                                    <td>
+                                        <div class="fw-semibold">
+                                            <?= htmlspecialchars(
+                                                $name
+                                            ); ?>
+
+                                        </div>
+                                        <div class="text-muted small">
+                                            <?= htmlspecialchars(
+                                                $controllerUrl
+                                            ); ?>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge text-bg-secondary">
+                                            <?= htmlspecialchars($groupName); ?>
+                                        </span>
+                                    </td>
+
+
                                     <td class="d-none d-md-table-cell">
-                                        <?php echo $public_page ? "<span class='badge text-bg-success'>Pública</span>" : "<span class='badge text-bg-danger'>Privada</span>";; ?>
+                                        <?= htmlspecialchars($obs); ?>
+                                    </td>
+
+                                    <td class="d-none d-md-table-cell">
+                                        <?php if ($publicPage): ?>
+                                            <span class="badge text-bg-success">
+                                                Pública
+                                            </span>
+
+                                        <?php else: ?>
+                                            <span class="badge text-bg-danger">
+                                                Privada
+                                            </span>
+
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
-                            <?php } ?>
+
+                            <?php endforeach; ?>
+
                         </tbody>
                     </table>
 
@@ -105,4 +306,140 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_update_access_level_permission
             ?>
         </div>
     </div>
+
+    <script>
+        document.addEventListener(
+            'DOMContentLoaded',
+            function() {
+
+                const searchInput =
+                    document.getElementById(
+                        'pagePermissionSearch'
+                    );
+
+                const groupSelect =
+                    document.getElementById(
+                        'pagePermissionGroup'
+                    );
+
+                const pageRows =
+                    document.querySelectorAll(
+                        '.permission-page-row'
+                    );
+
+                const groupRows =
+                    document.querySelectorAll(
+                        '.permission-group-row'
+                    );
+
+
+                function normalizeText(text) {
+
+                    return text
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(
+                            /[\u0300-\u036f]/g,
+                            ''
+                        );
+                }
+
+
+                function filterPages() {
+
+                    const search =
+                        normalizeText(
+                            searchInput.value.trim()
+                        );
+
+                    const selectedGroup =
+                        groupSelect.value;
+
+
+                    /*
+                     * Guardar quantas páginas ficaram
+                     * visíveis em cada grupo.
+                     */
+                    const visibleGroups = {};
+
+
+                    pageRows.forEach(
+                        function(row) {
+
+                            const rowGroup =
+                                row.dataset.group;
+
+                            const rowSearch =
+                                normalizeText(
+                                    row.dataset.search ??
+                                    ''
+                                );
+
+
+                            const matchesSearch =
+                                search === '' ||
+                                rowSearch.includes(
+                                    search
+                                );
+
+
+                            const matchesGroup =
+                                selectedGroup === '' ||
+                                rowGroup ===
+                                selectedGroup;
+
+
+                            const visible =
+                                matchesSearch &&
+                                matchesGroup;
+
+
+                            row.style.display =
+                                visible ?
+                                '' :
+                                'none';
+
+
+                            if (visible) {
+
+                                visibleGroups[rowGroup] =
+                                    true;
+                            }
+                        }
+                    );
+
+
+                    /*
+                     * Mostrar apenas cabeçalhos de grupos
+                     * que ainda possuem páginas visíveis.
+                     */
+                    groupRows.forEach(
+                        function(row) {
+
+                            const groupId =
+                                row.dataset.groupHeader;
+
+
+                            row.style.display =
+                                visibleGroups[groupId] ?
+                                '' :
+                                'none';
+                        }
+                    );
+                }
+
+
+                searchInput.addEventListener(
+                    'input',
+                    filterPages
+                );
+
+
+                groupSelect.addEventListener(
+                    'change',
+                    filterPages
+                );
+            }
+        );
+    </script>
 </div>

@@ -59,34 +59,34 @@ $buildPaginationUrl =
             array_filter(
                 [
                     'page' =>
-                        $page,
+                    $page,
 
                     'project_id' =>
-                        $filters['project_id']
+                    $filters['project_id']
                         ?? null,
 
                     'category_id' =>
-                        $filters['category_id']
+                    $filters['category_id']
                         ?? null,
 
                     'payment_method_id' =>
-                        $filters['payment_method_id']
+                    $filters['payment_method_id']
                         ?? null,
 
                     'date_start' =>
-                        $filters['date_start']
+                    $filters['date_start']
                         ?? null,
 
                     'date_end' =>
-                        $filters['date_end']
+                    $filters['date_end']
                         ?? null,
 
                     'description' =>
-                        $filters['description']
+                    $filters['description']
                         ?? null,
                 ],
                 static fn($value): bool =>
-                    $value !== null
+                $value !== null
                     &&
                     $value !== ''
             );
@@ -402,9 +402,9 @@ $getPaginationPages =
                         class="form-control"
                         placeholder="Pesquisar descrição..."
                         value="<?= htmlspecialchars(
-                            $filters['description']
-                            ?? ''
-                        ); ?>">
+                                    $filters['description']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -425,9 +425,9 @@ $getPaginationPages =
                         id="date_start"
                         class="form-control"
                         value="<?= htmlspecialchars(
-                            $filters['date_start']
-                            ?? ''
-                        ); ?>">
+                                    $filters['date_start']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -448,9 +448,9 @@ $getPaginationPages =
                         id="date_end"
                         class="form-control"
                         value="<?= htmlspecialchars(
-                            $filters['date_end']
-                            ?? ''
-                        ); ?>">
+                                    $filters['date_end']
+                                        ?? ''
+                                ); ?>">
 
                 </div>
 
@@ -633,6 +633,10 @@ $getPaginationPages =
                                     Valor
                                 </th>
 
+                                <th class="text-center text-nowrap" style="width: 110px;">
+                                    Ações
+                                </th>
+
                             </tr>
 
                         </thead>
@@ -646,9 +650,7 @@ $getPaginationPages =
 
                                     <td class="text-nowrap">
 
-                                        <?= !empty(
-                                            $expense['expense_date']
-                                        )
+                                        <?= !empty($expense['expense_date'])
                                             ? date(
                                                 'd/m/Y',
                                                 strtotime(
@@ -664,7 +666,7 @@ $getPaginationPages =
 
                                         <?= htmlspecialchars(
                                             $expense['project_name']
-                                            ?? '-'
+                                                ?? '-'
                                         ); ?>
 
                                     </td>
@@ -676,7 +678,7 @@ $getPaginationPages =
 
                                             <?= htmlspecialchars(
                                                 $expense['category_name']
-                                                ?? '-'
+                                                    ?? '-'
                                             ); ?>
 
                                         </span>
@@ -690,15 +692,13 @@ $getPaginationPages =
 
                                             <?= htmlspecialchars(
                                                 $expense['description']
-                                                ?? '-'
+                                                    ?? '-'
                                             ); ?>
 
                                         </div>
 
 
-                                        <?php if (!empty(
-                                            $expense['observation']
-                                        )): ?>
+                                        <?php if (!empty($expense['observation'])): ?>
 
                                             <div class="small text-muted">
 
@@ -717,7 +717,7 @@ $getPaginationPages =
 
                                         <?= htmlspecialchars(
                                             $expense['payment_method_name']
-                                            ?? '-'
+                                                ?? '-'
                                         ); ?>
 
                                     </td>
@@ -738,6 +738,38 @@ $getPaginationPages =
 
                                     </td>
 
+                                    <td class="text-center text-nowrap">
+
+                                        <div
+                                            class="d-inline-flex align-items-center gap-1">
+
+                                            <!-- EDITAR -->
+                                            <a
+                                                href="<?= $_ENV['URL_ADM']; ?>edit-direct-expense/<?= (int) $expense['id']; ?>"
+                                                class="btn btn-sm btn-outline-primary"
+                                                title="Editar despesa"
+                                                aria-label="Editar despesa">
+
+                                                <i class="fa-solid fa-pen"></i>
+
+                                            </a>
+
+
+                                            <!-- CANCELAR -->
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                title="Cancelar despesa"
+                                                aria-label="Cancelar despesa"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#cancelDirectExpenseModal<?= (int) $expense['id']; ?>">
+
+                                                <i class="fa-solid fa-trash"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
                                 </tr>
 
                             <?php endforeach; ?>
@@ -747,6 +779,280 @@ $getPaginationPages =
                     </table>
 
                 </div>
+
+
+                <!-- ====================================================== -->
+                <!-- MODAIS DE CANCELAMENTO                                 -->
+                <!-- ====================================================== -->
+
+                <?php foreach ($directExpenses as $expense): ?>
+
+                    <div
+                        class="modal fade"
+                        id="cancelDirectExpenseModal<?= (int) $expense['id']; ?>"
+                        tabindex="-1"
+                        aria-labelledby="cancelDirectExpenseModalLabel<?= (int) $expense['id']; ?>"
+                        aria-hidden="true">
+
+                        <div class="modal-dialog modal-dialog-centered">
+
+                            <div class="modal-content">
+
+
+                                <!-- ================================================== -->
+                                <!-- CABEÇALHO                                          -->
+                                <!-- ================================================== -->
+
+                                <div class="modal-header">
+
+                                    <h5
+                                        class="modal-title"
+                                        id="cancelDirectExpenseModalLabel<?= (int) $expense['id']; ?>">
+
+                                        <i
+                                            class="fa-solid
+                               fa-triangle-exclamation
+                               text-danger
+                               me-1">
+                                        </i>
+
+                                        Cancelar Despesa Direta
+
+                                    </h5>
+
+
+                                    <button
+                                        type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Fechar">
+                                    </button>
+
+                                </div>
+
+
+                                <!-- ================================================== -->
+                                <!-- FORMULÁRIO                                         -->
+                                <!-- ================================================== -->
+
+                                <form
+                                    method="POST"
+                                    action="<?= $_ENV['URL_ADM']; ?>cancel-direct-expense/<?= (int) $expense['id']; ?>">
+
+
+                                    <div class="modal-body">
+
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="<?= htmlspecialchars(
+                                                        \App\admsDaman\Helpers\CSRFHelper::generateCSRFToken(
+                                                            'form_cancel_direct_expense_'
+                                                                . (int) $expense['id']
+                                                        )
+                                                    ); ?>">
+
+
+                                        <!-- ================================================== -->
+                                        <!-- AVISO                                              -->
+                                        <!-- ================================================== -->
+
+                                        <div class="alert alert-warning">
+
+                                            <div class="fw-semibold mb-1">
+
+                                                Esta ação retirará a despesa dos totais
+                                                e relatórios ativos.
+
+                                            </div>
+
+                                            <div class="small">
+
+                                                O lançamento não será apagado fisicamente
+                                                e permanecerá registrado para fins de histórico.
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- ================================================== -->
+                                        <!-- DADOS                                              -->
+                                        <!-- ================================================== -->
+
+                                        <div class="border rounded p-3 mb-3">
+
+                                            <div class="row g-2">
+
+
+                                                <div class="col-12">
+
+                                                    <div class="text-muted small">
+                                                        Descrição
+                                                    </div>
+
+                                                    <div class="fw-semibold">
+
+                                                        <?= htmlspecialchars(
+                                                            $expense['description']
+                                                                ?? '-'
+                                                        ); ?>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="col-md-6">
+
+                                                    <div class="text-muted small">
+                                                        Obra
+                                                    </div>
+
+                                                    <div>
+
+                                                        <?= htmlspecialchars(
+                                                            $expense['project_name']
+                                                                ?? '-'
+                                                        ); ?>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="col-md-6">
+
+                                                    <div class="text-muted small">
+                                                        Data
+                                                    </div>
+
+                                                    <div>
+
+                                                        <?= !empty($expense['expense_date'])
+                                                            ? date(
+                                                                'd/m/Y',
+                                                                strtotime(
+                                                                    $expense['expense_date']
+                                                                )
+                                                            )
+                                                            : '-'; ?>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="col-12">
+
+                                                    <div class="text-muted small">
+                                                        Valor
+                                                    </div>
+
+                                                    <div class="fw-bold">
+
+                                                        R$
+                                                        <?= number_format(
+                                                            (float) (
+                                                                $expense['amount']
+                                                                ?? 0
+                                                            ),
+                                                            2,
+                                                            ',',
+                                                            '.'
+                                                        ); ?>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <!-- ================================================== -->
+                                        <!-- MOTIVO                                             -->
+                                        <!-- ================================================== -->
+
+                                        <div>
+
+                                            <label
+                                                for="cancellation_reason_<?= (int) $expense['id']; ?>"
+                                                class="form-label">
+
+                                                Motivo do cancelamento
+
+                                                <span class="text-danger">
+                                                    *
+                                                </span>
+
+                                            </label>
+
+
+                                            <textarea
+                                                class="form-control"
+                                                id="cancellation_reason_<?= (int) $expense['id']; ?>"
+                                                name="cancellation_reason"
+                                                rows="3"
+                                                maxlength="500"
+                                                placeholder="Informe por que este lançamento está sendo cancelado..."
+                                                required></textarea>
+
+
+                                            <div class="form-text">
+
+                                                O motivo ficará registrado junto ao lançamento.
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- ================================================== -->
+                                    <!-- AÇÕES                                              -->
+                                    <!-- ================================================== -->
+
+                                    <div class="modal-footer">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+
+                                            Voltar
+
+                                        </button>
+
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger">
+
+                                            <i
+                                                class="fa-solid
+                                   fa-ban
+                                   me-1">
+                                            </i>
+
+                                            Confirmar Cancelamento
+
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <?php endforeach; ?>
 
 
                 <?php if ($totalPages > 1): ?>
@@ -767,12 +1073,12 @@ $getPaginationPages =
                                 <a
                                     class="page-link"
                                     href="<?= $currentPage > 1
-                                        ? htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $currentPage - 1
-                                            )
-                                        )
-                                        : '#'; ?>">
+                                                ? htmlspecialchars(
+                                                    $buildPaginationUrl(
+                                                        $currentPage - 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
 
                                     Anterior
 
@@ -798,10 +1104,10 @@ $getPaginationPages =
                                     <a
                                         class="page-link"
                                         href="<?= htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $pageNumber
-                                            )
-                                        ); ?>">
+                                                    $buildPaginationUrl(
+                                                        $pageNumber
+                                                    )
+                                                ); ?>">
 
                                         <?= $pageNumber; ?>
 
@@ -821,12 +1127,12 @@ $getPaginationPages =
                                 <a
                                     class="page-link"
                                     href="<?= $currentPage < $totalPages
-                                        ? htmlspecialchars(
-                                            $buildPaginationUrl(
-                                                $currentPage + 1
-                                            )
-                                        )
-                                        : '#'; ?>">
+                                                ? htmlspecialchars(
+                                                    $buildPaginationUrl(
+                                                        $currentPage + 1
+                                                    )
+                                                )
+                                                : '#'; ?>">
 
                                     Próxima
 

@@ -296,12 +296,35 @@ class PagesRepository extends DbConnection
     {
 
         // QUERY para recuperar os registros do banco de dados
-        $sql = 'SELECT ap.id, ap.name, ap.obs, ap.page_status, ap.public_page,
-                app.name AS app_name
+        $sql = "SELECT
+                    ap.id,
+                    ap.name,
+                    ap.controller,
+                    ap.controller_url,
+                    ap.obs,
+                    ap.page_status,
+                    ap.public_page,
+
+                    app.name AS app_name,
+
+                    agp.id AS group_id,
+                    agp.name AS group_name
+
                 FROM adms_daman_pages AS ap
-                INNER JOIN adms_daman_packages_pages AS app ON app.id=ap.adms_daman_packages_page_id 
-                WHERE ap.page_status = :page_status
-                ORDER BY ap.name ASC';
+
+                INNER JOIN adms_daman_packages_pages AS app
+                    ON app.id = ap.adms_daman_packages_page_id
+
+                INNER JOIN adms_daman_groups_pages AS agp
+                    ON agp.id = ap.adms_daman_groups_page_id
+
+                WHERE
+                    ap.page_status = :page_status
+
+                ORDER BY
+                    agp.name ASC,
+                    ap.name ASC
+            ";
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);
