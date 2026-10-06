@@ -5,7 +5,7 @@ namespace App\admsDaman\Controllers\projects;
 use App\admsDaman\Controllers\Services\Validation\ValidationUserProjectAssociateService;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
-use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\UsersProjectsRepository;
 
 class UpdateUserProjectAssociate
 {
@@ -46,8 +46,8 @@ class UpdateUserProjectAssociate
     private function editUserProjectAssociate(): void
     {
         // Instanciar a classe que valida os dados do formulário com Rakit
-        $validationUserAccessLevel = new ValidationUserProjectAssociateService();
-        $_SESSION['errors'] = $validationUserAccessLevel->validate($this->data['form']);
+        $validationUserProjectAssociate = new ValidationUserProjectAssociateService();
+        $_SESSION['errors'] = $validationUserProjectAssociate->validate($this->data['form']);
 
         // Acessa o IF quando existir o campo dados inclorretos
         if (!empty($_SESSION['errors'])) {
@@ -58,9 +58,27 @@ class UpdateUserProjectAssociate
             return;
         }
 
-        // Instanciar o UsersRepository para chamar o método que faz a edição das obra vinculadas
-        $userProjectsAssociateUpdate = new ProjectsRepository();
-        $result = $userProjectsAssociateUpdate->updateUserProjectsAssociate($this->data['form']);
+        // ID do usuário que terá os vínculos atualizados
+        $userId = (int) (
+            $this->data['form']['adms_daman_user_id']
+            ?? 0
+        );
+
+        // Obras selecionadas no formulário.
+        // Caso nenhuma obra esteja marcada, será enviado um array vazio.
+        $projectIds = array_values(
+            $this->data['form']['userProjectsAssociate']
+                ?? []
+        );
+
+        // Repositório responsável exclusivamente
+        // pelos vínculos entre usuários e obras
+        $usersProjectsRepository = new UsersProjectsRepository();
+
+        $result = $usersProjectsRepository->syncUserProjects(
+            $userId,
+            $projectIds
+        );
 
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {
@@ -68,7 +86,7 @@ class UpdateUserProjectAssociate
             $_SESSION['success'] = "Obras vinculadas do usuário editadas com sucesso!";
 
             // Redirecionar a obra vinculada para a página de visualizar Nível de acesso
-            header("Location: {$_ENV['URL_ADM']}view-user/{$this->data['form']['adms_daman_user_id']}");
+            header("Location: {$_ENV['URL_ADM']}view-user/{$userId}");
 
             return;
         } else {

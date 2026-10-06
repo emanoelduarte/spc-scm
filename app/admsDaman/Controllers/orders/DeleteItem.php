@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\orders;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\OrdersRepository;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
 
 /**
  * Controller para exclusão de item de Pedidos
@@ -34,64 +35,91 @@ class DeleteItem
     public function index(): void
     {
         // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW) ?? [];
 
-        // Acessar o IF se existir o CSRF e for valido o CSRF
-        if (!isset($this->data['form']['csrf_token']) or !CSRFHelper::validateCSRFToken('form_delete_item', $this->data['form']['csrf_token']) or empty($this->data['form']['item_id'])) {
+        $itemId = (int) ($this->data['form']['item_id'] ?? 0);
+        $orderId = (int) ($this->data['form']['order_id'] ?? 0);
 
-            // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Item não encontrado", []);
+        // Validar CSRF e os IDs recebidos
+        if (
+            empty($this->data['form']['csrf_token']) ||
+            !CSRFHelper::validateCSRFToken('form_delete_item', $this->data['form']['csrf_token']) ||
+            !$itemId ||
+            !$orderId
+        ) {
+            GenerateLog::generateLog("error", "Item não encontrado", [
+                'item_id' => $itemId,
+                'order_id' => $orderId
+            ]);
 
-            // Criar a mensagem de erro
             $_SESSION['error'] = "Item não encontrado!";
-
-            // Redirecionar o usuário para a página listar
-            // Redirecionar o usuário para a página de visualizar Pedido
-            header("Location: {$_ENV['URL_ADM']}view-order/{$this->data['form']['order_id']}");
-
+            header("Location: {$_ENV['URL_ADM']}list-orders");
             return;
         }
 
-        
-        // Instanciar o Repository para recuperar o registro do banco de dados
-        $deleteItem = new OrdersRepository();
-        $this->data['item'] = $deleteItem->getItems((int) $this->data['form']['order_id']);
+        // Recuperar o pedido ao qual o item deve pertencer
+        $ordersRepository = new OrdersRepository();
+        $order = $ordersRepository->getOrder($orderId);
 
-        // Verificar se encontrou o registro no banco de dados
-        if (!$this->data['item']) {
-            // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Item não encontrado", ['id' => (int) $this->data['form']['item_id']]);
+        // Verificar se o pedido existe
+        if (!$order) {
+            GenerateLog::generateLog("error", "Pedido não encontrado ao apagar item", [
+                'item_id' => $itemId,
+                'order_id' => $orderId
+            ]);
 
-            // Criar a mensagem de erro
-            $_SESSION['error'] = "Item não encontrado!";
-
-            // Redirecionar o usuário para a página listar
-            header("Location: {$_ENV['URL_ADM']}view-order/{$this->data['form']['order_id']}");
-
+            $_SESSION['error'] = "Pedido não encontrado!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
             return;
         }
 
-        // Instanciar o Repository para apagar o registro do banco de dados
-        $result = $deleteItem->deleteItem($this->data['form']['item_id']);
+        // Verificar se o usuário possui acesso à obra do pedido
+        $projectAccessService = new ProjectAccessService();
 
-        // Acessa o IF se o repositório retornou TRUE
+        $userId = (int) $_SESSION['user_id'];
+        $projectId = (int) $order['adms_daman_project_id'];
+
+        if (!$projectAccessService->canAccessProject($userId, $projectId)) {
+            GenerateLog::generateLog("error", "Tentativa de apagar item de pedido sem acesso", [
+                'user_id' => $userId,
+                'item_id' => $itemId,
+                'order_id' => $orderId,
+                'project_id' => $projectId
+            ]);
+
+            $_SESSION['error'] = "Você não possui acesso a este pedido!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
+            return;
+        }
+
+        // Recuperar os itens pertencentes ao pedido informado
+        $items = $ordersRepository->getItems($orderId);
+
+        // Verificar se o item realmente pertence ao pedido
+        $itemIds = array_map('intval', array_column($items ?: [], 'item_id'));
+
+        if (!in_array($itemId, $itemIds, true)) {
+            GenerateLog::generateLog("error", "Tentativa de apagar item que não pertence ao pedido", [
+                'user_id' => $userId,
+                'item_id' => $itemId,
+                'order_id' => $orderId
+            ]);
+
+            $_SESSION['error'] = "Item não pertence a este pedido!";
+            header("Location: {$_ENV['URL_ADM']}view-order/{$orderId}");
+            return;
+        }
+
+        // Apagar o item
+        $result = $ordersRepository->deleteItem($itemId);
+
         if ($result) {
-            // Criar a mensagem de sucesso ao apagar
             $_SESSION['success'] = "Item apagado com sucesso!";
-
-            // Redirecionar o usuário para a página de visualizar pedido
-            header("Location: {$_ENV['URL_ADM']}view-order/{$this->data['form']['order_id']}");
-
-
+            header("Location: {$_ENV['URL_ADM']}view-order/{$orderId}");
             return;
-        } else {
-            // Criar a mensagem de erro ao tentar apagar
-            $_SESSION['error'] = "Item não apagado!";
-
-            // Redirecionar o usuário para a página de visualizar o pedido
-            header("Location: {$_ENV['URL_ADM']}view-order/{$this->data['form']['order_id']}");
-
         }
+
+        $_SESSION['error'] = "Item não apagado!";
+        header("Location: {$_ENV['URL_ADM']}view-order/{$orderId}");
     }
 }
-?>

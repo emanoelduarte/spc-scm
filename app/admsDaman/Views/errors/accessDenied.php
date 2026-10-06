@@ -10,14 +10,26 @@
             <hr>
 
             <small class="text-muted">
-                Precisa de ajuda? 
+                Precisa de ajuda?
                 <a href="mailto:<?= $this->data['emailAdm'] ?>"><?= $this->data['emailAdm'] ?></a>
             </small>
 
             <div class="mt-3">
-                <a href="<?= $_ENV['URL_ADM'] ?>dashboard" class="btn btn-primary btn-sm">
-                    <i class="fa-solid fa-house"></i> Voltar ao início
-                </a>
+
+                <?php if (($this->data['buttonType'] ?? '') === 'back'): ?>
+
+                    <button type="button" class="btn btn-primary btn-sm" onclick="history.back()">
+                        <i class="fa-solid fa-arrow-left"></i> <?= $this->data['buttonText'] ?>
+                    </button>
+
+                <?php else: ?>
+
+                    <a href="<?= $_ENV['URL_ADM'] ?>dashboard" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-house"></i> <?= $this->data['buttonText'] ?>
+                    </a>
+
+                <?php endif; ?>
+
             </div>
 
         </div>

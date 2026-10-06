@@ -7,6 +7,7 @@ use App\admsDaman\Controllers\Services\PageLayoutService;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\OrderCommentsRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ViewOrder
@@ -25,81 +26,96 @@ class ViewOrder
      * 
      * @return void
      */
-    public function index(int|string $id)
-    {
+    public function index(int|string $id): void
+{
+    $orderId = (int) $id;
 
-        // Receber os dados do formulário
-        $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
+    // Receber os dados do formulário
+    $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
-        // Acessa o IF se o id for valor do tipo inteiro
-        if (!(int) $id) {
-            // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $id]);
-
-            // Criar a mensagem de erro
-            $_SESSION['error'] = "Pedido não encontrado!";
-
-            // Redirecionar o usuário para a página listar
-            header("Location: {$_ENV['URL_ADM']}list-orders");
-
-            return;
-        }
-
-        $viewOrder = new OrdersRepository();
-        $this->data['order'] = $viewOrder->getOrder((int) $id);
-        $this->data['items'] = $viewOrder->getItems((int) $id);
-
-        // Verificar se encontrou o registro no banco de dados
-        if (!$this->data['order']) {
-            // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $id]);
-
-            // Criar a mensagem de erro
-            $_SESSION['error'] = "Pedido não encontrado!";
-
-            // Redirecionar o usuário para a página listar
-            header("Location: {$_ENV['URL_ADM']}list-orders");
-
-            return;
-        }
-
-        // Chamar serviço de comentários adicionar comentário
-        $commentService = new OrderCommentService();
-        $arrayAddUserComment = $this->data['form'] ?? [];
-
-        $changesArray = $commentService->logBatchUserComment($arrayAddUserComment);
-
-        // Verificar se o retorno teve dados ou foi array vazio
-        if (!empty($changesArray)) {
-            $orderComments = new OrderCommentsRepository();
-            $orderComments->insertMultipleComments($changesArray);
-            $this->data['form']['new_user_comment'] = '';
-        }
-
-        $getComments = new OrderCommentsRepository();
-        $this->data['comments'] = $getComments->getComment((int) $id);
-
-        $sendComments = new OrderCommentService();
-        $this->data['formatedComments'] = $sendComments->commentPresenter($this->data['comments']);
-
-        // Configurar os elementos da página
-        $pageElements = [
-            'title_head' => "Visualizar Pedido",
-            'menu' => "list-orders",
-            'buttonPermissions' => ["ListOrders", "UpdateOrder", "UpdateRentalOrder", "DeleteItem", "GeneratePurchasing", "DeleteOrder",],
-        ];
-
-        $pageLayoutService = new PageLayoutService();
-        $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
-
-        // Criar o título da página
-        $this->data['title_head'] = "Visualizar Pedido";
-
-        // Ativar o item de Menu
-        $this->data['menu'] = "list-orders";
-
-        // Carregar a VIEW
-        $loadView = new LoadViewService("admsDaman/Views/orders/view", $this->data);
-        $loadView->loadView();
+    // Verificar se o ID do pedido é válido
+    if (!$orderId) {
+        GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => $orderId]);
+        $_SESSION['error'] = "Pedido não encontrado!";
+        header("Location: {$_ENV['URL_ADM']}list-orders");
+        return;
     }
+
+    // Recuperar o pedido
+    $viewOrder = new OrdersRepository();
+    $this->data['order'] = $viewOrder->getOrder($orderId);
+
+    // Verificar se encontrou o pedido
+    if (!$this->data['order']) {
+        GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => $orderId]);
+        $_SESSION['error'] = "Pedido não encontrado!";
+        header("Location: {$_ENV['URL_ADM']}list-orders");
+        return;
+    }
+
+    // Verificar se o usuário possui acesso à obra do pedido
+    $projectAccessService = new ProjectAccessService();
+    $userId = (int) $_SESSION['user_id'];
+    $projectId = (int) $this->data['order']['adms_daman_project_id'];
+
+    if (!$projectAccessService->canAccessProject($userId, $projectId)) {
+        GenerateLog::generateLog("error", "Acesso negado ao pedido", [
+            'user_id' => $userId,
+            'order_id' => $orderId,
+            'project_id' => $projectId
+        ]);
+
+        $_SESSION['error'] = "Você não possui acesso a este pedido!";
+        header("Location: {$_ENV['URL_ADM']}list-orders");
+        return;
+    }
+
+    // Recuperar os itens somente após validar o acesso
+    $this->data['items'] = $viewOrder->getItems($orderId);
+
+    // Garantir que eventual comentário seja associado ao pedido da rota
+    if (is_array($this->data['form'])) {
+        $this->data['form']['id'] = $orderId;
+    }
+
+    // Chamar serviço de comentários adicionar comentário
+    $commentService = new OrderCommentService();
+    $arrayAddUserComment = $this->data['form'] ?? [];
+    $changesArray = $commentService->logBatchUserComment($arrayAddUserComment);
+
+    // Verificar se o retorno teve dados ou foi array vazio
+    if (!empty($changesArray)) {
+        $orderComments = new OrderCommentsRepository();
+        $orderComments->insertMultipleComments($changesArray);
+        $this->data['form']['new_user_comment'] = '';
+    }
+
+    // Recuperar os comentários
+    $getComments = new OrderCommentsRepository();
+    $this->data['comments'] = $getComments->getComment($orderId);
+
+    $sendComments = new OrderCommentService();
+    $this->data['formatedComments'] = $sendComments->commentPresenter($this->data['comments']);
+
+    // Configurar os elementos da página
+    $pageElements = [
+        'title_head' => "Visualizar Pedido",
+        'menu' => "list-orders",
+        'buttonPermissions' => [
+            "ListOrders",
+            "UpdateOrder",
+            "UpdateRentalOrder",
+            "DeleteItem",
+            "GeneratePurchasing",
+            "DeleteOrder",
+        ],
+    ];
+
+    $pageLayoutService = new PageLayoutService();
+    $this->data = array_merge($this->data, $pageLayoutService->configurePageElements($pageElements));
+
+    // Carregar a VIEW
+    $loadView = new LoadViewService("admsDaman/Views/orders/view", $this->data);
+    $loadView->loadView();
+}
 }

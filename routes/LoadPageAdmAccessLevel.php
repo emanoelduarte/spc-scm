@@ -3,6 +3,7 @@
 namespace Routes;
 
 use App\admsDaman\Helpers\GenerateLog;
+use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Models\Repository\PagesRoutesRepository;
 
 class LoadPageAdmAccessLevel
@@ -56,16 +57,19 @@ class LoadPageAdmAccessLevel
         if ($loginStatus === 'ok') {
             $this->checkControllersExists();
         } elseif ($loginStatus === 'no_permission') {
-            // Usuário logado mas sem permissão
-            $totalPermissoes = count($_SESSION['menuPermission'] ?? []);
 
-            if ($totalPermissoes === 0) {
-                // Conta nova, sem nenhuma permissão ainda
-                header("Location: {$_ENV['URL_ADM']}access-denied-controller?reason=no_access");
+            // Recuperar os níveis de acesso vinculados ao usuário
+            $usersAccessLevelsRepository = new UsersAccessLevelsRepository();
+            $userAccessLevels = $usersAccessLevelsRepository->getUserAccessLevelsArray((int) $_SESSION['user_id']);
+
+            if (empty($userAccessLevels)) {
+                // Conta recém-cadastrada e ainda sem nível de acesso
+                header("Location: {$_ENV['URL_ADM']}access-denied-controller?reason=pending");
             } else {
-                // Tem permissões, mas não nesta página
+                // Usuário configurado, mas sem permissão para esta página
                 header("Location: {$_ENV['URL_ADM']}access-denied-controller?reason=restricted");
             }
+
             exit;
         }
         // 'redirect' já foi tratado dentro do verifyLogin (não logado → vai pro login)

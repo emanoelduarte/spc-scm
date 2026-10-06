@@ -10,8 +10,179 @@ use PDO;
 
 class OrdersRepository extends DbConnection
 {
+
     /**
-     * Recuperar todos os pedidos com paginação.
+     * Montar as condições utilizadas na listagem e
+     * na contagem dos pedidos.
+     *
+     * $accessibleProjectIds:
+     *
+     * null
+     *     Usuário possui acesso global.
+     *
+     * []
+     *     Usuário não possui acesso a nenhuma obra.
+     *
+     * [1, 5, 8]
+     *     Usuário pode acessar somente essas obras.
+     */
+    private function buildOrderConditions(
+        ?array $filters = [],
+        ?array $accessibleProjectIds = null
+    ): array {
+
+        $conditions = [];
+        $params = [];
+
+        $filters = $filters ?? [];
+
+
+        /*
+     * =====================================================
+     * ACESSO POR OBRA
+     * =====================================================
+     */
+        if ($accessibleProjectIds !== null) {
+
+            /*
+         * Usuário comum sem nenhuma obra vinculada.
+         *
+         * A condição sempre falsa garante que nenhum
+         * pedido seja recuperado.
+         */
+            if (empty($accessibleProjectIds)) {
+
+                $conditions[] = '1 = 0';
+            } else {
+
+                $projectPlaceholders = [];
+
+                foreach (
+                    array_values($accessibleProjectIds)
+                    as $index => $projectId
+                ) {
+
+                    $paramName =
+                        "access_project_{$index}";
+
+                    $projectPlaceholders[] =
+                        ":{$paramName}";
+
+                    $params[$paramName] =
+                        (int) $projectId;
+                }
+
+
+                $conditions[] =
+                    'ado.adms_daman_project_id IN (' .
+                    implode(
+                        ', ',
+                        $projectPlaceholders
+                    ) .
+                    ')';
+            }
+        }
+
+
+        /*
+     * =====================================================
+     * FILTROS DA TELA
+     * =====================================================
+     */
+        $map = [
+            'order_number'
+            => 'ado.id',
+
+            'adms_daman_project_id'
+            => 'ado.adms_daman_project_id',
+
+            'adms_daman_acquisition_status_id'
+            => 'ado.adms_daman_acquisition_status_id',
+
+            'adms_daman_category_id'
+            => 'ado.adms_daman_category_id',
+        ];
+
+
+        foreach ($map as $field => $column) {
+
+            if (!empty($filters[$field])) {
+
+                $conditions[] =
+                    "{$column} = :{$field}";
+
+                $params[$field] =
+                    (int) $filters[$field];
+            }
+        }
+
+
+        /*
+     * =====================================================
+     * INTERVALO DE DATAS
+     * =====================================================
+     */
+        if (!empty($filters['data_inicio'])) {
+
+            $conditions[] =
+                'ado.created_at >= :data_inicio';
+
+            $params['data_inicio'] =
+                $filters['data_inicio']
+                . ' 00:00:00';
+        }
+
+
+        if (!empty($filters['data_fim'])) {
+
+            $conditions[] =
+                'ado.created_at <= :data_fim';
+
+            $params['data_fim'] =
+                $filters['data_fim']
+                . ' 23:59:59';
+        }
+
+
+        /*
+     * =====================================================
+     * PESQUISA PELOS ITENS DO PEDIDO
+     * =====================================================
+     */
+        if (!empty($filters['description'])) {
+
+            $conditions[] = "
+            EXISTS (
+                SELECT 1
+                FROM adms_daman_order_items AS aoi
+                WHERE
+                    aoi.adms_daman_order_id = ado.id
+                    AND
+                    aoi.description LIKE :description
+            )
+        ";
+
+            $params['description'] =
+                '%' . $filters['description'] . '%';
+        }
+
+
+        $where =
+            !empty($conditions)
+            ? 'WHERE ' . implode(
+                ' AND ',
+                $conditions
+            )
+            : '';
+
+
+        return [
+            'where' => $where,
+            'params' => $params,
+        ];
+    }
+    /**
+     * Recuperar todos os pedidos com paginação respeitando os filtros e as obras acessíveis ao usuário.
      *
      * Este método retorna uma lista de pedidos da tabela `adms_daman_orders`, com suporte à paginação.
      *
@@ -19,92 +190,54 @@ class OrdersRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de pedidos recuperados do banco de dados.
      */
-    public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [])
+    public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [], ?array $accessibleProjectIds = null) : array
     {
         $offset = max(0, ($page - 1) * $limitResult);
 
-        $conditions = [];
-        $params = [];
+        $queryData =
+        $this->buildOrderConditions(
+            $filters,
+            $accessibleProjectIds
+        );
 
-        // Verificar se o usuário é Super Admin, Admin, Comprador ou Almoxarife
-        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
-            WHERE adms_daman_user_id = :check_user_id 
-            AND adms_daman_access_level_id IN (1, 2, 5, 6)";
 
-        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
-        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-        $stmtCheck->execute();
-        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+        $where =
+            $queryData['where'];
 
-        if (!$isPrivileged) {
-            $conditions[] = "ado.adms_daman_user_id = :logged_user_id";
-            $params['logged_user_id'] = $_SESSION['user_id'];
-        }
-
-        // Mapeamento campo form → coluna banco
-        $map = [
-            'order_number' => 'ado.id',
-            'adms_daman_project_id' => 'ado.adms_daman_project_id',
-            'adms_daman_acquisition_status_id' => 'ado.adms_daman_acquisition_status_id',
-            'adms_daman_category_id' => 'ado.adms_daman_category_id',
-        ];
-
-        foreach ($map as $field => $column) {
-            if (!empty($filters[$field])) {
-                $conditions[] = "{$column} = :{$field}";
-                $params[$field] = $filters[$field];
-            }
-        }
-
-        // Filtro por intervalo de datas
-        if (!empty($filters['data_inicio'])) {
-            $conditions[] = "ado.created_at >= :data_inicio";
-            $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
-        }
-
-        if (!empty($filters['data_fim'])) {
-            $conditions[] = "ado.created_at <= :data_fim";
-            $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
-        }
-
-        // Pesquisar por item
-        if (!empty($filters['description'])) {
-            $conditions[] = "EXISTS (
-        SELECT 1 
-        FROM adms_daman_order_items aoi
-        WHERE aoi.adms_daman_order_id = ado.id
-        AND aoi.description LIKE :description
-    )";
-
-            $params['description'] = '%' . $filters['description'] . '%';
-        }
-
-        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+        $params =
+            $queryData['params'];
 
         $sql = "SELECT 
-                ado.id AS pedido_id, 
-                ado.adms_daman_acquisition_types_id, 
-                ado.adms_daman_project_id, 
-                ado.adms_daman_acquisition_status_id, 
-                ado.created_at,
-                adp.name AS project_name, 
-                ados.id AS status_id,
-                ados.name AS status_name,
-                adot.name AS name_tape,
-                adc.name AS category_name, adc.id AS categoria_id
-            FROM adms_daman_orders AS ado
-            INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
-            INNER JOIN adms_daman_acquisition_status AS ados ON ados.id = ado.adms_daman_acquisition_status_id
-            INNER JOIN adms_daman_acquisition_types AS adot ON adot.id=ado.adms_daman_acquisition_types_id
-            INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
-            {$where}
-            ORDER BY pedido_id DESC
-            LIMIT :limit OFFSET :offset";
+                    ado.id AS pedido_id, 
+                    ado.adms_daman_acquisition_types_id, 
+                    ado.adms_daman_project_id, 
+                    ado.adms_daman_acquisition_status_id, 
+                    ado.created_at,
+
+                    adp.name AS project_name,
+
+                    ados.id AS status_id,
+                    ados.name AS status_name,
+
+                    adot.name AS name_tape,
+
+                    adc.name AS category_name, 
+                    adc.id AS categoria_id
+
+                FROM adms_daman_orders AS ado
+                INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
+                INNER JOIN adms_daman_acquisition_status AS ados ON ados.id = ado.adms_daman_acquisition_status_id
+                INNER JOIN adms_daman_acquisition_types AS adot ON adot.id=ado.adms_daman_acquisition_types_id
+                INNER JOIN adms_daman_categories AS adc ON adc.id=ado.adms_daman_category_id
+                {$where}
+                ORDER BY pedido_id DESC
+                LIMIT :limit OFFSET :offset
+            ";
 
         $stmt = $this->getConnection()->prepare($sql);
 
         foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value);
+            $stmt->bindValue(":{$key}", $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }
 
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
@@ -116,72 +249,34 @@ class OrdersRepository extends DbConnection
     }
 
     /**
-     * Recuperar a quantidade total de pedidos para paginação.
+     * Recuperar a quantidade total de pedidos para paginação utilizando exatamente as mesmas regras da listagem.
      *
      * Este método retorna a quantidade total de pedidos na tabela `adms_daman_orders`, útil para a paginação.
      *
      * @return int Quantidade total de pedidos encontrados no banco de dados.
      */
-    public function getAmountOrders(?array $filters = []): int
+    public function getAmountOrders(?array $filters = [], ?array $accessibleProjectIds = null): int
     {
-        $conditions = [];
-        $params = [];
+        $queryData =
+        $this->buildOrderConditions(
+            $filters,
+            $accessibleProjectIds
+        );
 
-        // Verificar se o usuário é Admin, Super Admin ou Comprador
-        $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
-            WHERE adms_daman_user_id = :check_user_id 
-            AND adms_daman_access_level_id IN (1, 2, 5)";
+        $where =
+            $queryData['where'];
 
-        $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
-        $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-        $stmtCheck->execute();
-        $isPrivileged = $stmtCheck->fetchColumn() > 0;
+        $params =
+            $queryData['params'];
 
-        if (!$isPrivileged) {
-            $conditions[] = "adms_daman_user_id = :logged_user_id";
-            $params['logged_user_id'] = $_SESSION['user_id'];
-        }
-
-        if (!empty($filters['order_number'])) {
-            $conditions[] = "id = :order_number";
-            $params['order_number'] = $filters['order_number'];
-        }
-
-        if (!empty($filters['adms_daman_project_id'])) {
-            $conditions[] = "adms_daman_project_id = :adms_daman_project_id";
-            $params['adms_daman_project_id'] = $filters['adms_daman_project_id'];
-        }
-
-        if (!empty($filters['adms_daman_category_id'])) {
-            $conditions[] = "adms_daman_category_id = :adms_daman_category_id";
-            $params['adms_daman_category_id'] = $filters['adms_daman_category_id'];
-        }
-
-        if (!empty($filters['adms_daman_acquisition_status_id'])) {
-            $conditions[] = "adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id";
-            $params['adms_daman_acquisition_status_id'] = $filters['adms_daman_acquisition_status_id'];
-        }
-
-        if (!empty($filters['data_inicio'])) {
-            $conditions[] = "created_at >= :data_inicio";
-            $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
-        }
-
-        if (!empty($filters['data_fim'])) {
-            $conditions[] = "created_at <= :data_fim";
-            $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
-        }
-
-        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
-
-        $sql = "SELECT COUNT(id) AS amount_records
-            FROM adms_daman_orders
+        $sql = "SELECT COUNT(ado.id) AS amount_records
+            FROM adms_daman_orders AS ado
             {$where}";
 
         $stmt = $this->getConnection()->prepare($sql);
 
         foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+            $stmt->bindValue(":{$key}", $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
         }
 
         $stmt->execute();

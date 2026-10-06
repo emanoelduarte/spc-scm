@@ -10,6 +10,8 @@ use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
+use App\admsDaman\Helpers\GenerateLog;
 
 /**
  * Controller para criação de pedido
@@ -63,9 +65,13 @@ class CreateOrder
      */
     private function viewOrder(): void
     {
-        // Instanciar o repositório para preencher os selects.
-        $getAllProjectsSelectActive = new ProjectsRepository();
-        $this->data['getAllProjectsSelectActive'] = $getAllProjectsSelectActive->getAllProjectsSelectActive();
+        // Recuperar as obras que o usuário possui acesso
+        $projectAccessService = new ProjectAccessService();
+        $accessibleProjectIds = $projectAccessService->getAccessibleProjectIds((int) $_SESSION['user_id']);
+
+        // Recuperar somente as obras ativas permitidas ao usuário
+        $projectsRepository = new ProjectsRepository();
+        $this->data['getAllProjectsSelectActive'] = $projectsRepository->getProjectsSelectByIds($accessibleProjectIds, true);
 
         // Instanciar o repositório para preencher os selects.
         $getProjectSelect = new CategoriesRepository();
@@ -108,6 +114,10 @@ class CreateOrder
      */
     private function addOrder(): void
     {
+
+        // Garantir que o solicitante seja sempre o usuário logado
+        $this->data['form']['adms_daman_user_id'] = (int) $_SESSION['user_id'];
+
         // Instaciar a classe que valida os dados do formulário de dados gerais do pedido com Rakit
         $validationOrder = new ValidationOrderService();
         $this->data['errors'] = $validationOrder->validate($this->data['form']);
@@ -121,8 +131,26 @@ class CreateOrder
             return;
         }
 
-        // var_dump($this->data['form']['items']);
-        // exit;
+        // Verificar se a obra selecionada está ativa e disponível para o usuário
+        $projectAccessService = new ProjectAccessService();
+        $accessibleProjectIds = $projectAccessService->getAccessibleProjectIds((int) $_SESSION['user_id']);
+
+        $projectsRepository = new ProjectsRepository();
+        $activeProjects = $projectsRepository->getProjectsSelectByIds($accessibleProjectIds, true);
+        $activeProjectIds = array_map('intval', array_column($activeProjects, 'id'));
+
+        $projectId = (int) ($this->data['form']['adms_daman_project_id'] ?? 0);
+
+        if (!in_array($projectId, $activeProjectIds, true)) {
+            GenerateLog::generateLog("error", "Tentativa de cadastrar pedido em obra sem acesso", [
+                'user_id' => (int) $_SESSION['user_id'],
+                'project_id' => $projectId
+            ]);
+
+            $this->data['errors'][] = "Você não possui acesso à obra selecionada!";
+            $this->viewOrder();
+            return;
+        }
 
         // Instaciar a classe que valida os dados do formulário de itens do pedido com Rakit
         $validationItemns = new ValidationOrderItemnsService();

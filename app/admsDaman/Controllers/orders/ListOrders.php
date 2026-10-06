@@ -8,6 +8,7 @@ use App\admsDaman\Models\Repository\CategoriesRepository;
 use App\admsDaman\Models\Repository\OrdersRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
 use App\admsDaman\Views\Services\LoadViewService;
 
 /**
@@ -35,26 +36,46 @@ class ListOrders
             $this->data['search']['submit']
         );
 
+        // Recuperar as obras que o usuário logado pode acessar.
+        //
+        // null      = acesso global
+        // []        = nenhuma obra
+        // [1, 2, 3] = somente essas obras
+        $projectAccessService = new ProjectAccessService();
+
+        $accessibleProjectIds =
+            $projectAccessService->getAccessibleProjectIds(
+                (int) $_SESSION['user_id']
+            );
+
         // Instanciar o Repository para recuperar os registros do banco de dados
         $listOrders = new OrdersRepository();
 
         $this->data['orders'] = $listOrders->getAllOrders(
             (int) $page,
             (int) $this->limitResult,
-            $this->data['search']
+            $this->data['search'],
+            $accessibleProjectIds
         );
 
         $this->data['pagination'] = PaginationService::generatePagination(
-            (int) $listOrders->getAmountOrders($this->data['search']),
+            (int) $listOrders->getAmountOrders(
+                $this->data['search'],
+                $accessibleProjectIds,
+            ),
             (int) $this->limitResult,
             (int) $page,
             'list-orders',
             $this->data['search']
         );
 
-        // Instanciar o repositório para preencher os selects.
-        $getAllProjectsSelect = new ProjectsRepository();
-        $this->data['getAllProjectsSelect'] = $getAllProjectsSelect->getAllProjectsSelect();
+        // Recuperar somente as obras que o usuário
+        // possui permissão para consultar
+        $projectsRepository = new ProjectsRepository();
+
+        $this->data['getAllProjectsSelect'] = $projectsRepository->getProjectsSelectByIds(
+                $accessibleProjectIds
+            );
 
         // Instanciar o repositório para preencher os selects.
         $getAllStatusSelect = new StatusRepository();

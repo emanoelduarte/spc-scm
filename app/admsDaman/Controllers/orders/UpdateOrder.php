@@ -15,6 +15,7 @@ use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\StatusRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
 
 /**
  * Controller responsável por editar um pedido.
@@ -40,36 +41,82 @@ class UpdateOrder
      */
     public function index(int|string $id): void
     {
+        $orderId = (int) $id;
+
+        // Verificar se o ID do pedido é válido
+        if (!$orderId) {
+            GenerateLog::generateLog("error", "Pedido inválido", ['id' => $orderId]);
+            $_SESSION['error'] = "Pedido não encontrado!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
+            return;
+        }
+
+        // Recuperar o pedido diretamente do banco
+        $ordersRepository = new OrdersRepository();
+        $currentOrder = $ordersRepository->getOrder($orderId);
+
+        // Verificar se o pedido existe
+        if (!$currentOrder) {
+            GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => $orderId]);
+            $_SESSION['error'] = "Pedido não encontrado!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
+            return;
+        }
+
+        // Verificar se o usuário possui acesso à obra do pedido
+        $projectAccessService = new ProjectAccessService();
+        $userId = (int) $_SESSION['user_id'];
+        $projectId = (int) $currentOrder['adms_daman_project_id'];
+
+        if (!$projectAccessService->canAccessProject($userId, $projectId)) {
+            GenerateLog::generateLog("error", "Acesso negado ao pedido", [
+                'user_id' => $userId,
+                'order_id' => $orderId,
+                'project_id' => $projectId
+            ]);
+
+            $_SESSION['error'] = "Você não possui acesso a este pedido!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
+            return;
+        }
+
         // Receber os dados do formulário
         $this->data['form'] = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
-        // Validar o CSRF token e a existência do ID do pedido
+        // Verificar se recebeu um POST válido para edição
         if (
             isset($this->data['form']['csrf_token']) &&
             CSRFHelper::validateCSRFToken('form_update_order', $this->data['form']['csrf_token'])
         ) {
-            // Editar a pedido
-            $this->editOrder();
-        } else {
-            // Recuperar o registro da pedido
-            $viewOrder = new OrdersRepository();
-            $this->data['form'] = $viewOrder->getOrder((int) $id);
-            $this->data['items'] = $viewOrder->getItems((int) $id);
+            // Garantir que o ID utilizado na edição seja o ID da rota
+            $this->data['form']['id'] = $orderId;
 
-            // Verificar se a pedido foi encontrada
-            if (!$this->data['form']) {
-                // Registrar o erro e redirecionar
-                GenerateLog::generateLog("error", "Pedido não encontrado", ['id' => (int) $id]);
-                $_SESSION['error'] = "Pedido não encontrado!";
+            // Verificar se o usuário possui acesso à obra selecionada na edição
+            $newProjectId = (int) ($this->data['form']['adms_daman_project_id'] ?? 0);
+
+            if ($newProjectId && !$projectAccessService->canAccessProject($userId, $newProjectId)) {
+                GenerateLog::generateLog("error", "Tentativa de alterar pedido para obra sem acesso", [
+                    'user_id' => $userId,
+                    'order_id' => $orderId,
+                    'project_id' => $newProjectId
+                ]);
+
+                $_SESSION['error'] = "Você não possui acesso à obra selecionada!";
                 header("Location: {$_ENV['URL_ADM']}list-orders");
                 return;
             }
 
-
-            // exit;
-            // Carregar a visualização para edição da Pedido
-            $this->viewUpdateOrder();
+            // Editar o pedido
+            $this->editOrder();
+            return;
         }
+
+        // Carregar os dados do pedido para edição
+        $this->data['form'] = $currentOrder;
+        $this->data['items'] = $ordersRepository->getItems($orderId);
+
+        // Carregar a visualização para edição
+        $this->viewUpdateOrder();
     }
 
     /**
@@ -81,9 +128,13 @@ class UpdateOrder
      */
     private function viewUpdateOrder(): void
     {
-        // Instanciar o repositório para preencher os selects.
-        $getProjectSelect = new ProjectsRepository();
-        $this->data['getAllProjectsSelect'] = $getProjectSelect->getAllProjectsSelect();
+        // Recuperar as obras que o usuário possui acesso
+        $projectAccessService = new ProjectAccessService();
+        $accessibleProjectIds = $projectAccessService->getAccessibleProjectIds((int) $_SESSION['user_id']);
+
+        // Instanciar o repositório para preencher o select de obras
+        $projectsRepository = new ProjectsRepository();
+        $this->data['getAllProjectsSelect'] = $projectsRepository->getProjectsSelectByIds($accessibleProjectIds);
 
         // Instanciar o repositório para preencher os selects.
         $getAllStatusSelect = new StatusRepository();

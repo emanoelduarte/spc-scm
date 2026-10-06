@@ -5,6 +5,7 @@ namespace App\admsDaman\Controllers\orders;
 use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\OrdersRepository;
+use App\admsDaman\Controllers\Services\ProjectAccessService;
 
 /**
  * Controller para exclusão de Pedidos
@@ -69,8 +70,27 @@ class DeleteOrder
             return;
         }
 
+        // Verificar se o usuário possui acesso à obra do pedido
+        $projectAccessService = new ProjectAccessService();
+
+        $userId = (int) $_SESSION['user_id'];
+        $orderId = (int) $this->data['form']['id'];
+        $projectId = (int) $this->data['order']['adms_daman_project_id'];
+
+        if (!$projectAccessService->canAccessProject($userId, $projectId)) {
+            GenerateLog::generateLog("error", "Tentativa de apagar pedido sem acesso", [
+                'user_id' => $userId,
+                'order_id' => $orderId,
+                'project_id' => $projectId
+            ]);
+
+            $_SESSION['error'] = "Você não possui acesso a este pedido!";
+            header("Location: {$_ENV['URL_ADM']}list-orders");
+            return;
+        }
+
         // Instanciar o Repository para apagar o registro do banco de dados
-        $result = $deleteOrder->deleteOrder($this->data['form']['id']);
+        $result = $deleteOrder->deleteOrder($orderId);
 
         // Acessa o IF se o repositório retornou TRUE
         if ($result) {

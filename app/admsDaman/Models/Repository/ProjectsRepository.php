@@ -268,6 +268,66 @@ class ProjectsRepository extends DbConnection
     }
 
     /**
+     * Recuperar obras disponíveis conforme uma lista de IDs permitidos.
+     *
+     * null:
+     *      sem restrição por obra.
+     *
+     * []:
+     *      nenhuma obra disponível.
+     *
+     * [1, 5, 8]:
+     *      retornar somente essas obras.
+     */
+    public function getProjectsSelectByIds(?array $projectIds = null, bool $onlyActive = false): array
+{
+    $conditions = [];
+    $params = [];
+
+    // Aplicar restrição por obras quando o usuário não possuir acesso global
+    if ($projectIds !== null) {
+        $projectIds = array_values(array_unique(array_filter(array_map('intval', $projectIds))));
+
+        if (empty($projectIds)) {
+            return [];
+        }
+
+        $placeholders = [];
+
+        foreach ($projectIds as $index => $projectId) {
+            $paramName = "project_id_{$index}";
+            $placeholders[] = ":{$paramName}";
+            $params[$paramName] = $projectId;
+        }
+
+        $conditions[] = 'p.id IN (' . implode(', ', $placeholders) . ')';
+    }
+
+    // Recuperar somente obras ativas quando solicitado
+    if ($onlyActive) {
+        $conditions[] = 'p.status = :status';
+        $params['status'] = 1;
+    }
+
+    $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+    $sql = "SELECT p.id, p.name, p.status
+            FROM adms_daman_projects AS p
+            {$where}
+            ORDER BY p.name ASC";
+
+    $stmt = $this->getConnection()->prepare($sql);
+
+    foreach ($params as $key => $value) {
+        $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+    }
+
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+    /**
      * Recuperar todas as obras que o usuário tem vínculo ou que tem autorização
      * 
      * @return array|bool Obra recuperada do banco de dados
@@ -326,118 +386,5 @@ class ProjectsRepository extends DbConnection
 
         // Ler os registros e retornar 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Retorna os IDs das obras vinculadas ao um usuário em formato de array.
-     *
-     * Obtém os IDs das obras vinculadas ao usuário a partir de seu ID.
-     *
-     * @param int $id ID do usuário
-     * @return array|bool Retorna um array simples com os IDs ou false caso não encontre
-     */
-    public function getUserProjectsAssociateArray(int $id): array|bool
-    {
-        // Query para recuperar os registros do banco de dados
-        // (recupera as obras vinculadas aos usuários)
-        $sql = 'SELECT adms_daman_project_id
-        FROM adms_daman_user_projects
-        WHERE adms_daman_user_id = :adms_daman_user_id';
-
-        // Preparar a Query -> Subistiruir links por valores
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->bindValue(':adms_daman_user_id', $id, PDO::PARAM_INT);
-
-        // Executar a Query
-        $stmt->execute();
-
-        // Ler os registross
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Retornar apenas os valores de 'adms_daman_project_id' como array simples
-        return $result ? array_column($result, 'adms_daman_project_id') : false;
-    }
-
-    /**
-     * Atualiza as obras vinculads do usuário com base nos dados fornecidos.
-     *
-     * Realiza a lógica de adicionar ou remover vínculos de obras com usuário conforme os ids recebidos.
-     * Também gera logs para acompanhamento das operações.
-     *
-     * @param array $data Dados contendo os ids de vinculo das obras e o ID do usuário
-     * @return bool Retorna true se a atualização for bem-sucedida, false em caso de erro
-     */
-    public function updateUserProjectsAssociate(array $data): array|bool
-    {
-        // Criar o Elemento userProjectsAssociate no array quando não vem nível de acesso do formulário
-        $userProjectsAssociateArray = $data['userProjectsAssociate'] ?? [];
-
-        try { // Permanece no try se não houver erro
-
-            // Recuperar os vínculos do usuário com as obras em formato de array
-            $userProjectsAssociateArray = $this->getUserProjectsAssociateArray($data['adms_daman_user_id']);
-
-            // Quando o usuário não tiver vínculo cadastrado ele irá criar um array vazio com a expressão ternária
-            $userProjectsAssociateArray = $userProjectsAssociateArray ? $userProjectsAssociateArray : [];
-
-            // Percorrer o array com os vínculos das obras e vincula os níveis de acessó que não tiver
-            foreach ($data['userProjectsAssociate'] ?? [] as $userProjectAssociate) {
-
-                // Se o usuário já tiver o vínculo com a obra, remove do array de vinculação
-                if (in_array($userProjectAssociate, $userProjectsAssociateArray)) {
-                    $userProjectsAssociateArray = array_diff($userProjectsAssociateArray, [$userProjectAssociate]);
-                } else {
-
-                    // Cadastrar o vínculo do usuário com a obra
-                    // Query para cadastrar o novo vínculo com nova obra
-                    $sql = 'INSERT INTO adms_daman_user_projects (adms_daman_user_id, adms_daman_project_id, created_at)
-                    VALUES (:adms_daman_user_id, :adms_daman_project_id, :created_at)';
-
-                    // Preparar a Query
-                    $stmt = $this->getConnection()->prepare($sql);
-
-                    // Subistituir Links pelos valores
-                    $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
-                    $stmt->bindValue(':adms_daman_project_id', $userProjectAssociate, PDO::PARAM_INT);
-                    $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
-
-                    // Executar a Query
-                    $stmt->execute();
-
-                    // Chamar o método para salvar o log
-                    GenerateLog::generateLog("info", "Vínculo do usuário com a obra cadastrado com sucesso.", ['id' => $data['adms_daman_user_id'], 'adms_daman_project_id' => $userProjectAssociate]);
-                }
-            }
-
-            // Percorrer o array com vínculos das obras do usuário e deletar o mesmo
-            foreach ($userProjectsAssociateArray as $userProjectAssociate) {
-                $sql = 'DELETE FROM adms_daman_user_projects
-                WHERE adms_daman_user_id = :adms_daman_user_id
-                AND adms_daman_project_id = :adms_daman_project_id
-                LIMIT 1';
-
-                // Preparar a Query
-                $stmt = $this->getConnection()->prepare($sql);
-
-                // Subistituir Links pelos valores
-                $stmt->bindValue(':adms_daman_user_id', $data['adms_daman_user_id'], PDO::PARAM_INT);
-                $stmt->bindValue(':adms_daman_project_id', $userProjectAssociate, PDO::PARAM_INT);
-
-                // Executar a Query
-                $stmt->execute();
-
-                // Chamar o método para salvar o log
-                GenerateLog::generateLog("info", "Vínculo do usuário com a obra removido com sucesso.", ['id' => $data['adms_daman_user_id'], 'adms_daman_project_id' => $userProjectAssociate]);
-            }
-
-            return true;
-        } catch (Exception $e) { // Acessa o catch quando houver erro no try
-
-            // Chamar o método para salvar o log
-            GenerateLog::generateLog("error", "Vínculo do usuário com a obra não editado.", ['id' => $data['adms_daman_user_id'], 'error' => $e->getMessage()]);
-
-            return false;
-        }
-        return true;
     }
 }

@@ -7,6 +7,7 @@ use App\admsDaman\Helpers\GenerateLog;
 use App\admsDaman\Models\Repository\ProjectsRepository;
 use App\admsDaman\Models\Repository\UsersAccessLevelsRepository;
 use App\admsDaman\Models\Repository\UsersRepository;
+use App\admsDaman\Models\Repository\UsersProjectsRepository;
 use App\admsDaman\Views\Services\LoadViewService;
 
 class ViewUser
@@ -55,20 +56,30 @@ class ViewUser
         }
 
         // Instanciar o Repository para recuperar os níveis de acesso do usuário
-        // $this->data['userAccessLevels'] = $viewUserAccessLevels->getUsersAccessLevels((int) $id);
-
         $viewUserAccessLevels = new UsersAccessLevelsRepository();
-        $this->data['userAccessLevelsArray'] = $viewUserAccessLevels->getUserAccessLevelsArray((int) $id);
 
-        // Instanciar o Repository para recuperar os níveis de acesso com menor prioridade de maior prioridade do usuário
-        $this->data['lowerPriorityAccessLevels'] = $viewUserAccessLevels->getLowerPriorityAccessLevels();
+        $this->data['userAccessLevelsArray'] =
+            $viewUserAccessLevels->getUserAccessLevelsArray((int) $id);
 
-        // Recuperar as obras vinculadas ao usuário
-        $viewUserProjectsAssociate = new ProjectsRepository();
-        $this->data['userProjectsAssociate'] = $viewUserProjectsAssociate->getUserProjectsAssociateArray((int) $id);
 
-        // Recuperar id e obras gerais ativas
-        $this->data['projectsActives'] = $viewUserProjectsAssociate->getAllProjectsSelectActive((int) $id);
+        // Instanciar o Repository para recuperar os níveis de acesso
+        // com menor prioridade que o usuário logado pode administrar
+        $this->data['lowerPriorityAccessLevels'] =
+            $viewUserAccessLevels->getLowerPriorityAccessLevels();
+
+
+        // Recuperar as obras vinculadas ao usuário visualizado
+        $usersProjectsRepository = new UsersProjectsRepository();
+
+        $this->data['userProjectsAssociate'] =
+            $usersProjectsRepository->getUserProjectIds((int) $id);
+
+
+        // Recuperar as obras ativas disponíveis
+        $projectsRepository = new ProjectsRepository();
+
+        $this->data['projectsActives'] =
+            $projectsRepository->getAllProjectsSelectActive();
 
         // Chamar o método para salvar o log
         GenerateLog::generateLog("error", "Visualizar o Usuário", ['id' => (int) $id]);
