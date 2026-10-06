@@ -10,6 +10,8 @@ use App\admsDaman\Models\Repository\PurchaseDocumentsRepository;
 use App\admsDaman\Models\Repository\PurchaseInstallmentsRepository;
 use App\admsDaman\Models\Repository\PurchaseInstallmentPaymentsRepository;
 use App\admsDaman\Models\Repository\PurchaseDocumentAllocationsRepository;
+use App\admsDaman\Models\Repository\PaymentMethodsRepository;
+use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 use RuntimeException;
 use Throwable;
 
@@ -21,6 +23,8 @@ class PurchaseDocumentService extends DbConnection
     private PurchaseInstallmentsService $purchaseInstallmentsService;
     private PurchaseDocumentAllocationsRepository $purchaseDocumentAllocationsRepository;
     private PurchaseDocumentAllocationService $purchaseDocumentAllocationService;
+    private PaymentMethodsRepository $paymentMethodsRepository;
+    private FinancialPaymentMethodsRepository $financialPaymentMethodsRepository;
 
     public function __construct()
     {
@@ -34,6 +38,12 @@ class PurchaseDocumentService extends DbConnection
 
         $this->purchaseInstallmentsService =
             new PurchaseInstallmentsService();
+
+        $this->paymentMethodsRepository =
+            new PaymentMethodsRepository();
+
+        $this->financialPaymentMethodsRepository =
+            new FinancialPaymentMethodsRepository();
 
         /*
         * Repository responsável por persistir
@@ -334,6 +344,11 @@ class PurchaseDocumentService extends DbConnection
                         ?? [],
                     $totalValue
                 );
+
+            $this->validateCardPaymentSchedule(
+                $paymentMethodId,
+                $installments
+            );
         }
 
 
@@ -584,9 +599,7 @@ class PurchaseDocumentService extends DbConnection
              * será registrada uma baixa financeira verdadeira.
              */
             $payOnSave =
-                !empty(
-                    $installment['pay_on_save']
-                );
+                !empty($installment['pay_on_save']);
 
 
             /*
@@ -597,9 +610,7 @@ class PurchaseDocumentService extends DbConnection
              */
             $financialPaymentMethodId =
                 (int) (
-                    $installment[
-                        'adms_daman_financial_payment_method_id'
-                    ]
+                    $installment['adms_daman_financial_payment_method_id']
                     ?? 0
                 );
 
@@ -1072,6 +1083,11 @@ class PurchaseDocumentService extends DbConnection
                     $data['installments'] ?? [],
                     $totalValue
                 );
+
+            $this->validateCardPaymentSchedule(
+                $paymentMethodId,
+                $installments
+            );
         }
 
 
@@ -1307,7 +1323,7 @@ class PurchaseDocumentService extends DbConnection
         int $createdBy,
         string $paymentDate,
         string $observation =
-            'Baixa automática registrada no momento do lançamento da compra.'
+        'Baixa automática registrada no momento do lançamento da compra.'
     ): void {
 
         /*
@@ -1318,7 +1334,7 @@ class PurchaseDocumentService extends DbConnection
                 array_filter(
                     $installments,
                     static fn(array $installment): bool =>
-                        !empty($installment['pay_on_save'])
+                    !empty($installment['pay_on_save'])
                 )
             );
 
@@ -1415,36 +1431,34 @@ class PurchaseDocumentService extends DbConnection
             $paymentService->createPayment([
 
                 'adms_daman_purchase_installment_id' =>
-                    $installmentId,
+                $installmentId,
 
                 'payment_date' =>
-                    $paymentDate,
+                $paymentDate,
 
                 'adms_daman_financial_payment_method_id' =>
-                    (int) (
-                        $installment[
-                            'adms_daman_financial_payment_method_id'
-                        ]
-                        ?? 0
-                    ),
+                (int) (
+                    $installment['adms_daman_financial_payment_method_id']
+                    ?? 0
+                ),
 
                 'principal_amount' =>
-                    (string) $installment['original_amount'],
+                (string) $installment['original_amount'],
 
                 'interest_amount' =>
-                    '0.00',
+                '0.00',
 
                 'penalty_amount' =>
-                    '0.00',
+                '0.00',
 
                 'discount_amount' =>
-                    '0.00',
+                '0.00',
 
                 'observation' =>
-                    $observation,
+                $observation,
 
                 'created_by' =>
-                    $createdBy,
+                $createdBy,
             ]);
         }
     }
@@ -1679,6 +1693,11 @@ class PurchaseDocumentService extends DbConnection
                     )
                 );
 
+            $this->validateCardPaymentSchedule(
+                $paymentMethodId,
+                $installments
+            );
+
 
             /*
             * =====================================================
@@ -1901,9 +1920,9 @@ class PurchaseDocumentService extends DbConnection
              */
             $purchaseDocument =
                 $this->purchaseDocumentsRepository
-                    ->getById(
-                        $purchaseDocumentId
-                    );
+                ->getById(
+                    $purchaseDocumentId
+                );
 
 
             if (!$purchaseDocument) {
@@ -1933,11 +1952,11 @@ class PurchaseDocumentService extends DbConnection
              */
             $existingInstallments =
                 $this->purchaseInstallmentsRepository
-                    ->getByPurchaseDocumentIds(
-                        [
-                            $purchaseDocumentId
-                        ]
-                    );
+                ->getByPurchaseDocumentIds(
+                    [
+                        $purchaseDocumentId
+                    ]
+                );
 
 
             $existingById = [];
@@ -1987,9 +2006,9 @@ class PurchaseDocumentService extends DbConnection
 
                 $payments =
                     $paymentsRepository
-                        ->getByInstallmentIds(
-                            $installmentIds
-                        );
+                    ->getByInstallmentIds(
+                        $installmentIds
+                    );
 
 
                 foreach ($payments as $payment) {
@@ -2038,7 +2057,7 @@ class PurchaseDocumentService extends DbConnection
 
                 throw new RuntimeException(
                     'Este lançamento ainda está como FB. '
-                    . 'Confirme as parcelas pelo fluxo de confirmação antes de editá-las.'
+                        . 'Confirme as parcelas pelo fluxo de confirmação antes de editá-las.'
                 );
             }
 
@@ -2127,10 +2146,8 @@ class PurchaseDocumentService extends DbConnection
 
 
                 $hasPaymentHistory =
-                    !empty(
-                        $paymentsByInstallment[$installmentId]
-                        ?? []
-                    );
+                    !empty($paymentsByInstallment[$installmentId]
+                        ?? []);
 
 
                 /*
@@ -2150,7 +2167,7 @@ class PurchaseDocumentService extends DbConnection
                             $existingInstallment['original_amount']
                             ?? 0
                         )
-                        * 100
+                            * 100
                     );
 
 
@@ -2234,19 +2251,17 @@ class PurchaseDocumentService extends DbConnection
 
 
                     $submittedDueDate =
-                        !empty(
-                            $installmentInput['due_date']
+                        !empty($installmentInput['due_date'])
+                        ? trim(
+                            (string) $installmentInput['due_date']
                         )
-                            ? trim(
-                                (string) $installmentInput['due_date']
-                            )
-                            : null;
+                        : null;
 
 
                     $expectedNature =
                         $existingStatus === 'AP'
-                            ? 'AP'
-                            : 'NORMAL';
+                        ? 'AP'
+                        : 'NORMAL';
 
 
                     $submittedNature =
@@ -2261,22 +2276,20 @@ class PurchaseDocumentService extends DbConnection
 
 
                     $existingDueDate =
-                        !empty(
-                            $existingInstallment['due_date']
-                        )
-                            ? (string) $existingInstallment['due_date']
-                            : null;
+                        !empty($existingInstallment['due_date'])
+                        ? (string) $existingInstallment['due_date']
+                        : null;
 
 
                     if (
                         $submittedAmountCents
-                            !== $existingAmountCents
+                        !== $existingAmountCents
                         ||
                         $submittedDueDate
-                            !== $existingDueDate
+                        !== $existingDueDate
                         ||
                         $submittedNature
-                            !== $expectedNature
+                        !== $expectedNature
                     ) {
 
                         throw new RuntimeException(
@@ -2301,16 +2314,16 @@ class PurchaseDocumentService extends DbConnection
 
                 $preparedUpdates[] = [
                     'id' =>
-                        $installmentId,
+                    $installmentId,
 
                     'due_date' =>
-                        $prepared['due_date'],
+                    $prepared['due_date'],
 
                     'original_amount' =>
-                        $prepared['original_amount'],
+                    $prepared['original_amount'],
 
                     'status' =>
-                        $prepared['status'],
+                    $prepared['status'],
                 ];
 
 
@@ -2366,19 +2379,19 @@ class PurchaseDocumentService extends DbConnection
 
                 $preparedCreates[] = [
                     'installment_number' =>
-                        $installmentNumber,
+                    $installmentNumber,
 
                     'due_date' =>
-                        $prepared['due_date'],
+                    $prepared['due_date'],
 
                     'original_amount' =>
-                        $prepared['original_amount'],
+                    $prepared['original_amount'],
 
                     'status' =>
-                        $prepared['status'],
+                    $prepared['status'],
 
                     'observation' =>
-                        null,
+                    null,
                 ];
 
 
@@ -2420,7 +2433,7 @@ class PurchaseDocumentService extends DbConnection
                         $purchaseDocument['total_value']
                         ?? 0
                     )
-                    * 100
+                        * 100
                 );
 
 
@@ -2436,26 +2449,26 @@ class PurchaseDocumentService extends DbConnection
                 $paymentScheduleStatus === 'confirmed'
                 &&
                 $totalInstallmentsCents
-                    !== $documentTotalCents
+                !== $documentTotalCents
             ) {
 
                 $difference =
                     abs(
                         $documentTotalCents
-                        - $totalInstallmentsCents
+                            - $totalInstallmentsCents
                     );
 
 
                 throw new RuntimeException(
                     'A soma das parcelas deve continuar igual '
-                    . 'ao valor total do documento. Diferença: R$ '
-                    . number_format(
-                        $difference / 100,
-                        2,
-                        ',',
-                        '.'
-                    )
-                    . '.'
+                        . 'ao valor total do documento. Diferença: R$ '
+                        . number_format(
+                            $difference / 100,
+                            2,
+                            ',',
+                            '.'
+                        )
+                        . '.'
                 );
             }
 
@@ -2467,14 +2480,14 @@ class PurchaseDocumentService extends DbConnection
              */
             $documentUpdated =
                 $this->purchaseDocumentsRepository
-                    ->updateEditableData(
-                        $purchaseDocumentId,
-                        $buyerId,
-                        $purchaseDate,
-                        $observation !== ''
-                            ? $observation
-                            : null
-                    );
+                ->updateEditableData(
+                    $purchaseDocumentId,
+                    $buyerId,
+                    $purchaseDate,
+                    $observation !== ''
+                        ? $observation
+                        : null
+                );
 
 
             if (!$documentUpdated) {
@@ -2497,10 +2510,10 @@ class PurchaseDocumentService extends DbConnection
 
                 $deleted =
                     $this->purchaseInstallmentsRepository
-                        ->deleteById(
-                            $installmentId,
-                            $purchaseDocumentId
-                        );
+                    ->deleteById(
+                        $installmentId,
+                        $purchaseDocumentId
+                    );
 
 
                 if (!$deleted) {
@@ -2521,12 +2534,12 @@ class PurchaseDocumentService extends DbConnection
 
                 $updated =
                     $this->purchaseInstallmentsRepository
-                        ->updateEditableData(
-                            (int) $preparedUpdate['id'],
-                            $preparedUpdate['due_date'],
-                            (string) $preparedUpdate['original_amount'],
-                            (string) $preparedUpdate['status']
-                        );
+                    ->updateEditableData(
+                        (int) $preparedUpdate['id'],
+                        $preparedUpdate['due_date'],
+                        (string) $preparedUpdate['original_amount'],
+                        (string) $preparedUpdate['status']
+                    );
 
 
                 if (!$updated) {
@@ -2547,10 +2560,10 @@ class PurchaseDocumentService extends DbConnection
 
                 $created =
                     $this->purchaseInstallmentsRepository
-                        ->createMany(
-                            $purchaseDocumentId,
-                            $preparedCreates
-                        );
+                    ->createMany(
+                        $purchaseDocumentId,
+                        $preparedCreates
+                    );
 
 
                 if (!$created) {
@@ -2569,7 +2582,6 @@ class PurchaseDocumentService extends DbConnection
 
 
             return $purchaseDocumentId;
-
         } catch (Throwable $err) {
 
             if (
@@ -2587,13 +2599,13 @@ class PurchaseDocumentService extends DbConnection
                 'Erro ao editar lançamento financeiro.',
                 [
                     'purchase_document_id' =>
-                        $purchaseDocumentId,
+                    $purchaseDocumentId,
 
                     'updated_by' =>
-                        $updatedBy,
+                    $updatedBy,
 
                     'error' =>
-                        $err->getMessage(),
+                    $err->getMessage(),
                 ]
             );
 
@@ -2659,13 +2671,11 @@ class PurchaseDocumentService extends DbConnection
 
 
         $dueDate =
-            !empty(
-                $installmentInput['due_date']
+            !empty($installmentInput['due_date'])
+            ? trim(
+                (string) $installmentInput['due_date']
             )
-                ? trim(
-                    (string) $installmentInput['due_date']
-                )
-                : null;
+            : null;
 
 
         if ($nature === 'NORMAL') {
@@ -2684,7 +2694,6 @@ class PurchaseDocumentService extends DbConnection
 
             $status =
                 'AV';
-
         } else {
 
             $dueDate =
@@ -2697,21 +2706,21 @@ class PurchaseDocumentService extends DbConnection
 
         return [
             'amount_cents' =>
-                $amountCents,
+            $amountCents,
 
             'original_amount' =>
-                number_format(
-                    $amountCents / 100,
-                    2,
-                    '.',
-                    ''
-                ),
+            number_format(
+                $amountCents / 100,
+                2,
+                '.',
+                ''
+            ),
 
             'due_date' =>
-                $dueDate,
+            $dueDate,
 
             'status' =>
-                $status,
+            $status,
         ];
     }
 
@@ -2795,9 +2804,9 @@ class PurchaseDocumentService extends DbConnection
              */
             $purchaseDocument =
                 $this->purchaseDocumentsRepository
-                    ->getById(
-                        $purchaseDocumentId
-                    );
+                ->getById(
+                    $purchaseDocumentId
+                );
 
 
             if (!$purchaseDocument) {
@@ -2821,7 +2830,7 @@ class PurchaseDocumentService extends DbConnection
 
                 throw new RuntimeException(
                     'Não é possível excluir este lançamento, '
-                    . 'pois ele já possui histórico financeiro.'
+                        . 'pois ele já possui histórico financeiro.'
                 );
             }
 
@@ -2833,11 +2842,11 @@ class PurchaseDocumentService extends DbConnection
              */
             $installments =
                 $this->purchaseInstallmentsRepository
-                    ->getByPurchaseDocumentIds(
-                        [
-                            $purchaseDocumentId
-                        ]
-                    );
+                ->getByPurchaseDocumentIds(
+                    [
+                        $purchaseDocumentId
+                    ]
+                );
 
 
             $installmentIds = [];
@@ -2875,7 +2884,7 @@ class PurchaseDocumentService extends DbConnection
 
                     throw new RuntimeException(
                         'Não é possível excluir este lançamento, '
-                        . 'pois ele já possui histórico financeiro.'
+                            . 'pois ele já possui histórico financeiro.'
                     );
                 }
             }
@@ -2897,16 +2906,16 @@ class PurchaseDocumentService extends DbConnection
 
                 $payments =
                     $paymentsRepository
-                        ->getByInstallmentIds(
-                            $installmentIds
-                        );
+                    ->getByInstallmentIds(
+                        $installmentIds
+                    );
 
 
                 if (!empty($payments)) {
 
                     throw new RuntimeException(
                         'Não é possível excluir este lançamento, '
-                        . 'pois ele já possui histórico financeiro.'
+                            . 'pois ele já possui histórico financeiro.'
                     );
                 }
             }
@@ -2922,34 +2931,34 @@ class PurchaseDocumentService extends DbConnection
              */
             $auditContext = [
                 'purchase_document_id' =>
-                    $purchaseDocumentId,
+                $purchaseDocumentId,
 
                 'document_origin' =>
-                    $purchaseDocument['document_origin']
+                $purchaseDocument['document_origin']
                     ?? null,
 
                 'document_type' =>
-                    $purchaseDocument['document_type']
+                $purchaseDocument['document_type']
                     ?? null,
 
                 'document_number' =>
-                    $purchaseDocument['document_number']
+                $purchaseDocument['document_number']
                     ?? null,
 
                 'nfe_id' =>
-                    $purchaseDocument['adms_daman_nfe_id']
+                $purchaseDocument['adms_daman_nfe_id']
                     ?? null,
 
                 'total_value' =>
-                    $purchaseDocument['total_value']
+                $purchaseDocument['total_value']
                     ?? null,
 
                 'purchase_date' =>
-                    $purchaseDocument['purchase_date']
+                $purchaseDocument['purchase_date']
                     ?? null,
 
                 'deleted_by' =>
-                    $deletedBy,
+                $deletedBy,
             ];
 
 
@@ -2967,7 +2976,6 @@ class PurchaseDocumentService extends DbConnection
                     'Auditoria: exclusão de lançamento financeiro autorizada.',
                     $auditContext
                 );
-
             } catch (Throwable $logErr) {
 
                 $auditContext['audit_log_fallback_error'] =
@@ -2994,9 +3002,9 @@ class PurchaseDocumentService extends DbConnection
              */
             $deleted =
                 $this->purchaseDocumentsRepository
-                    ->deleteById(
-                        $purchaseDocumentId
-                    );
+                ->deleteById(
+                    $purchaseDocumentId
+                );
 
 
             if (!$deleted) {
@@ -3015,19 +3023,18 @@ class PurchaseDocumentService extends DbConnection
 
             return [
                 'purchase_document_id' =>
-                    $purchaseDocumentId,
+                $purchaseDocumentId,
 
                 'document_origin' =>
-                    $purchaseDocument['document_origin']
+                $purchaseDocument['document_origin']
                     ?? 'MANUAL',
 
                 'nfe_id' =>
-                    (int) (
-                        $purchaseDocument['adms_daman_nfe_id']
-                        ?? 0
-                    ),
+                (int) (
+                    $purchaseDocument['adms_daman_nfe_id']
+                    ?? 0
+                ),
             ];
-
         } catch (Throwable $err) {
 
             if (
@@ -3045,13 +3052,13 @@ class PurchaseDocumentService extends DbConnection
                 'Erro ao excluir lançamento financeiro.',
                 [
                     'purchase_document_id' =>
-                        $purchaseDocumentId,
+                    $purchaseDocumentId,
 
                     'deleted_by' =>
-                        $deletedBy,
+                    $deletedBy,
 
                     'error' =>
-                        $err->getMessage(),
+                    $err->getMessage(),
                 ]
             );
 
@@ -3076,6 +3083,207 @@ class PurchaseDocumentService extends DbConnection
             $parsed !== false
             &&
             $parsed->format('Y-m-d')
-                === $date;
+            === $date;
+    }
+
+    /**
+     * Normalizar nomes para comparação de regras financeiras.
+     *
+     * CARTÃO
+     * Cartão
+     * cartao
+     *
+     * todos resultarão em CARTAO.
+     */
+    private function normalizePaymentMethodName(
+        string $name
+    ): string {
+
+        $name =
+            mb_strtoupper(
+                trim($name),
+                'UTF-8'
+            );
+
+
+        return strtr(
+            $name,
+            [
+                'Á' => 'A',
+                'À' => 'A',
+                'Â' => 'A',
+                'Ã' => 'A',
+
+                'É' => 'E',
+                'Ê' => 'E',
+
+                'Í' => 'I',
+
+                'Ó' => 'O',
+                'Ô' => 'O',
+                'Õ' => 'O',
+
+                'Ú' => 'U',
+
+                'Ç' => 'C',
+            ]
+        );
+    }
+
+
+    /**
+     * Verificar se a condição comercial é CARTÃO.
+     */
+    private function isCardPaymentMethod(
+        int $paymentMethodId
+    ): bool {
+
+        $paymentMethod =
+            $this->paymentMethodsRepository
+            ->getById(
+                $paymentMethodId
+            );
+
+
+        if (!$paymentMethod) {
+            return false;
+        }
+
+
+        $name =
+            $this->normalizePaymentMethodName(
+                (string) (
+                    $paymentMethod['name']
+                    ?? ''
+                )
+            );
+
+
+        return
+            $name === 'CARTAO';
+    }
+
+
+    /**
+     * Verificar se a forma efetiva utilizada
+     * na baixa realmente é cartão.
+     *
+     * Aceita:
+     *
+     * Cartão de Crédito
+     * Cartão de Débito
+     */
+    private function isCardFinancialPaymentMethod(
+        int $financialPaymentMethodId
+    ): bool {
+
+        $paymentMethod =
+            $this
+            ->financialPaymentMethodsRepository
+            ->getById(
+                $financialPaymentMethodId
+            );
+
+
+        if (!$paymentMethod) {
+            return false;
+        }
+
+
+        /*
+        * Forma inativa não deve ser utilizada.
+        */
+        if (
+            (int) (
+                $paymentMethod['status']
+                ?? 0
+            ) !== 1
+        ) {
+            return false;
+        }
+
+
+        $name =
+            $this->normalizePaymentMethodName(
+                (string) (
+                    $paymentMethod['name']
+                    ?? ''
+                )
+            );
+
+
+        return str_starts_with(
+            $name,
+            'CARTAO'
+        );
+    }
+
+
+    /**
+     * Regra especial da condição CARTÃO.
+     *
+     * O cartão não representa obrigação futura
+     * com o fornecedor.
+     */
+    private function validateCardPaymentSchedule(
+        int $paymentMethodId,
+        array $installments
+    ): void {
+
+        if (
+            !$this->isCardPaymentMethod(
+                $paymentMethodId
+            )
+        ) {
+            return;
+        }
+
+
+        /*
+        * CARTÃO sempre será representado
+        * por uma única parcela de controle.
+        */
+        if (count($installments) !== 1) {
+
+            throw new RuntimeException(
+                'Pagamentos em cartão devem possuir apenas uma parcela de controle.'
+            );
+        }
+
+
+        $installment =
+            $installments[0];
+
+
+        /*
+        * Não pode permanecer como obrigação em aberto.
+        */
+        if (
+            empty($installment['pay_on_save'])
+        ) {
+
+            throw new RuntimeException(
+                'Pagamentos em cartão devem ser baixados no momento do lançamento.'
+            );
+        }
+
+
+        $financialPaymentMethodId =
+            (int) (
+                $installment['adms_daman_financial_payment_method_id']
+                ?? 0
+            );
+
+
+        if (
+            !$this->isCardFinancialPaymentMethod(
+                $financialPaymentMethodId
+            )
+        ) {
+
+            throw new RuntimeException(
+                'Selecione Cartão de Crédito ou Cartão de Débito como forma de pagamento.'
+            );
+        }
     }
 }

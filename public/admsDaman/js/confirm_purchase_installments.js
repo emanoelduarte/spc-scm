@@ -37,6 +37,84 @@
         );
 
 
+    const financialPaymentMethodsData =
+        document.getElementById(
+            'confirmFinancialPaymentMethodsData'
+        );
+
+    let financialPaymentMethods = [];
+
+    if (financialPaymentMethodsData) {
+
+        try {
+
+            const parsed =
+                JSON.parse(
+                    financialPaymentMethodsData.textContent
+                    || '[]'
+                );
+
+            financialPaymentMethods =
+                Array.isArray(parsed)
+                    ? parsed
+                    : [];
+
+        } catch (error) {
+
+            console.error(
+                'Erro ao recuperar formas de pagamento.',
+                error
+            );
+
+            financialPaymentMethods = [];
+        }
+    }
+
+
+    function normalizePaymentMethodName(value) {
+
+        return String(
+            value
+            ?? ''
+        )
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toUpperCase();
+    }
+
+
+    function isCardConditionSelected() {
+
+        const selectedText =
+            paymentMethod.options[
+                paymentMethod.selectedIndex
+            ]?.textContent
+            ?? '';
+
+
+        return (
+            normalizePaymentMethodName(
+                selectedText
+            )
+            === 'CARTAO'
+        );
+    }
+
+
+    function isCardFinancialPaymentMethod(
+        method
+    ) {
+
+        return normalizePaymentMethodName(
+            method?.name
+            ?? ''
+        ).startsWith(
+            'CARTAO'
+        );
+    }
+
+
     /*
      * ==========================================================
      * GERAR PARCELAS
@@ -93,6 +171,71 @@
             try {
 
                 btnGenerate.disabled = true;
+
+
+                if (
+                    isCardConditionSelected()
+                ) {
+
+                    const cardDate =
+                        addDaysToDate(
+                            purchaseDate,
+                            0
+                        );
+
+
+                    container.innerHTML = '';
+
+
+                    const row =
+                        document.createElement(
+                            'div'
+                        );
+
+                    row.className =
+                        'row g-3';
+
+
+                    row.appendChild(
+                        createInstallmentCard({
+                            index: 0,
+                            installmentNumber: 1,
+                            dueDate:
+                                formatDateInput(
+                                    cardDate
+                                ),
+                            amountCents:
+                                totalCents,
+                            status:
+                                getInstallmentStatus(
+                                    cardDate
+                                ),
+                            payOnSave: true,
+                            cardPayment: true,
+                            financialPaymentMethodId: 0
+                        })
+                    );
+
+
+                    container.appendChild(
+                        row
+                    );
+
+
+                    bindConfirmationEvents();
+
+                    validateConfirmation();
+
+
+                    container.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+
+
+                    return;
+                }
+
 
                 btnGenerate.innerHTML = `
                     <span
@@ -282,7 +425,10 @@
         installmentNumber,
         dueDate,
         amountCents,
-        status
+        status,
+        payOnSave = false,
+        cardPayment = false,
+        financialPaymentMethodId = 0
     }) {
 
         const column =
@@ -401,10 +547,7 @@
                     </div>
 
 
-                    <!--
-                        Baixa automática opcional no momento
-                        da confirmação das parcelas.
-                    -->
+                    <!-- Baixa automática -->
                     <div class="border-top mt-3 pt-3">
 
                         <div class="form-check">
@@ -416,6 +559,7 @@
                                 name="installments[${index}][pay_on_save]"
                                 id="confirm_installment_pay_on_save_${index}"
                                 value="1"
+                                ${payOnSave ? 'checked' : ''}
                             >
 
                             <label
@@ -435,6 +579,35 @@
                             junto com a confirmação.
                         </div>
 
+
+                        <div
+                            class="mt-3 confirm-financial-payment-method-wrapper
+                            ${payOnSave ? '' : 'd-none'}">
+
+                            <label
+                                class="form-label"
+                                for="confirm_financial_payment_method_${index}">
+
+                                Forma de pagamento
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <select
+                                class="form-select confirm-installment-financial-payment-method"
+                                form="confirmPaymentScheduleForm"
+                                name="installments[${index}][adms_daman_financial_payment_method_id]"
+                                id="confirm_financial_payment_method_${index}"
+                                ${payOnSave ? 'required' : 'disabled'}>
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                            </select>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -443,7 +616,132 @@
         `;
 
 
+        column.dataset.cardPayment =
+            cardPayment
+                ? '1'
+                : '0';
+
+
+        const financialPaymentMethodSelect =
+            column.querySelector(
+                '.confirm-installment-financial-payment-method'
+            );
+
+
+        if (financialPaymentMethodSelect) {
+
+            const methodsToRender =
+                cardPayment
+                    ? financialPaymentMethods.filter(
+                        isCardFinancialPaymentMethod
+                    )
+                    : financialPaymentMethods;
+
+
+            methodsToRender.forEach(
+                method => {
+
+                    const methodId =
+                        Number(
+                            method.id
+                            ?? 0
+                        );
+
+
+                    if (methodId <= 0) {
+                        return;
+                    }
+
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+                    option.value =
+                        String(
+                            methodId
+                        );
+
+                    option.textContent =
+                        String(
+                            method.name
+                            ?? ''
+                        );
+
+                    option.selected =
+                        methodId === Number(
+                            financialPaymentMethodId
+                        );
+
+
+                    financialPaymentMethodSelect.appendChild(
+                        option
+                    );
+                }
+            );
+        }
+
+
+        updateAutomaticPaymentMethodState(
+            column
+        );
+
+
         return column;
+    }
+
+
+    function updateAutomaticPaymentMethodState(
+        card
+    ) {
+
+        if (!card) {
+            return;
+        }
+
+
+        const payOnSaveInput =
+            card.querySelector(
+                '.confirm-installment-pay-on-save'
+            );
+
+        const wrapper =
+            card.querySelector(
+                '.confirm-financial-payment-method-wrapper'
+            );
+
+        const paymentMethodSelect =
+            card.querySelector(
+                '.confirm-installment-financial-payment-method'
+            );
+
+
+        if (
+            !payOnSaveInput
+            ||
+            !wrapper
+            ||
+            !paymentMethodSelect
+        ) {
+            return;
+        }
+
+
+        const enabled =
+            payOnSaveInput.checked;
+
+
+        wrapper.classList.toggle(
+            'd-none',
+            !enabled
+        );
+
+        paymentMethodSelect.disabled =
+            !enabled;
+
+        paymentMethodSelect.required =
+            enabled;
     }
 
 
@@ -722,12 +1020,91 @@
         });
 
 
+        let automaticPaymentsValid =
+            true;
+
+
+        container
+            .querySelectorAll(
+                '.confirm-installment-pay-on-save:checked'
+            )
+            .forEach(input => {
+
+                const card =
+                    input.closest(
+                        '[data-card-payment]'
+                    );
+
+                const methodSelect =
+                    card?.querySelector(
+                        '.confirm-installment-financial-payment-method'
+                    );
+
+
+                if (
+                    !methodSelect
+                    ||
+                    !methodSelect.value
+                ) {
+
+                    automaticPaymentsValid =
+                        false;
+                }
+            });
+
+
+        if (
+            isCardConditionSelected()
+        ) {
+
+            const payOnSave =
+                container.querySelector(
+                    '.confirm-installment-pay-on-save'
+                );
+
+            const methodSelect =
+                container.querySelector(
+                    '.confirm-installment-financial-payment-method'
+                );
+
+
+            const selectedMethod =
+                financialPaymentMethods.find(
+                    method =>
+                        Number(method.id)
+                        === Number(
+                            methodSelect?.value
+                            ?? 0
+                        )
+                );
+
+
+            if (
+                amountInputs.length !== 1
+                ||
+                !payOnSave?.checked
+                ||
+                !selectedMethod
+                ||
+                !isCardFinancialPaymentMethod(
+                    selectedMethod
+                )
+            ) {
+
+                automaticPaymentsValid =
+                    false;
+            }
+        }
+
+
         const isValid =
             documentTotal > 0
             &&
             installmentsTotal === documentTotal
             &&
-            allDatesValid;
+            allDatesValid
+            &&
+            automaticPaymentsValid;
 
 
         btnConfirm.disabled =
@@ -783,6 +1160,60 @@
             .forEach(input => {
 
                 input.addEventListener(
+                    'change',
+                    validateConfirmation
+                );
+            });
+
+
+        container
+            .querySelectorAll(
+                '.confirm-installment-pay-on-save'
+            )
+            .forEach(input => {
+
+                input.addEventListener(
+                    'change',
+                    function () {
+
+                        const card =
+                            this.closest(
+                                '[data-card-payment]'
+                            );
+
+
+                        if (
+                            card?.dataset.cardPayment === '1'
+                            &&
+                            !this.checked
+                        ) {
+
+                            this.checked =
+                                true;
+
+                            alert(
+                                'Compras no CARTÃO devem ser baixadas ao confirmar.'
+                            );
+                        }
+
+
+                        updateAutomaticPaymentMethodState(
+                            card
+                        );
+
+                        validateConfirmation();
+                    }
+                );
+            });
+
+
+        container
+            .querySelectorAll(
+                '.confirm-installment-financial-payment-method'
+            )
+            .forEach(select => {
+
+                select.addEventListener(
                     'change',
                     validateConfirmation
                 );

@@ -16,8 +16,7 @@ class FinancialPaymentMethodsRepository extends DbConnection
      */
     public function getAllActiveSelect(): array
     {
-        $sql = "
-            SELECT
+        $sql = "SELECT
                 id,
                 name
             FROM adms_daman_financial_payment_methods
@@ -27,12 +26,66 @@ class FinancialPaymentMethodsRepository extends DbConnection
 
         $stmt =
             $this->getConnection()
-                ->prepare($sql);
+            ->prepare($sql);
 
         $stmt->execute();
 
         return $stmt->fetchAll(
             PDO::FETCH_ASSOC
         );
+    }
+
+    /**
+     * Recuperar uma forma de pagamento efetivo pelo ID.
+     */
+    public function getById(
+        int $id
+    ): ?array {
+
+        if ($id <= 0) {
+            return null;
+        }
+
+
+        $sql = "SELECT
+                id,
+                name,
+                status
+
+            FROM
+                adms_daman_financial_payment_methods
+
+            WHERE
+                id = :id
+
+            LIMIT 1
+        ";
+
+
+        $stmt =
+            $this->getConnection()
+            ->prepare($sql);
+
+
+        $stmt->bindValue(
+            ':id',
+            $id,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->execute();
+
+
+        $paymentMethod =
+            $stmt->fetch(
+                PDO::FETCH_ASSOC
+            );
+
+
+        return
+            $paymentMethod !== false
+            ? $paymentMethod
+            : null;
     }
 }

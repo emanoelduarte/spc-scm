@@ -868,7 +868,9 @@ class FinancialDisbursementsRepository extends DbConnection
                     AS financial_payment_method
                 ON financial_payment_method.id =
                     direct_expense.adms_daman_financial_payment_method_id
-        ";
+            WHERE
+                direct_expense.status = 1
+            ";
     }
 
 

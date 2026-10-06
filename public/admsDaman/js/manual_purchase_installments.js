@@ -103,6 +103,65 @@
         }
     }
 
+
+    /*
+     * ==========================================================
+     * REGRA ESPECIAL: CARTÃO
+     * ==========================================================
+     */
+
+    function normalizePaymentMethodName(value) {
+
+        return String(
+            value
+            ?? ''
+        )
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toUpperCase();
+    }
+
+
+    function isCardConditionSelected() {
+
+        if (
+            !paymentMethod
+            ||
+            paymentMethod.selectedIndex < 0
+        ) {
+            return false;
+        }
+
+
+        const selectedText =
+            paymentMethod.options[
+                paymentMethod.selectedIndex
+            ]?.textContent
+            ?? '';
+
+
+        return (
+            normalizePaymentMethodName(
+                selectedText
+            )
+            === 'CARTAO'
+        );
+    }
+
+
+    function isCardFinancialPaymentMethod(
+        method
+    ) {
+
+        return normalizePaymentMethodName(
+            method?.name
+            ?? ''
+        ).startsWith(
+            'CARTAO'
+        );
+    }
+
     /*
  * ==========================================================
  * PARCELAS RETORNADAS PELO POST
@@ -233,7 +292,9 @@
                         status,
                         payOnSave,
                         daysAfterPurchase,
-                        financialPaymentMethodId
+                        financialPaymentMethodId,
+                        cardPayment:
+                            isCardConditionSelected()
                     });
 
 
@@ -277,8 +338,26 @@
         }
 
 
-        const isPending =
+        let isPending =
             paymentSchedulePending.checked;
+
+
+        if (
+            isPending
+            &&
+            isCardConditionSelected()
+        ) {
+
+            paymentSchedulePending.checked =
+                false;
+
+            isPending =
+                false;
+
+            alert(
+                'A condição CARTÃO deve ser baixada no momento do lançamento e não pode ficar como Falta Boleto.'
+            );
+        }
 
 
         /*
@@ -417,14 +496,65 @@
                  * quando o status é AP.
                  */
                 const selectedPaymentMethodText =
-                    String(
+                    normalizePaymentMethodName(
                         paymentMethod.options[
                             paymentMethod.selectedIndex
                         ]?.textContent
                         ?? ''
-                    )
-                        .trim()
-                        .toUpperCase();
+                    );
+
+
+                if (
+                    selectedPaymentMethodText === 'CARTAO'
+                ) {
+
+                    const cardDate =
+                        parseDateInput(
+                            purchaseDate.value
+                        );
+
+
+                    if (!cardDate) {
+
+                        throw new Error(
+                            'Data da compra inválida.'
+                        );
+                    }
+
+
+                    renderInstallments(
+                        [
+                            {
+                                installment_number: 1,
+                                due_date:
+                                    formatDateInput(
+                                        cardDate
+                                    ),
+                                original_amount:
+                                    formatMoneyInput(
+                                        totalCents
+                                    ),
+                                status:
+                                    getInstallmentStatus(
+                                        cardDate
+                                    ),
+                                days_after_purchase: 0,
+                                pay_on_save: 1,
+                                adms_daman_financial_payment_method_id: 0
+                            }
+                        ],
+                        true
+                    );
+
+
+                    preview.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+
+                    return;
+                }
 
 
                 if (
@@ -651,7 +781,8 @@
         status,
         payOnSave = false,
         daysAfterPurchase = -1,
-        financialPaymentMethodId = 0
+        financialPaymentMethodId = 0,
+        cardPayment = false
     }) {
 
         const card =
@@ -661,6 +792,12 @@
 
         card.className =
             'col-md-6 col-xl-4';
+
+
+        card.dataset.cardPayment =
+            cardPayment
+                ? '1'
+                : '0';
 
 
         card.innerHTML = `
@@ -856,7 +993,15 @@
 
         if (financialPaymentMethodSelect) {
 
-            financialPaymentMethods.forEach(
+            const methodsToRender =
+                cardPayment
+                    ? financialPaymentMethods.filter(
+                        isCardFinancialPaymentMethod
+                    )
+                    : financialPaymentMethods;
+
+
+            methodsToRender.forEach(
                 method => {
 
                     const methodId =
@@ -1191,10 +1336,29 @@
                     'change',
                     function () {
 
-                        updateAutomaticPaymentMethodState(
+                        const card =
                             this.closest(
                                 '.card'
-                            )
+                            );
+
+
+                        if (
+                            card?.dataset.cardPayment === '1'
+                            &&
+                            !this.checked
+                        ) {
+
+                            this.checked =
+                                true;
+
+                            alert(
+                                'Compras no CARTÃO devem ser baixadas ao salvar.'
+                            );
+                        }
+
+
+                        updateAutomaticPaymentMethodState(
+                            card
                         );
                     }
                 );
@@ -1555,7 +1719,12 @@
 
     paymentMethod.addEventListener(
         'change',
-        invalidateInstallments
+        function () {
+
+            updatePaymentSchedulePendingState();
+
+            invalidateInstallments();
+        }
     );
 
 

@@ -58,8 +58,26 @@
         }
 
 
-        const isPending =
+        let isPending =
             paymentSchedulePending.checked;
+
+
+        if (
+            isPending
+            &&
+            isCardConditionSelected()
+        ) {
+
+            paymentSchedulePending.checked =
+                false;
+
+            isPending =
+                false;
+
+            alert(
+                'A condição CARTÃO deve ser baixada no momento do lançamento e não pode ficar como Falta Boleto.'
+            );
+        }
 
 
         /*
@@ -233,6 +251,71 @@
         }
     }
 
+
+    /*
+     * ==========================================================
+     * REGRA ESPECIAL: CARTÃO
+     * ==========================================================
+     */
+
+    function normalizePaymentMethodName(value) {
+
+        return String(
+            value
+            ?? ''
+        )
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim()
+            .toUpperCase();
+    }
+
+
+    function isCardConditionSelected() {
+
+        const paymentMethodElement =
+            document.getElementById(
+                'adms_daman_payment_method_id'
+            );
+
+
+        if (
+            !paymentMethodElement
+            ||
+            paymentMethodElement.selectedIndex < 0
+        ) {
+            return false;
+        }
+
+
+        const selectedText =
+            paymentMethodElement.options[
+                paymentMethodElement.selectedIndex
+            ]?.textContent
+            ?? '';
+
+
+        return (
+            normalizePaymentMethodName(
+                selectedText
+            )
+            === 'CARTAO'
+        );
+    }
+
+
+    function isCardFinancialPaymentMethod(
+        method
+    ) {
+
+        return normalizePaymentMethodName(
+            method?.name
+            ?? ''
+        ).startsWith(
+            'CARTAO'
+        );
+    }
+
     /*
      * Se algum elemento essencial estiver ausente,
      * não executar o módulo.
@@ -319,6 +402,77 @@
             try {
 
                 btnGenerateInstallments.disabled = true;
+
+
+                /*
+                 * CARTÃO:
+                 * uma única parcela de controle,
+                 * com baixa obrigatória ao salvar.
+                 */
+                if (
+                    isCardConditionSelected()
+                ) {
+
+                    const cardDate =
+                        parseDateInput(
+                            purchaseDate.value
+                        );
+
+
+                    if (!cardDate) {
+
+                        throw new Error(
+                            'Data da compra inválida.'
+                        );
+                    }
+
+
+                    container.innerHTML = '';
+
+
+                    const card =
+                        createInstallmentCard({
+                            index: 0,
+                            installmentNumber: 1,
+                            dueDate:
+                                formatDateInput(
+                                    cardDate
+                                ),
+                            amountCents:
+                                totalCents,
+                            status:
+                                getInstallmentStatus(
+                                    cardDate
+                                ),
+                            payOnSave: true,
+                            financialPaymentMethodId: 0,
+                            cardPayment: true
+                        });
+
+
+                    container.appendChild(
+                        card
+                    );
+
+
+                    preview.classList.remove(
+                        'd-none'
+                    );
+
+
+                    bindInstallmentEvents();
+
+                    recalculateInstallmentsSummary();
+
+
+                    preview.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+
+                    return;
+                }
 
 
                 const response = await fetch(
@@ -488,7 +642,8 @@
         amountCents,
         status,
         payOnSave = false,
-        financialPaymentMethodId = 0
+        financialPaymentMethodId = 0,
+        cardPayment = false
     }) {
 
         const safeInstallmentNumber =
@@ -530,6 +685,12 @@
 
         card.className =
             'col-md-6 col-xl-4';
+
+
+        card.dataset.cardPayment =
+            cardPayment
+                ? '1'
+                : '0';
 
 
         card.innerHTML = `
@@ -752,7 +913,15 @@
 
         if (financialPaymentMethodSelect) {
 
-            financialPaymentMethods.forEach(
+            const methodsToRender =
+                cardPayment
+                    ? financialPaymentMethods.filter(
+                        isCardFinancialPaymentMethod
+                    )
+                    : financialPaymentMethods;
+
+
+            methodsToRender.forEach(
                 method => {
 
                     const methodId =
@@ -1220,10 +1389,29 @@
                     'change',
                     function () {
 
-                        updateAutomaticPaymentMethodState(
+                        const card =
                             this.closest(
                                 '.card'
-                            )
+                            );
+
+
+                        if (
+                            card?.dataset.cardPayment === '1'
+                            &&
+                            !this.checked
+                        ) {
+
+                            this.checked =
+                                true;
+
+                            alert(
+                                'Compras no CARTÃO devem ser baixadas ao salvar.'
+                            );
+                        }
+
+
+                        updateAutomaticPaymentMethodState(
+                            card
                         );
                     }
                 );
@@ -1363,7 +1551,10 @@
                                     'adms_daman_financial_payment_method_id'
                                 ]
                                 ?? 0
-                            )
+                            ),
+
+                        cardPayment:
+                            isCardConditionSelected()
                     });
 
 
@@ -1960,6 +2151,46 @@
             }
         );
     }
+
+    /*
+     * ==========================================================
+     * INVALIDAR PARCELAS AO TROCAR CONDIÇÃO / DATA
+     * ==========================================================
+     */
+
+    function invalidateGeneratedInstallments() {
+
+        container.innerHTML = '';
+
+        preview.classList.add(
+            'd-none'
+        );
+
+
+        if (btnSavePurchaseDocument) {
+
+            btnSavePurchaseDocument.disabled =
+                true;
+        }
+    }
+
+
+    paymentMethod.addEventListener(
+        'change',
+        function () {
+
+            updatePaymentSchedulePendingState();
+
+            invalidateGeneratedInstallments();
+        }
+    );
+
+
+    purchaseDate.addEventListener(
+        'change',
+        invalidateGeneratedInstallments
+    );
+
 
     /*
    * ==========================================================

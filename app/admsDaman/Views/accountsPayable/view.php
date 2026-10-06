@@ -30,7 +30,7 @@ $financialPaymentMethodsRepository =
 
 $financialPaymentMethods =
     $financialPaymentMethodsRepository
-        ->getAllActiveSelect();
+    ->getAllActiveSelect();
 
 
 /*
@@ -41,9 +41,7 @@ $financialPaymentMethods =
  * O Service valida novamente antes do DELETE.
  */
 $canDeletePurchaseDocument =
-    !empty(
-        $this->data['canDeletePurchaseDocument']
-    );
+    !empty($this->data['canDeletePurchaseDocument']);
 
 $paymentCsrfToken =
     CSRFHelper::generateCSRFToken(
@@ -1881,6 +1879,20 @@ $difference =
 
                 <?php if ($isPaymentSchedulePending): ?>
 
+                    <script
+                        type="application/json"
+                        id="confirmFinancialPaymentMethodsData">
+                        <?= json_encode(
+                            $financialPaymentMethods,
+                            JSON_UNESCAPED_UNICODE
+                                | JSON_UNESCAPED_SLASHES
+                                | JSON_HEX_TAG
+                                | JSON_HEX_AMP
+                                | JSON_HEX_APOS
+                                | JSON_HEX_QUOT
+                        ); ?>
+                    </script>
+
                     <div class="alert alert-warning mb-0">
 
                         <div class="d-flex align-items-center gap-2">
@@ -2200,11 +2212,11 @@ $difference =
                                                 $purchaseDocument['document_type']
                                                 ?? ''
                                             )
-                                            . ' '
-                                            . (
-                                                $purchaseDocument['document_number']
-                                                ?? ''
-                                            )
+                                                . ' '
+                                                . (
+                                                    $purchaseDocument['document_number']
+                                                    ?? ''
+                                                )
                                         )
                                     ); ?>
 

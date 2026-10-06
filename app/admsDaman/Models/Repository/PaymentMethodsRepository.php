@@ -55,4 +55,57 @@ class PaymentMethodsRepository extends DbConnection
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Recuperar uma condição de pagamento pelo ID.
+     */
+    public function getById(
+        int $id
+    ): ?array {
+
+        if ($id <= 0) {
+            return null;
+        }
+
+
+        $sql = 'SELECT
+                id,
+                name
+
+            FROM
+                adms_daman_payment_methods
+
+            WHERE
+                id = :id
+
+            LIMIT 1
+        ';
+
+
+        $stmt =
+            $this->getConnection()
+            ->prepare($sql);
+
+
+        $stmt->bindValue(
+            ':id',
+            $id,
+            PDO::PARAM_INT
+        );
+
+
+        $stmt->execute();
+
+
+        $paymentMethod =
+            $stmt->fetch(
+                PDO::FETCH_ASSOC
+            );
+
+
+        return
+            $paymentMethod !== false
+            ? $paymentMethod
+            : null;
+    }
 }
