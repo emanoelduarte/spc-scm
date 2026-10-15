@@ -12,6 +12,7 @@ use App\admsDaman\Models\Repository\PurchaseInstallmentPaymentsRepository;
 use App\admsDaman\Models\Repository\PurchaseDocumentAllocationsRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
 use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
+use App\admsDaman\Models\Repository\SuppliersRepository;
 use RuntimeException;
 use Throwable;
 
@@ -25,6 +26,7 @@ class PurchaseDocumentService extends DbConnection
     private PurchaseDocumentAllocationService $purchaseDocumentAllocationService;
     private PaymentMethodsRepository $paymentMethodsRepository;
     private FinancialPaymentMethodsRepository $financialPaymentMethodsRepository;
+    private SuppliersRepository $suppliersRepository;
 
     public function __construct()
     {
@@ -44,6 +46,9 @@ class PurchaseDocumentService extends DbConnection
 
         $this->financialPaymentMethodsRepository =
             new FinancialPaymentMethodsRepository();
+
+        $this->suppliersRepository =
+            new SuppliersRepository();
 
         /*
         * Repository responsável por persistir
@@ -139,6 +144,21 @@ class PurchaseDocumentService extends DbConnection
                 'Esta NF-e já possui um lançamento financeiro.'
             );
         }
+
+
+        /*
+         * =====================================================
+         * IDENTIFICAR O FORNECEDOR PELO CNPJ DA NF-e
+         * =====================================================
+         */
+        $supplierId =
+            $this->suppliersRepository
+                ->findSupplierIdByCnpj(
+                    (string) (
+                        $nfe['issuer_cnpj']
+                        ?? ''
+                    )
+                );
 
 
         /*
@@ -377,6 +397,9 @@ class PurchaseDocumentService extends DbConnection
 
                     'adms_daman_nfe_id' =>
                     (int) $nfe['id'],
+
+                    'adms_daman_supplier_id' =>
+                    $supplierId,
 
                     /*
                          * Mantido temporariamente por compatibilidade.

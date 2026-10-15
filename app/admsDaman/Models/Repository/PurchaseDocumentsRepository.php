@@ -417,8 +417,8 @@ class PurchaseDocumentsRepository extends DbConnection
                     * Fornecedor.
                     */
                     COALESCE(
-                        nfe.issuer_name,
-                        supplier.legal_name
+                        supplier.legal_name,
+                        nfe.issuer_name
                     ) AS supplier_name,
 
                     COALESCE(
@@ -972,6 +972,7 @@ class PurchaseDocumentsRepository extends DbConnection
                 INSERT INTO adms_daman_purchase_documents
                 (
                     adms_daman_nfe_id,
+                    adms_daman_supplier_id,
                     adms_daman_project_id,
                     adms_daman_user_id,
                     adms_daman_payment_method_id,
@@ -986,6 +987,7 @@ class PurchaseDocumentsRepository extends DbConnection
                 VALUES
                 (
                     :adms_daman_nfe_id,
+                    :adms_daman_supplier_id,
                     :adms_daman_project_id,
                     :adms_daman_user_id,
                     :adms_daman_payment_method_id,
@@ -1009,6 +1011,21 @@ class PurchaseDocumentsRepository extends DbConnection
                 ':adms_daman_nfe_id',
                 (int) $data['adms_daman_nfe_id'],
                 PDO::PARAM_INT
+            );
+
+
+            $supplierId =
+                !empty($data['adms_daman_supplier_id'])
+                    ? (int) $data['adms_daman_supplier_id']
+                    : null;
+
+
+            $stmt->bindValue(
+                ':adms_daman_supplier_id',
+                $supplierId,
+                $supplierId === null
+                    ? PDO::PARAM_NULL
+                    : PDO::PARAM_INT
             );
 
 
@@ -1241,8 +1258,8 @@ class PurchaseDocumentsRepository extends DbConnection
                 * Fornecedor.
                 */
                 COALESCE(
-                    nfe.issuer_name,
-                    supplier.legal_name
+                    supplier.legal_name,
+                    nfe.issuer_name
                 ) AS supplier_name,
 
                 COALESCE(
@@ -1761,128 +1778,113 @@ class PurchaseDocumentsRepository extends DbConnection
     public function getPurchaseSuppliersSelect(): array
     {
         try {
-
             $sql = "
-            SELECT
-                MAX(
-                    COALESCE(
-                        nfe.issuer_name,
-                        supplier.legal_name
-                    )
-                ) AS supplier_name,
+                SELECT
+                    MAX(
+                        CASE
+                            WHEN pd.adms_daman_supplier_id IS NOT NULL
+                                THEN supplier.legal_name
+                            ELSE COALESCE(
+                                nfe.issuer_name,
+                                supplier.legal_name
+                            )
+                        END
+                    ) AS supplier_name,
 
-                CASE
+                    CASE
+                        WHEN pd.adms_daman_supplier_id IS NOT NULL
+                            THEN CONCAT(
+                                'supplier:',
+                                pd.adms_daman_supplier_id
+                            )
 
-                    /*
-                     * Havendo CNPJ, utilizar documento fiscal.
-                     *
-                     * Isso permite agrupar NF-e e compras
-                     * avulsas do mesmo fornecedor.
-                     */
-                    WHEN
-                        REPLACE(
+                        WHEN
                             REPLACE(
                                 REPLACE(
                                     REPLACE(
-                                        COALESCE(
-                                            nfe.issuer_cnpj,
-                                            supplier.cnpj,
+                                        REPLACE(
+                                            COALESCE(
+                                                nfe.issuer_cnpj,
+                                                supplier.cnpj,
+                                                ''
+                                            ),
+                                            '.',
                                             ''
                                         ),
-                                        '.',
+                                        '/',
                                         ''
                                     ),
-                                    '/',
+                                    '-',
                                     ''
                                 ),
-                                '-',
+                                ' ',
                                 ''
-                            ),
-                            ' ',
-                            ''
-                        ) <> ''
-
-                    THEN CONCAT(
-                        'tax:',
-                        REPLACE(
+                            ) <> ''
+                        THEN CONCAT(
+                            'tax:',
                             REPLACE(
                                 REPLACE(
                                     REPLACE(
-                                        COALESCE(
-                                            nfe.issuer_cnpj,
-                                            supplier.cnpj
+                                        REPLACE(
+                                            COALESCE(
+                                                nfe.issuer_cnpj,
+                                                supplier.cnpj
+                                            ),
+                                            '.',
+                                            ''
                                         ),
-                                        '.',
+                                        '/',
                                         ''
                                     ),
-                                    '/',
+                                    '-',
                                     ''
                                 ),
-                                '-',
+                                ' ',
                                 ''
-                            ),
-                            ' ',
-                            ''
+                            )
                         )
-                    )
 
+                        ELSE NULL
+                    END AS supplier_key
 
-                    /*
-                     * Compra avulsa sem CNPJ.
-                     */
-                    WHEN
-                        pd.adms_daman_supplier_id IS NOT NULL
+                FROM
+                    adms_daman_purchase_documents AS pd
 
-                    THEN CONCAT(
-                        'supplier:',
-                        pd.adms_daman_supplier_id
-                    )
+                LEFT JOIN
+                    adms_daman_nfes AS nfe
+                    ON nfe.id = pd.adms_daman_nfe_id
 
+                LEFT JOIN
+                    adms_daman_suppliers AS supplier
+                    ON supplier.id = pd.adms_daman_supplier_id
 
-                    ELSE NULL
+                GROUP BY
+                    supplier_key
 
-                END AS supplier_key
+                HAVING
+                    supplier_key IS NOT NULL
 
-            FROM
-                adms_daman_purchase_documents pd
-
-            LEFT JOIN
-                adms_daman_nfes nfe
-                ON nfe.id = pd.adms_daman_nfe_id
-
-            LEFT JOIN
-                adms_daman_suppliers supplier
-                ON supplier.id = pd.adms_daman_supplier_id
-
-            GROUP BY
-                supplier_key
-
-            HAVING
-                supplier_key IS NOT NULL
-
-            ORDER BY
-                supplier_name ASC
-        ";
-
+                ORDER BY
+                    supplier_name ASC
+            ";
 
             $stmt =
-                $this->getConnection()->prepare(
-                    $sql
-                );
+                $this->getConnection()
+                    ->prepare(
+                        $sql
+                    );
 
             $stmt->execute();
-
 
             return $stmt->fetchAll(
                 PDO::FETCH_ASSOC
             );
         } catch (PDOException $e) {
-
             GenerateLog::generateLog(
                 'error',
                 'Erro ao recuperar fornecedores dos lançamentos.',
                 [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]
             );
 

@@ -97,27 +97,67 @@ class SuppliersRepository extends DbConnection
     public function getSupplier(int $id): array|bool
     {
         try {
-            $sql = 'SELECT ads.id, ads.legal_name, ads.trade_name, ads.cnpj, ads.contact_name, ads.phone, ads.email, ads.adms_daman_suppliers_types_id, ads.accepted_payments, ads.supplier_status, ads.created_at, ads.updated_at,
-            adst.name AS supplier_type
-            FROM adms_daman_suppliers AS ads
-            INNER JOIN adms_daman_suppliers_types AS adst ON adst.id = ads.adms_daman_suppliers_types_id
-            WHERE ads.id = :id';
+            $sql = '
+                SELECT
+                    ads.id,
+                    ads.legal_name,
+                    ads.trade_name,
+                    ads.cnpj,
+                    ads.contact_name,
+                    ads.phone,
+                    ads.email,
+                    ads.adms_daman_suppliers_types_id,
+                    ads.accepted_payments,
+                    ads.supplier_status,
+                    ads.created_at,
+                    ads.updated_at,
+                    adst.name AS supplier_type
+                FROM adms_daman_suppliers AS ads
+                INNER JOIN adms_daman_suppliers_types AS adst
+                    ON adst.id = ads.adms_daman_suppliers_types_id
+                WHERE ads.id = :id
+                LIMIT 1
+            ';
 
-            // Preparar a Query
             $stmt = $this->getConnection()->prepare($sql);
-
-            // Substiruir os links pelos valores 
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-
-            // Executar a Query
             $stmt->execute();
 
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $supplier = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$supplier) {
+                return false;
+            }
+
+            $additionalCnpjs = [];
+
+            foreach ($this->getSupplierTaxIds($id) as $taxId) {
+                if ((int) ($taxId['is_primary'] ?? 0) === 1) {
+                    continue;
+                }
+
+                $additionalCnpjs[] =
+                    $this->formatCnpj(
+                        (string) ($taxId['cnpj'] ?? '')
+                    );
+            }
+
+            $supplier['additional_cnpjs'] =
+                implode(PHP_EOL, $additionalCnpjs);
+
+            return $supplier;
         } catch (Exception $err) {
-            GenerateLog::generateLog("error", "Fornecedor não encontrado", ['id' => (int) $id]);
-            die("Fornecedor não encontrado " . $err->getMessage());
+            GenerateLog::generateLog(
+                'error',
+                'Fornecedor não encontrado',
+                [
+                    'id' => $id,
+                    'error' => $err->getMessage(),
+                ]
+            );
+
+            return false;
         }
-        return false;
     }
 
     /**
@@ -127,37 +167,82 @@ class SuppliersRepository extends DbConnection
      */
     public function createSupplier(array $data): bool|int
     {
+        $connection = $this->getConnection();
+
         try {
-            // Criar a Query para cadastrar os dados
-            $sql = 'INSERT INTO adms_daman_suppliers (legal_name, trade_name, cnpj, contact_name, phone, email, adms_daman_suppliers_types_id, supplier_status, created_at) 
-            VALUES (:legal_name, :trade_name, :cnpj, :contact_name, :phone, :email, :adms_daman_suppliers_types_id, :supplier_status, :created_at)';
+            $connection->beginTransaction();
 
-            if ($data['email'] == '') {
-                $data['email'] = null;
-            }
+            $sql = '
+                INSERT INTO adms_daman_suppliers
+                (
+                    legal_name,
+                    trade_name,
+                    cnpj,
+                    contact_name,
+                    phone,
+                    email,
+                    adms_daman_suppliers_types_id,
+                    supplier_status,
+                    created_at
+                )
+                VALUES
+                (
+                    :legal_name,
+                    :trade_name,
+                    :cnpj,
+                    :contact_name,
+                    :phone,
+                    :email,
+                    :adms_daman_suppliers_types_id,
+                    :supplier_status,
+                    :created_at
+                )
+            ';
 
-            // Preparar a query para inserir os dados no banco de dados
-            $stmt = $this->getConnection()->prepare($sql);
+            $email =
+                trim((string) ($data['email'] ?? '')) !== ''
+                    ? trim((string) $data['email'])
+                    : null;
 
-            // Substituir os links pelos valores passados no array
-            $stmt->bindValue(':legal_name', strtoupper($data['legal_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':trade_name', strtoupper($data['trade_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':cnpj', $data['cnpj'], PDO::PARAM_STR);
-            $stmt->bindValue(':contact_name', strtoupper($data['contact_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':phone', $data['phone'], PDO::PARAM_STR);
-            $stmt->bindValue(':email', $data['email']);
-            $stmt->bindValue(':adms_daman_suppliers_types_id', $data['adms_daman_suppliers_types_id'], PDO::PARAM_INT);
+            $stmt = $connection->prepare($sql);
+            $stmt->bindValue(':legal_name', strtoupper((string) $data['legal_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':trade_name', strtoupper((string) $data['trade_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':cnpj', (string) $data['cnpj'], PDO::PARAM_STR);
+            $stmt->bindValue(':contact_name', strtoupper((string) $data['contact_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':phone', (string) $data['phone'], PDO::PARAM_STR);
+            $stmt->bindValue(':email', $email, $email === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->bindValue(
+                ':adms_daman_suppliers_types_id',
+                (int) $data['adms_daman_suppliers_types_id'],
+                PDO::PARAM_INT
+            );
             $stmt->bindValue(':supplier_status', 1, PDO::PARAM_INT);
-            $stmt->bindValue(':created_at', date("Y-m-d H:i:s"));
-
-            // Executar a querry para cadastrar no banco de dados
+            $stmt->bindValue(':created_at', date('Y-m-d H:i:s'));
             $stmt->execute();
 
-            // Retornar o ID do fornecedor recém cadastrado
-            return $this->getConnection()->lastInsertId();
+            $supplierId = (int) $connection->lastInsertId();
+
+            $this->syncSupplierTaxIds(
+                $supplierId,
+                $data
+            );
+
+            $connection->commit();
+
+            return $supplierId;
         } catch (Exception $e) {
-            // Chamar método para salvar o log
-            GenerateLog::generateLog("error", "Usuário tentou cadastrar usuário existente", ['email' => $data['email'], 'error_sql' => $e->getMessage()]);
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+
+            GenerateLog::generateLog(
+                'error',
+                'Fornecedor não cadastrado.',
+                [
+                    'legal_name' => $data['legal_name'] ?? null,
+                    'error' => $e->getMessage(),
+                ]
+            );
 
             return false;
         }
@@ -170,46 +255,578 @@ class SuppliersRepository extends DbConnection
      */
     public function updateSupplier(array $data): bool
     {
-        // Usar try e catch para gerencia exceção/erro
-        try { // Permanece no try se não houver nenhum erro
+        $connection = $this->getConnection();
 
-            // Query para atualizar o Fornecedor
-            $sql = "UPDATE adms_daman_suppliers 
-            SET legal_name = :legal_name, trade_name = :trade_name, cnpj = :cnpj, contact_name = :contact_name, phone = :phone, email = :email, adms_daman_suppliers_types_id = :adms_daman_suppliers_types_id, supplier_status = :supplier_status, updated_at = :updated_at";
+        try {
+            $connection->beginTransaction();
 
-            // Condição para indicar qual registo editar
-            $sql .= ' WHERE id = :id';
+            $sql = '
+                UPDATE adms_daman_suppliers
+                SET
+                    legal_name = :legal_name,
+                    trade_name = :trade_name,
+                    cnpj = :cnpj,
+                    contact_name = :contact_name,
+                    phone = :phone,
+                    email = :email,
+                    adms_daman_suppliers_types_id = :adms_daman_suppliers_types_id,
+                    supplier_status = :supplier_status,
+                    updated_at = :updated_at
+                WHERE id = :id
+            ';
 
-            // Preparar a Query
-            $stmt = $this->getConnection()->prepare($sql);
+            $email =
+                trim((string) ($data['email'] ?? '')) !== ''
+                    ? trim((string) $data['email'])
+                    : null;
 
-            // Substituir os links pelos valores passados no array
-            $stmt->bindValue(':legal_name', strtoupper($data['legal_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':trade_name', strtoupper($data['trade_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':cnpj', $data['cnpj'], PDO::PARAM_STR);
-            $stmt->bindValue(':contact_name', strtoupper($data['contact_name']), PDO::PARAM_STR);
-            $stmt->bindValue(':phone', $data['phone'], PDO::PARAM_STR);
-            $stmt->bindValue(':email', $data['email']);
-            $stmt->bindValue(':adms_daman_suppliers_types_id', $data['adms_daman_suppliers_types_id'], PDO::PARAM_INT);
-            $stmt->bindValue(':supplier_status', $data['supplier_status'], PDO::PARAM_INT);
-            $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
-            $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
-
-            // Executar a Query.
-            //
-            // IMPORTANTE:
-            // rowCount() pode retornar 0 quando os dados gerais do
-            // fornecedor não mudam. Isso é válido, por exemplo, quando
-            // o usuário altera somente o endereço.
+            $stmt = $connection->prepare($sql);
+            $stmt->bindValue(':legal_name', strtoupper((string) $data['legal_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':trade_name', strtoupper((string) $data['trade_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':cnpj', (string) $data['cnpj'], PDO::PARAM_STR);
+            $stmt->bindValue(':contact_name', strtoupper((string) $data['contact_name']), PDO::PARAM_STR);
+            $stmt->bindValue(':phone', (string) $data['phone'], PDO::PARAM_STR);
+            $stmt->bindValue(':email', $email, $email === null ? PDO::PARAM_NULL : PDO::PARAM_STR);
+            $stmt->bindValue(
+                ':adms_daman_suppliers_types_id',
+                (int) $data['adms_daman_suppliers_types_id'],
+                PDO::PARAM_INT
+            );
+            $stmt->bindValue(
+                ':supplier_status',
+                (int) ($data['supplier_status'] ?? 1),
+                PDO::PARAM_INT
+            );
+            $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'), PDO::PARAM_STR);
+            $stmt->bindValue(':id', (int) $data['id'], PDO::PARAM_INT);
             $stmt->execute();
 
+            $this->syncSupplierTaxIds(
+                (int) $data['id'],
+                $data
+            );
+
+            $connection->commit();
+
             return true;
-        } catch (Exception $e) { // Acessa o catch quando houver erro no try
-            // Chamar método para salvar o log
-            GenerateLog::generateLog("error", "Fornecedor não editado.", ['id' => $data['id'], 'error' => $e->getMessage()]);
+        } catch (Exception $e) {
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+
+            GenerateLog::generateLog(
+                'error',
+                'Fornecedor não editado.',
+                [
+                    'id' => (int) ($data['id'] ?? 0),
+                    'error' => $e->getMessage(),
+                ]
+            );
 
             return false;
         }
+    }
+
+
+    public function validateSupplierTaxIds(
+        array $data,
+        ?int $supplierId = null
+    ): ?string {
+        try {
+            $taxIdsData =
+                $this->extractSupplierTaxIds(
+                    $data
+                );
+
+            $taxIds = $taxIdsData['all'];
+
+            $placeholders =
+                implode(
+                    ', ',
+                    array_fill(
+                        0,
+                        count($taxIds),
+                        '?'
+                    )
+                );
+
+            $sql = "
+                SELECT
+                    supplier_tax_id.cnpj,
+                    supplier.legal_name
+                FROM
+                    adms_daman_supplier_tax_ids AS supplier_tax_id
+                INNER JOIN
+                    adms_daman_suppliers AS supplier
+                    ON supplier.id =
+                        supplier_tax_id.adms_daman_supplier_id
+                WHERE
+                    supplier_tax_id.cnpj IN ({$placeholders})
+            ";
+
+            $params = $taxIds;
+
+            if ($supplierId !== null && $supplierId > 0) {
+                $sql .= '
+                    AND supplier_tax_id.adms_daman_supplier_id <> ?
+                ';
+
+                $params[] = $supplierId;
+            }
+
+            $sql .= ' LIMIT 1';
+
+            $stmt =
+                $this->getConnection()
+                    ->prepare(
+                        $sql
+                    );
+
+            $stmt->execute(
+                $params
+            );
+
+            $conflict =
+                $stmt->fetch(
+                    PDO::FETCH_ASSOC
+                );
+
+            if (!$conflict) {
+                return null;
+            }
+
+            return
+                'O CNPJ '
+                . $this->formatCnpj(
+                    (string) $conflict['cnpj']
+                )
+                . ' já está vinculado ao fornecedor '
+                . (string) $conflict['legal_name']
+                . '.';
+
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+    public function findSupplierIdByCnpj(
+        string $cnpj
+    ): ?int {
+        $normalizedCnpj =
+            $this->normalizeCnpj(
+                $cnpj
+            );
+
+        if (strlen($normalizedCnpj) !== 14) {
+            return null;
+        }
+
+        $sql = '
+            SELECT
+                adms_daman_supplier_id
+            FROM
+                adms_daman_supplier_tax_ids
+            WHERE
+                cnpj = :cnpj
+                AND status = 1
+            LIMIT 1
+        ';
+
+        $stmt =
+            $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+        $stmt->bindValue(
+            ':cnpj',
+            $normalizedCnpj,
+            PDO::PARAM_STR
+        );
+
+        $stmt->execute();
+
+        $supplierId =
+            $stmt->fetchColumn();
+
+        if ($supplierId !== false) {
+            return (int) $supplierId;
+        }
+
+        $sql = "
+            SELECT
+                id
+            FROM
+                adms_daman_suppliers
+            WHERE
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                cnpj,
+                                '.',
+                                ''
+                            ),
+                            '/',
+                            ''
+                        ),
+                        '-',
+                        ''
+                    ),
+                    ' ',
+                    ''
+                ) = :cnpj
+            LIMIT 1
+        ";
+
+        $stmt =
+            $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+        $stmt->bindValue(
+            ':cnpj',
+            $normalizedCnpj,
+            PDO::PARAM_STR
+        );
+
+        $stmt->execute();
+
+        $supplierId =
+            $stmt->fetchColumn();
+
+        return
+            $supplierId !== false
+                ? (int) $supplierId
+                : null;
+    }
+
+
+    public function getSupplierTaxIds(
+        int $supplierId
+    ): array {
+        if ($supplierId <= 0) {
+            return [];
+        }
+
+        $sql = '
+            SELECT
+                id,
+                cnpj,
+                is_primary,
+                status
+            FROM
+                adms_daman_supplier_tax_ids
+            WHERE
+                adms_daman_supplier_id = :supplier_id
+                AND status = 1
+            ORDER BY
+                is_primary DESC,
+                id ASC
+        ';
+
+        $stmt =
+            $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+        $stmt->bindValue(
+            ':supplier_id',
+            $supplierId,
+            PDO::PARAM_INT
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+    }
+
+
+    private function syncSupplierTaxIds(
+        int $supplierId,
+        array $data
+    ): void {
+        $taxIdsData =
+            $this->extractSupplierTaxIds(
+                $data
+            );
+
+        $taxIds = $taxIdsData['all'];
+        $primaryCnpj = $taxIdsData['primary'];
+        $connection = $this->getConnection();
+
+        $validationError =
+            $this->validateSupplierTaxIds(
+                $data,
+                $supplierId
+            );
+
+        if ($validationError !== null) {
+            throw new Exception(
+                $validationError
+            );
+        }
+
+        $deleteStmt =
+            $connection->prepare(
+                '
+                    DELETE FROM
+                        adms_daman_supplier_tax_ids
+                    WHERE
+                        adms_daman_supplier_id = :supplier_id
+                '
+            );
+
+        $deleteStmt->bindValue(
+            ':supplier_id',
+            $supplierId,
+            PDO::PARAM_INT
+        );
+
+        $deleteStmt->execute();
+
+        $insertStmt =
+            $connection->prepare(
+                '
+                    INSERT INTO adms_daman_supplier_tax_ids
+                    (
+                        adms_daman_supplier_id,
+                        cnpj,
+                        is_primary,
+                        status,
+                        created_at,
+                        updated_at
+                    )
+                    VALUES
+                    (
+                        :supplier_id,
+                        :cnpj,
+                        :is_primary,
+                        1,
+                        NOW(),
+                        NOW()
+                    )
+                '
+            );
+
+        foreach ($taxIds as $cnpj) {
+            $insertStmt->bindValue(
+                ':supplier_id',
+                $supplierId,
+                PDO::PARAM_INT
+            );
+
+            $insertStmt->bindValue(
+                ':cnpj',
+                $cnpj,
+                PDO::PARAM_STR
+            );
+
+            $insertStmt->bindValue(
+                ':is_primary',
+                $cnpj === $primaryCnpj
+                    ? 1
+                    : 0,
+                PDO::PARAM_INT
+            );
+
+            $insertStmt->execute();
+        }
+
+        $this->relinkPurchaseDocumentsByTaxIds(
+            $supplierId,
+            $taxIds
+        );
+    }
+
+
+    private function relinkPurchaseDocumentsByTaxIds(
+        int $supplierId,
+        array $taxIds
+    ): void {
+        if (empty($taxIds)) {
+            return;
+        }
+
+        $placeholders =
+            implode(
+                ', ',
+                array_fill(
+                    0,
+                    count($taxIds),
+                    '?'
+                )
+            );
+
+        $sql = "
+            UPDATE
+                adms_daman_purchase_documents AS purchase_document
+            INNER JOIN
+                adms_daman_nfes AS nfe
+                ON nfe.id =
+                    purchase_document.adms_daman_nfe_id
+            SET
+                purchase_document.adms_daman_supplier_id = ?
+            WHERE
+                REPLACE(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE(
+                                nfe.issuer_cnpj,
+                                '.',
+                                ''
+                            ),
+                            '/',
+                            ''
+                        ),
+                        '-',
+                        ''
+                    ),
+                    ' ',
+                    ''
+                ) IN ({$placeholders})
+                AND (
+                    purchase_document.adms_daman_supplier_id IS NULL
+                    OR purchase_document.adms_daman_supplier_id = ?
+                )
+        ";
+
+        $params = [
+            $supplierId,
+            ...$taxIds,
+            $supplierId,
+        ];
+
+        $stmt =
+            $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+        $stmt->execute(
+            $params
+        );
+    }
+
+
+    private function extractSupplierTaxIds(
+        array $data
+    ): array {
+        $primaryCnpj =
+            $this->normalizeCnpj(
+                (string) (
+                    $data['cnpj']
+                    ?? ''
+                )
+            );
+
+        if (strlen($primaryCnpj) !== 14) {
+            throw new Exception(
+                'Informe um CNPJ principal válido com 14 dígitos.'
+            );
+        }
+
+        $rawAdditional =
+            $data['additional_cnpjs']
+            ?? '';
+
+        $additionalItems =
+            is_array($rawAdditional)
+                ? $rawAdditional
+                : (
+                    preg_split(
+                        '/[\r\n,;]+/',
+                        (string) $rawAdditional
+                    )
+                    ?: []
+                );
+
+        $additionalCnpjs = [];
+
+        foreach ($additionalItems as $rawCnpj) {
+            $rawCnpj =
+                trim(
+                    (string) $rawCnpj
+                );
+
+            if ($rawCnpj === '') {
+                continue;
+            }
+
+            $normalizedCnpj =
+                $this->normalizeCnpj(
+                    $rawCnpj
+                );
+
+            if (strlen($normalizedCnpj) !== 14) {
+                throw new Exception(
+                    'O CNPJ adicional "'
+                    . $rawCnpj
+                    . '" é inválido.'
+                );
+            }
+
+            $additionalCnpjs[] =
+                $normalizedCnpj;
+        }
+
+        $allCnpjs =
+            array_values(
+                array_unique(
+                    [
+                        $primaryCnpj,
+                        ...$additionalCnpjs,
+                    ]
+                )
+            );
+
+        return [
+            'primary' => $primaryCnpj,
+            'all' => $allCnpjs,
+        ];
+    }
+
+
+    private function normalizeCnpj(
+        string $cnpj
+    ): string {
+        return
+            preg_replace(
+                '/\D/',
+                '',
+                $cnpj
+            )
+            ?? '';
+    }
+
+
+    private function formatCnpj(
+        string $cnpj
+    ): string {
+        $cnpj =
+            $this->normalizeCnpj(
+                $cnpj
+            );
+
+        if (strlen($cnpj) !== 14) {
+            return $cnpj;
+        }
+
+        return
+            substr($cnpj, 0, 2)
+            . '.'
+            . substr($cnpj, 2, 3)
+            . '.'
+            . substr($cnpj, 5, 3)
+            . '/'
+            . substr($cnpj, 8, 4)
+            . '-'
+            . substr($cnpj, 12, 2);
     }
 
     /**

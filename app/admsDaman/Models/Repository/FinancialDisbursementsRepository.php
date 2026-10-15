@@ -727,6 +727,12 @@ class FinancialDisbursementsRepository extends DbConnection
                 project.name AS project_name,
 
                 CASE
+                    WHEN purchase_document.adms_daman_supplier_id IS NOT NULL
+                    THEN CONCAT(
+                        'supplier:',
+                        purchase_document.adms_daman_supplier_id
+                    )
+
                     WHEN
                         REPLACE(
                             REPLACE(
@@ -772,17 +778,13 @@ class FinancialDisbursementsRepository extends DbConnection
                             ''
                         )
                     )
-                    WHEN purchase_document.adms_daman_supplier_id IS NOT NULL
-                    THEN CONCAT(
-                        'supplier:',
-                        purchase_document.adms_daman_supplier_id
-                    )
+
                     ELSE NULL
                 END AS supplier_key,
 
                 COALESCE(
-                    nfe.issuer_name,
                     supplier.legal_name,
+                    nfe.issuer_name,
                     '-'
                 ) AS counterparty,
 
@@ -1102,6 +1104,12 @@ class FinancialDisbursementsRepository extends DbConnection
                 project.name AS project_name,
 
                 CASE
+                    WHEN direct_expense.adms_daman_supplier_id IS NOT NULL
+                    THEN CONCAT(
+                        'supplier:',
+                        direct_expense.adms_daman_supplier_id
+                    )
+
                     WHEN
                         REPLACE(
                             REPLACE(
@@ -1143,11 +1151,7 @@ class FinancialDisbursementsRepository extends DbConnection
                             ''
                         )
                     )
-                    WHEN direct_expense.adms_daman_supplier_id IS NOT NULL
-                    THEN CONCAT(
-                        'supplier:',
-                        direct_expense.adms_daman_supplier_id
-                    )
+
                     ELSE NULL
                 END AS supplier_key,
 
@@ -1300,7 +1304,7 @@ class FinancialDisbursementsRepository extends DbConnection
         if (!empty($filters['supplier_key'])) {
 
             $conditions[] =
-                'BINARY entry.supplier_key = BINARY :supplier_key';
+                'entry.supplier_key = :supplier_key';
 
             $params['supplier_key'] =
                 (string) $filters['supplier_key'];

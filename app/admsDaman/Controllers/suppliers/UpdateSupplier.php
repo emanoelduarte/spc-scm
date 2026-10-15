@@ -120,6 +120,19 @@ class UpdateSupplier
         $supplierId = (int) ($this->data['form']['id'] ?? 0);
 
         $suppliersRepository = new SuppliersRepository();
+
+        $taxIdError =
+            $suppliersRepository->validateSupplierTaxIds(
+                $this->data['form'],
+                $supplierId
+            );
+
+        if ($taxIdError !== null) {
+            $this->data['errors'][] = $taxIdError;
+            $this->viewUpdateSupplier();
+            return;
+        }
+
         $supplierUpdated =
             $suppliersRepository->updateSupplier($this->data['form']);
 

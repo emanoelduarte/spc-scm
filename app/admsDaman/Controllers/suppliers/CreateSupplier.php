@@ -47,6 +47,18 @@ class CreateSupplier
         }
 
         $supplierRepository = new SuppliersRepository();
+
+        $taxIdError =
+            $supplierRepository->validateSupplierTaxIds(
+                $this->data['form']
+            );
+
+        if ($taxIdError !== null) {
+            $this->data['errors'][] = $taxIdError;
+            $this->viewCreateSupplier();
+            return;
+        }
+
         $supplierId =
             $supplierRepository->createSupplier($this->data['form']);
 

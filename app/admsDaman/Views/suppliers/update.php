@@ -64,9 +64,18 @@ $supplierTypes = $this->data['getAllTypesSuppliersSelect'] ?? [];
                 </div>
 
                 <div class="col-lg-4">
-                    <label for="cnpj" class="form-label">CNPJ:</label>
+                    <label for="cnpj" class="form-label">CNPJ principal:</label>
                     <input type="text" class="form-control" id="cnpj" name="cnpj"
-                        value="<?= htmlspecialchars($form['cnpj'] ?? ''); ?>" placeholder="CNPJ da Empresa">
+                        value="<?= htmlspecialchars($form['cnpj'] ?? ''); ?>" placeholder="CNPJ principal da empresa">
+                </div>
+
+                <div class="col-lg-8">
+                    <label for="additional_cnpjs" class="form-label">Outros CNPJs vinculados (opcional):</label>
+                    <textarea class="form-control" id="additional_cnpjs" name="additional_cnpjs" rows="2"
+                        placeholder="Informe um CNPJ por linha"><?= htmlspecialchars($form['additional_cnpjs'] ?? ''); ?></textarea>
+                    <div class="form-text">
+                        Informe um CNPJ por linha. NF-es de qualquer CNPJ vinculado serão tratadas como do mesmo fornecedor.
+                    </div>
                 </div>
 
                 <div class="col-lg-4">
