@@ -31,6 +31,7 @@ class DirectExpensesRepository extends DbConnection
                 INSERT INTO adms_daman_direct_expenses
                 (
                     adms_daman_project_id,
+                    adms_daman_supplier_id,
                     adms_daman_expense_category_id,
                     adms_daman_financial_payment_method_id,
                     expense_date,
@@ -43,6 +44,7 @@ class DirectExpensesRepository extends DbConnection
                 VALUES
                 (
                     :adms_daman_project_id,
+                    :adms_daman_supplier_id,
                     :adms_daman_expense_category_id,
                     :adms_daman_financial_payment_method_id,
                     :expense_date,
@@ -59,6 +61,11 @@ class DirectExpensesRepository extends DbConnection
             $stmt->execute([
                 ':adms_daman_project_id' =>
                 (int) $data['adms_daman_project_id'],
+
+                ':adms_daman_supplier_id' =>
+                !empty($data['adms_daman_supplier_id'])
+                    ? (int) $data['adms_daman_supplier_id']
+                    : null,
 
                 ':adms_daman_expense_category_id' =>
                 (int) $data['adms_daman_expense_category_id'],
@@ -205,6 +212,8 @@ class DirectExpensesRepository extends DbConnection
 
                 direct_expense.adms_daman_project_id,
 
+                direct_expense.adms_daman_supplier_id,
+
                 direct_expense.adms_daman_expense_category_id,
 
                 direct_expense.adms_daman_financial_payment_method_id,
@@ -229,6 +238,9 @@ class DirectExpensesRepository extends DbConnection
                 category.name AS category_name,
 
                 payment_method.name AS payment_method_name,
+
+                supplier.legal_name AS supplier_name,
+                supplier.cnpj AS supplier_cnpj,
 
 
                 user.name AS created_by_name
@@ -261,6 +273,14 @@ class DirectExpensesRepository extends DbConnection
 
                 ON payment_method.id =
                     direct_expense.adms_daman_financial_payment_method_id
+
+
+            LEFT JOIN
+                adms_daman_suppliers
+                    AS supplier
+
+                ON supplier.id =
+                    direct_expense.adms_daman_supplier_id
 
 
             INNER JOIN
@@ -430,6 +450,9 @@ class DirectExpensesRepository extends DbConnection
                     adms_daman_project_id =
                         :adms_daman_project_id,
 
+                    adms_daman_supplier_id =
+                        :adms_daman_supplier_id,
+
                     adms_daman_expense_category_id =
                         :adms_daman_expense_category_id,
 
@@ -465,6 +488,11 @@ class DirectExpensesRepository extends DbConnection
 
                 ':adms_daman_project_id' =>
                 (int) $data['adms_daman_project_id'],
+
+                ':adms_daman_supplier_id' =>
+                !empty($data['adms_daman_supplier_id'])
+                    ? (int) $data['adms_daman_supplier_id']
+                    : null,
 
                 ':adms_daman_expense_category_id' =>
                 (int) $data['adms_daman_expense_category_id'],

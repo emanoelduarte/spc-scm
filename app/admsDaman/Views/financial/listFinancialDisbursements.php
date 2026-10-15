@@ -16,6 +16,10 @@ $categories =
     $this->data['expense_categories']
     ?? [];
 
+$suppliers =
+    $this->data['suppliers']
+    ?? [];
+
 $paymentMethods =
     $this->data['financial_payment_methods']
     ?? [];
@@ -185,6 +189,10 @@ $buildPaginationUrl =
                     $filters['category_key']
                         ?? null,
 
+                    'supplier_key' =>
+                    $filters['supplier_key']
+                        ?? null,
+
                     'payment_method_id' =>
                     $filters['payment_method_id']
                         ?? null,
@@ -215,6 +223,61 @@ $buildPaginationUrl =
                 $params
             );
     };
+
+
+$exportParams =
+    array_filter(
+        [
+            'project_id' =>
+            $filters['project_id']
+                ?? null,
+
+            'origin' =>
+            $filters['origin']
+                ?? null,
+
+            'category_key' =>
+            $filters['category_key']
+                ?? null,
+
+            'supplier_key' =>
+            $filters['supplier_key']
+                ?? null,
+
+            'payment_method_id' =>
+            $filters['payment_method_id']
+                ?? null,
+
+            'date_start' =>
+            $filters['date_start']
+                ?? null,
+
+            'date_end' =>
+            $filters['date_end']
+                ?? null,
+
+            'search' =>
+            $filters['search']
+                ?? null,
+        ],
+        static fn($value): bool =>
+        $value !== null
+            &&
+            $value !== ''
+    );
+
+
+$exportUrl =
+    $_ENV['URL_ADM']
+    . 'export-financial-disbursements-excel'
+    . (
+        !empty($exportParams)
+        ? '?'
+        . http_build_query(
+            $exportParams
+        )
+        : ''
+    );
 
 
 $getPaginationPages =
@@ -516,6 +579,56 @@ $getPaginationPages =
                 </div>
 
 
+                <div class="col-xl-3 col-md-6">
+
+                    <label
+                        for="supplier_key"
+                        class="form-label">
+
+                        Fornecedor / Credor
+
+                    </label>
+
+                    <select
+                        name="supplier_key"
+                        id="supplier_key"
+                        class="form-select">
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        <?php foreach ($suppliers as $supplier): ?>
+
+                            <option
+                                value="<?= htmlspecialchars(
+                                            (string) (
+                                                $supplier['supplier_key']
+                                                ?? ''
+                                            )
+                                        ); ?>"
+                                <?= (
+                                    ($filters['supplier_key'] ?? '')
+                                    ===
+                                    ($supplier['supplier_key'] ?? '')
+                                )
+                                    ? 'selected'
+                                    : ''; ?>>
+
+                                <?= htmlspecialchars(
+                                    $supplier['supplier_name']
+                                        ?? '-'
+                                ); ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                </div>
+
+
                 <div class="col-xl-2 col-md-6">
 
                     <label
@@ -664,6 +777,25 @@ $getPaginationPages =
                     </a>
 
                 </div>
+
+
+                <?php if (in_array("ExportFinancialDisbursementsExcel", $this->data['buttonPermissions'])): ?>
+
+                    <div class="col-auto ms-lg-auto">
+
+                        <a
+                            href="<?= htmlspecialchars($exportUrl); ?>"
+                            class="btn btn-success">
+
+                            <i class="fa-solid fa-file-excel me-1"></i>
+
+                            Exportar Excel
+
+                        </a>
+
+                    </div>
+
+                <?php endif; ?>
 
             </form>
 

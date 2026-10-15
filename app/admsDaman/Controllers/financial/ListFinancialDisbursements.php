@@ -62,6 +62,7 @@ class ListFinancialDisbursements
 
         $allowedOrigins = [
             'purchase',
+            'financial_obligation',
             'direct',
         ];
 
@@ -90,6 +91,12 @@ class ListFinancialDisbursements
 
             'category_key' =>
                 $categoryKey,
+
+            'supplier_key' =>
+                $this->normalizeSupplierKey(
+                    $getFilters['supplier_key']
+                    ?? null
+                ),
 
             'payment_method_id' =>
                 !empty($getFilters['payment_method_id'])
@@ -259,6 +266,14 @@ class ListFinancialDisbursements
                 ->getAllActiveSelect();
 
 
+        $financialDisbursementsRepository =
+            new FinancialDisbursementsRepository();
+
+        $this->data['suppliers'] =
+            $financialDisbursementsRepository
+                ->getSupplierOptions();
+
+
         $paymentMethodsRepository =
             new FinancialPaymentMethodsRepository();
 
@@ -349,6 +364,41 @@ class ListFinancialDisbursements
 
 
     /**
+     * Validar a chave de fornecedor utilizada pela visão consolidada.
+     *
+     * tax:CNPJ     = fornecedor identificado pelo documento fiscal.
+     * supplier:ID  = fornecedor sem CNPJ ou vínculo somente por ID.
+     */
+    private function normalizeSupplierKey(
+        mixed $supplierKey
+    ): ?string {
+
+        $supplierKey =
+            trim(
+                (string) $supplierKey
+            );
+
+
+        if ($supplierKey === '') {
+            return null;
+        }
+
+
+        if (
+            preg_match(
+                '/^(tax:[0-9]{8,20}|supplier:[1-9][0-9]*)$/',
+                $supplierKey
+            )
+        ) {
+            return $supplierKey;
+        }
+
+
+        return null;
+    }
+
+
+    /**
      * Configurar título e menu ativo.
      */
     private function configurePage(): void
@@ -361,7 +411,7 @@ class ListFinancialDisbursements
                 'list-financial-disbursements',
 
             'buttonPermissions' =>
-                [],
+                ["ExportFinancialDisbursementsExcel"],
         ];
 
 

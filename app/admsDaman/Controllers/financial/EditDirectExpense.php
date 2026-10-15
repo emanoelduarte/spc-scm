@@ -11,6 +11,7 @@ use App\admsDaman\Models\Repository\DirectExpensesRepository;
 use App\admsDaman\Models\Repository\ExpenseCategoriesRepository;
 use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Models\Services\DirectExpenseService;
 use App\admsDaman\Views\Services\LoadViewService;
 use Throwable;
@@ -207,6 +208,11 @@ class EditDirectExpense
             'adms_daman_project_id' =>
             (int) $expense['adms_daman_project_id'],
 
+            'adms_daman_supplier_id' =>
+            !empty($expense['adms_daman_supplier_id'])
+                ? (int) $expense['adms_daman_supplier_id']
+                : null,
+
             'adms_daman_expense_category_id' =>
             (int) $expense['adms_daman_expense_category_id'],
 
@@ -369,6 +375,18 @@ class EditDirectExpense
         $this->data['expense_categories'] =
             $categoriesRepository
             ->getAllActiveSelect();
+
+
+        /*
+         * Fornecedores.
+         */
+        $suppliersRepository =
+            new SuppliersRepository();
+
+
+        $this->data['suppliers'] =
+            $suppliersRepository
+            ->getAllSuppliersSelectAllActive();
 
 
         /*

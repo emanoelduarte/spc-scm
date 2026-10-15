@@ -96,6 +96,134 @@ class FinancialDisbursementsRepository extends DbConnection
 
 
     /**
+     * Recuperar todas as movimentações para exportação.
+     *
+     * Utiliza exatamente a mesma consulta base e os mesmos filtros
+     * da tela, porém sem paginação.
+     */
+    public function getAllForExport(
+        array $filters = []
+    ): array {
+
+        [
+            'where' => $where,
+            'params' => $params,
+        ] = $this->buildFilters(
+            $filters
+        );
+
+        $baseQuery =
+            $this->getBaseQuery();
+
+        $sql = "
+            SELECT
+                entry.*
+            FROM (
+                {$baseQuery}
+            ) AS entry
+
+            {$where}
+
+            ORDER BY
+                entry.event_date ASC,
+                entry.project_name ASC,
+                entry.counterparty ASC,
+                entry.source_sort_id ASC
+        ";
+
+        try {
+
+            $stmt =
+                $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+            $this->bindParams(
+                $stmt,
+                $params
+            );
+
+            $stmt->execute();
+
+            return $stmt->fetchAll(
+                PDO::FETCH_ASSOC
+            );
+        } catch (PDOException $e) {
+
+            GenerateLog::generateLog(
+                'error',
+                'Erro ao recuperar desembolsos para exportação.',
+                [
+                    'filters' => $filters,
+                    'error' => $e->getMessage(),
+                ]
+            );
+
+            throw $e;
+        }
+    }
+
+
+    /**
+     * Recuperar fornecedores/credores presentes nos desembolsos.
+     *
+     * A chave utiliza CNPJ quando disponível para unificar NF-e,
+     * compra avulsa e despesa direta do mesmo fornecedor.
+     */
+    public function getSupplierOptions(): array
+    {
+        $baseQuery =
+            $this->getBaseQuery();
+
+        $sql = "
+            SELECT
+                entry.supplier_key,
+                MAX(entry.counterparty) AS supplier_name
+            FROM (
+                {$baseQuery}
+            ) AS entry
+
+            WHERE
+                entry.supplier_key IS NOT NULL
+                AND entry.supplier_key <> ''
+
+            GROUP BY
+                entry.supplier_key
+
+            ORDER BY
+                supplier_name ASC
+        ";
+
+        try {
+
+            $stmt =
+                $this->getConnection()
+                ->prepare(
+                    $sql
+                );
+
+            $stmt->execute();
+
+            return $stmt->fetchAll(
+                PDO::FETCH_ASSOC
+            );
+        } catch (PDOException $e) {
+
+            GenerateLog::generateLog(
+                'error',
+                'Erro ao recuperar fornecedores dos desembolsos.',
+                [
+                    'error' => $e->getMessage(),
+                ]
+            );
+
+            throw $e;
+        }
+    }
+
+
+    /**
      * Quantidade de linhas apropriadas conforme os filtros.
      *
      * Uma compra rateada pode gerar uma linha para cada obra,
@@ -211,22 +339,22 @@ class FinancialDisbursementsRepository extends DbConnection
 
             return [
                 'total_amount' =>
-                    (float) (
-                        $summary['total_amount']
-                        ?? 0
-                    ),
+                (float) (
+                    $summary['total_amount']
+                    ?? 0
+                ),
 
                 'purchase_amount' =>
-                    (float) (
-                        $summary['purchase_amount']
-                        ?? 0
-                    ),
+                (float) (
+                    $summary['purchase_amount']
+                    ?? 0
+                ),
 
                 'direct_amount' =>
-                    (float) (
-                        $summary['direct_amount']
-                        ?? 0
-                    ),
+                (float) (
+                    $summary['direct_amount']
+                    ?? 0
+                ),
             ];
         } catch (PDOException $e) {
             GenerateLog::generateLog(
@@ -392,9 +520,9 @@ class FinancialDisbursementsRepository extends DbConnection
 
             $stmt =
                 $this->getConnection()
-                    ->prepare(
-                        $sql
-                    );
+                ->prepare(
+                    $sql
+                );
 
 
             $this->bindParams(
@@ -426,10 +554,10 @@ class FinancialDisbursementsRepository extends DbConnection
                 'Erro ao recuperar evolução mensal dos desembolsos.',
                 [
                     'filters' =>
-                        $filters,
+                    $filters,
 
                     'error' =>
-                        $e->getMessage(),
+                    $e->getMessage(),
                 ]
             );
 
@@ -516,9 +644,9 @@ class FinancialDisbursementsRepository extends DbConnection
 
             $stmt =
                 $this->getConnection()
-                    ->prepare(
-                        $sql
-                    );
+                ->prepare(
+                    $sql
+                );
 
 
             $this->bindParams(
@@ -540,13 +668,13 @@ class FinancialDisbursementsRepository extends DbConnection
                 'Erro ao recuperar composição dos desembolsos.',
                 [
                     'filters' =>
-                        $filters,
+                    $filters,
 
                     'group_expression' =>
-                        $groupExpression,
+                    $groupExpression,
 
                     'error' =>
-                        $e->getMessage(),
+                    $e->getMessage(),
                 ]
             );
 
@@ -583,8 +711,12 @@ class FinancialDisbursementsRepository extends DbConnection
                     COALESCE(allocation.id, 0)
                 ) AS row_key,
 
-                payment.id AS source_sort_id,
+                CONCAT(
+                    'purchase:',
+                    payment.id
+                ) AS source_payment_key,
 
+                payment.id AS source_sort_id,
                 payment.payment_date AS event_date,
 
                 COALESCE(
@@ -593,6 +725,66 @@ class FinancialDisbursementsRepository extends DbConnection
                 ) AS project_id,
 
                 project.name AS project_name,
+
+                CASE
+                    WHEN
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        COALESCE(
+                                            nfe.issuer_cnpj,
+                                            supplier.cnpj,
+                                            ''
+                                        ),
+                                        '.',
+                                        ''
+                                    ),
+                                    '/',
+                                    ''
+                                ),
+                                '-',
+                                ''
+                            ),
+                            ' ',
+                            ''
+                        ) <> ''
+                    THEN CONCAT(
+                        'tax:',
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        COALESCE(
+                                            nfe.issuer_cnpj,
+                                            supplier.cnpj
+                                        ),
+                                        '.',
+                                        ''
+                                    ),
+                                    '/',
+                                    ''
+                                ),
+                                '-',
+                                ''
+                            ),
+                            ' ',
+                            ''
+                        )
+                    )
+                    WHEN purchase_document.adms_daman_supplier_id IS NOT NULL
+                    THEN CONCAT(
+                        'supplier:',
+                        purchase_document.adms_daman_supplier_id
+                    )
+                    ELSE NULL
+                END AS supplier_key,
+
+                COALESCE(
+                    nfe.issuer_name,
+                    supplier.legal_name,
+                    '-'
+                ) AS counterparty,
 
                 CASE
                     WHEN COALESCE(
@@ -659,17 +851,17 @@ class FinancialDisbursementsRepository extends DbConnection
                     purchase_document.document_number
                 ) AS document_number,
 
-                COALESCE(
-                    nfe.issuer_name,
-                    supplier.legal_name,
-                    'Fornecedor não informado'
-                ) AS counterparty,
-
                 CONCAT(
                     'Pagamento da ',
                     purchase_installment.installment_number,
                     'ª parcela'
                 ) AS description,
+
+                CONCAT(
+                    'Pagamento da ',
+                    purchase_installment.installment_number,
+                    'ª parcela'
+                ) AS report_description,
 
                 payment.observation AS observation,
 
@@ -686,34 +878,142 @@ class FinancialDisbursementsRepository extends DbConnection
                 payment.total_paid AS source_total_paid,
 
                 CASE
-                    WHEN
+                    WHEN COALESCE(
+                        nfe.total_value,
+                        purchase_document.total_value,
+                        0
+                    ) > 0
+                    THEN payment.principal_amount * (
                         COALESCE(
-                            nfe.total_value,
-                            purchase_document.total_value,
-                            0
-                        ) > 0
-                    THEN
-                        payment.total_paid
-                        *
-                        (
+                            allocation.allocated_amount,
                             COALESCE(
-                                allocation.allocated_amount,
-                                COALESCE(
-                                    nfe.total_value,
-                                    purchase_document.total_value,
-                                    0
-                                )
-                            )
-                            /
-                            NULLIF(
-                                COALESCE(
-                                    nfe.total_value,
-                                    purchase_document.total_value,
-                                    0
-                                ),
+                                nfe.total_value,
+                                purchase_document.total_value,
                                 0
                             )
                         )
+                        /
+                        NULLIF(
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            ),
+                            0
+                        )
+                    )
+                    ELSE 0
+                END AS allocated_principal_amount,
+
+                CASE
+                    WHEN COALESCE(
+                        nfe.total_value,
+                        purchase_document.total_value,
+                        0
+                    ) > 0
+                    THEN payment.interest_amount * (
+                        COALESCE(
+                            allocation.allocated_amount,
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            )
+                        )
+                        /
+                        NULLIF(
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            ),
+                            0
+                        )
+                    )
+                    ELSE 0
+                END AS allocated_interest_amount,
+
+                CASE
+                    WHEN COALESCE(
+                        nfe.total_value,
+                        purchase_document.total_value,
+                        0
+                    ) > 0
+                    THEN payment.penalty_amount * (
+                        COALESCE(
+                            allocation.allocated_amount,
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            )
+                        )
+                        /
+                        NULLIF(
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            ),
+                            0
+                        )
+                    )
+                    ELSE 0
+                END AS allocated_penalty_amount,
+
+                CASE
+                    WHEN COALESCE(
+                        nfe.total_value,
+                        purchase_document.total_value,
+                        0
+                    ) > 0
+                    THEN payment.discount_amount * (
+                        COALESCE(
+                            allocation.allocated_amount,
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            )
+                        )
+                        /
+                        NULLIF(
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            ),
+                            0
+                        )
+                    )
+                    ELSE 0
+                END AS allocated_discount_amount,
+
+                CASE
+                    WHEN COALESCE(
+                        nfe.total_value,
+                        purchase_document.total_value,
+                        0
+                    ) > 0
+                    THEN payment.total_paid * (
+                        COALESCE(
+                            allocation.allocated_amount,
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            )
+                        )
+                        /
+                        NULLIF(
+                            COALESCE(
+                                nfe.total_value,
+                                purchase_document.total_value,
+                                0
+                            ),
+                            0
+                        )
+                    )
                     ELSE 0
                 END AS amount
 
@@ -786,8 +1086,12 @@ class FinancialDisbursementsRepository extends DbConnection
                     COALESCE(allocation.id, 0)
                 ) AS row_key,
 
-                direct_expense.id AS source_sort_id,
+                CONCAT(
+                    'direct:',
+                    direct_expense.id
+                ) AS source_payment_key,
 
+                direct_expense.id AS source_sort_id,
                 direct_expense.expense_date AS event_date,
 
                 COALESCE(
@@ -796,6 +1100,61 @@ class FinancialDisbursementsRepository extends DbConnection
                 ) AS project_id,
 
                 project.name AS project_name,
+
+                CASE
+                    WHEN
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        COALESCE(
+                                            direct_supplier.cnpj,
+                                            ''
+                                        ),
+                                        '.',
+                                        ''
+                                    ),
+                                    '/',
+                                    ''
+                                ),
+                                '-',
+                                ''
+                            ),
+                            ' ',
+                            ''
+                        ) <> ''
+                    THEN CONCAT(
+                        'tax:',
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        direct_supplier.cnpj,
+                                        '.',
+                                        ''
+                                    ),
+                                    '/',
+                                    ''
+                                ),
+                                '-',
+                                ''
+                            ),
+                            ' ',
+                            ''
+                        )
+                    )
+                    WHEN direct_expense.adms_daman_supplier_id IS NOT NULL
+                    THEN CONCAT(
+                        'supplier:',
+                        direct_expense.adms_daman_supplier_id
+                    )
+                    ELSE NULL
+                END AS supplier_key,
+
+                COALESCE(
+                    direct_supplier.legal_name,
+                    '-'
+                ) AS counterparty,
 
                 'direct' AS origin,
                 'Despesa Direta' AS origin_label,
@@ -816,9 +1175,15 @@ class FinancialDisbursementsRepository extends DbConnection
 
                 'Despesa Direta' AS document_type,
                 NULL AS document_number,
-                NULL AS counterparty,
 
                 direct_expense.description,
+
+                CASE
+                    WHEN direct_expense.adms_daman_supplier_id IS NOT NULL
+                        THEN '-'
+                    ELSE direct_expense.description
+                END AS report_description,
+
                 direct_expense.observation,
 
                 NULL AS purchase_document_id,
@@ -827,11 +1192,20 @@ class FinancialDisbursementsRepository extends DbConnection
 
                 NULL AS installment_number,
 
-                NULL AS principal_amount,
-                NULL AS interest_amount,
-                NULL AS penalty_amount,
-                NULL AS discount_amount,
+                direct_expense.amount AS principal_amount,
+                0 AS interest_amount,
+                0 AS penalty_amount,
+                0 AS discount_amount,
                 direct_expense.amount AS source_total_paid,
+
+                COALESCE(
+                    allocation.allocated_amount,
+                    direct_expense.amount
+                ) AS allocated_principal_amount,
+
+                0 AS allocated_interest_amount,
+                0 AS allocated_penalty_amount,
+                0 AS allocated_discount_amount,
 
                 COALESCE(
                     allocation.allocated_amount,
@@ -868,9 +1242,16 @@ class FinancialDisbursementsRepository extends DbConnection
                     AS financial_payment_method
                 ON financial_payment_method.id =
                     direct_expense.adms_daman_financial_payment_method_id
+
+            LEFT JOIN
+                adms_daman_suppliers
+                    AS direct_supplier
+                ON direct_supplier.id =
+                    direct_expense.adms_daman_supplier_id
+
             WHERE
                 direct_expense.status = 1
-            ";
+        ";
     }
 
 
@@ -897,20 +1278,32 @@ class FinancialDisbursementsRepository extends DbConnection
 
 
         if (!empty($filters['origin'])) {
+
             $conditions[] =
-                'entry.origin = :origin';
+                'BINARY entry.origin = BINARY :origin';
 
             $params['origin'] =
-                $filters['origin'];
+                (string) $filters['origin'];
         }
 
 
         if (!empty($filters['category_key'])) {
+
             $conditions[] =
-                'entry.category_key = :category_key';
+                'BINARY entry.category_key = BINARY :category_key';
 
             $params['category_key'] =
-                $filters['category_key'];
+                (string) $filters['category_key'];
+        }
+
+
+        if (!empty($filters['supplier_key'])) {
+
+            $conditions[] =
+                'BINARY entry.supplier_key = BINARY :supplier_key';
+
+            $params['supplier_key'] =
+                (string) $filters['supplier_key'];
         }
 
 
@@ -942,32 +1335,47 @@ class FinancialDisbursementsRepository extends DbConnection
 
 
         if (!empty($filters['search'])) {
-            $conditions[] = "
-                (
-                    entry.description LIKE :search
-                    OR entry.document_number LIKE :search
-                    OR entry.counterparty LIKE :search
-                    OR entry.observation LIKE :search
-                )
-            ";
 
-            $params['search'] =
+            $conditions[] = "
+        (
+            entry.description LIKE :search_description
+            OR entry.document_number LIKE :search_document
+            OR entry.counterparty LIKE :search_counterparty
+            OR entry.observation LIKE :search_observation
+        )
+    ";
+
+
+            $search =
                 '%'
                 . trim(
                     (string) $filters['search']
                 )
                 . '%';
+
+
+            $params['search_description'] =
+                $search;
+
+            $params['search_document'] =
+                $search;
+
+            $params['search_counterparty'] =
+                $search;
+
+            $params['search_observation'] =
+                $search;
         }
 
 
         $where =
             !empty($conditions)
-                ? 'WHERE '
-                    . implode(
-                        ' AND ',
-                        $conditions
-                    )
-                : '';
+            ? 'WHERE '
+            . implode(
+                ' AND ',
+                $conditions
+            )
+            : '';
 
 
         return [

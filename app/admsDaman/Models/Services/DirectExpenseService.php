@@ -101,6 +101,27 @@ class DirectExpenseService
 
         /*
      * =====================================================
+     * FORNECEDOR OPCIONAL
+     * =====================================================
+     *
+     * Despesa direta pode ou não estar vinculada a um fornecedor.
+     * Quando não houver vínculo, persistimos NULL.
+     */
+        $supplierId =
+            (int) (
+                $data['adms_daman_supplier_id']
+                ?? 0
+            );
+
+
+        $data['adms_daman_supplier_id'] =
+            $supplierId > 0
+                ? $supplierId
+                : null;
+
+
+        /*
+     * =====================================================
      * VALOR
      * =====================================================
      */

@@ -10,6 +10,7 @@ use App\admsDaman\Helpers\CSRFHelper;
 use App\admsDaman\Models\Repository\ExpenseCategoriesRepository;
 use App\admsDaman\Models\Repository\FinancialPaymentMethodsRepository;
 use App\admsDaman\Models\Repository\ProjectsRepository;
+use App\admsDaman\Models\Repository\SuppliersRepository;
 use App\admsDaman\Models\Services\DirectExpenseService;
 use App\admsDaman\Views\Services\LoadViewService;
 use Throwable;
@@ -81,6 +82,14 @@ class CreateDirectExpense
         $this->data['expense_categories'] =
             $categoriesRepository
                 ->getAllActiveSelect();
+
+
+        $suppliersRepository =
+            new SuppliersRepository();
+
+        $this->data['suppliers'] =
+            $suppliersRepository
+                ->getAllSuppliersSelectAllActive();
 
 
         $paymentMethodsRepository =

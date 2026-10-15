@@ -356,6 +356,41 @@ class SuppliersRepository extends DbConnection
     }
 
 
+    /**
+     * Recuperar todos os fornecedores ativos, independentemente do tipo.
+     *
+     * Utilizado por despesas diretas, pois esse lançamento pode representar
+     * compra, serviço, hospedagem, taxa ou outro desembolso já realizado.
+     */
+    public function getAllSuppliersSelectAllActive(): array|bool
+    {
+        $sql = '
+            SELECT
+                id,
+                legal_name,
+                trade_name,
+                cnpj,
+                adms_daman_suppliers_types_id
+            FROM
+                adms_daman_suppliers
+            WHERE
+                supplier_status = 1
+            ORDER BY
+                legal_name ASC
+        ';
+
+        $stmt =
+            $this->getConnection()
+                ->prepare($sql);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(
+            PDO::FETCH_ASSOC
+        );
+    }
+
+
     public function getAllTypesSuppliersSelect(): array|bool
     {
 

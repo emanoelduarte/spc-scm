@@ -18,6 +18,11 @@ $categories =
     ?? [];
 
 
+$suppliers =
+    $this->data['suppliers']
+    ?? [];
+
+
 $paymentMethods =
     $this->data['financial_payment_methods']
     ?? [];
@@ -418,6 +423,70 @@ $directExpenseId =
                 <!-- ================================================== -->
                 <!-- DESCRIÇÃO                                          -->
                 <!-- ================================================== -->
+
+                <!-- Fornecedor opcional -->
+                <div class="col-lg-6 col-md-12 col-sm-12">
+
+                    <label
+                        for="adms_daman_supplier_id"
+                        class="form-label">
+
+                        Fornecedor
+                        <span class="text-muted small">(opcional)</span>
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="adms_daman_supplier_id"
+                        name="adms_daman_supplier_id">
+
+                        <option value="">
+                            Sem fornecedor vinculado
+                        </option>
+
+                        <?php foreach ($suppliers as $supplier): ?>
+
+                            <?php
+
+                            $selected =
+                                (
+                                    (string) (
+                                        $form['adms_daman_supplier_id']
+                                        ?? ''
+                                    )
+                                    ===
+                                    (string) $supplier['id']
+                                )
+                                    ? 'selected'
+                                    : '';
+
+                            ?>
+
+                            <option
+                                value="<?= (int) $supplier['id']; ?>"
+                                <?= $selected; ?>>
+
+                                <?= htmlspecialchars(
+                                    $supplier['legal_name']
+                                ); ?>
+
+                                <?php if (!empty($supplier['cnpj'])): ?>
+                                    - <?= htmlspecialchars($supplier['cnpj']); ?>
+                                <?php endif; ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                    <div class="form-text">
+                        Vincule quando a despesa tiver um fornecedor identificado.
+                    </div>
+
+                </div>
+
 
                 <div class="col-lg-6 col-md-12 col-sm-12">
 
