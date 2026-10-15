@@ -28,7 +28,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
 
             <?php  // Formulário para buscar compra 
             ?>
-            <form action="" method="POST">
+            <form action="<?= $_ENV['URL_ADM']; ?>list-purchasings/1" method="GET">
                 <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center">
 
                     <input type="text" class="form-control flex-grow-1" name="legal_name"
@@ -82,6 +82,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                             <th scope="col" class="d-none d-md-table-cell">Comprador</th>
                             <th scope="col">Obra</th>
                             <th scope="col" class="d-none d-md-table-cell">Fornecedor</th>
+                            <th scope="col">Total</th>
                             <th scope="col" class="d-none d-md-table-cell">Status</th>
                             <th scope="col" class="text-center">Ações</th>
                         </tr>
@@ -111,6 +112,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
                                 <td class="d-none d-md-table-cell"><?= $buyer_name ?></td>
                                 <td><?= $project_name ?></td>
                                 <td class="d-none d-md-table-cell"><?= $trade_name ?></td>
+                                <td class="text-end"> R$ <?= number_format((float) $purchasing['total_purchase'], 2, ',', '.'); ?> </td>
                                 <td class="d-none d-md-table-cell"><?= $purchasing_status ?></td>
                                 <td class="text-center">
                                     <?php if (in_array("ViewPurchasing", $this->data['buttonPermissions'])): ?>
@@ -159,7 +161,7 @@ $csrf_token = CSRFHelper::generateCSRFToken('form_delete_purchasing');
     <h5>Filtrar Compras</h5>
 
     <?php // Inclui o action para o formulário sempre submeter e começar da página 1?>
-    <form action="<?= $_ENV['URL_ADM'] ?>list-purchasings/1" method="POST" id="filterForm">
+    <form action="<?= $_ENV['URL_ADM'] ?>list-purchasings/1" method="GET" id="filterForm">
 
         <?php // Campo para pesquisar compra por numero 
         ?>

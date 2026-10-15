@@ -64,39 +64,45 @@ class StatusRepository extends DbConnection
      * Método para recuperar e contar a quantidade de pedido com um status especifico a fim de exibir a quantidade em um card no dasboard
      * Se por acaso não for Super Admi, Admim ou comprador, exibe apenas os números do usuário solicitante
      */
-    public function countStatus(): array|bool
+    /**
+     * Recuperar a quantidade de pedidos por status respeitando
+     * as obras que o usuário possui acesso.
+     */
+    public function countStatus(?array $accessibleProjectIds = null): array|bool
     {
         try {
+            $joinCondition = '';
             $params = [];
 
-            // Verificar se o usuário é Admin, Super Admin ou Comprador para exibir se todos ou apenas o status dos pedidos que o usuário fez
-            $sqlCheckLevel = "SELECT COUNT(*) FROM adms_daman_users_access_levels 
-            WHERE adms_daman_user_id = :check_user_id 
-            AND adms_daman_access_level_id IN (1, 2, 5)";
+            // Aplicar restrição por obra quando o usuário não possuir acesso global
+            if ($accessibleProjectIds !== null) {
+                if (empty($accessibleProjectIds)) {
+                    $joinCondition = 'AND 1 = 0';
+                } else {
+                    $placeholders = [];
 
-            $stmtCheck = $this->getConnection()->prepare($sqlCheckLevel);
-            $stmtCheck->bindValue(':check_user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-            $stmtCheck->execute();
-            $isPrivileged = $stmtCheck->fetchColumn() > 0;
+                    foreach (array_values($accessibleProjectIds) as $index => $projectId) {
+                        $paramName = "access_project_{$index}";
+                        $placeholders[] = ":{$paramName}";
+                        $params[$paramName] = (int) $projectId;
+                    }
 
-            $joinCondition = "";
-
-            if (!$isPrivileged) {
-                $joinCondition = "AND ado.adms_daman_user_id = :logged_user_id";
-                $params['logged_user_id'] = $_SESSION['user_id'];
+                    $joinCondition = 'AND ado.adms_daman_project_id IN (' . implode(', ', $placeholders) . ')';
+                }
             }
 
-            $sql = "SELECT 
-                        adas.id,
-                        adas.name,
-                        adas.color,
-                        adas.icon,
-                        COUNT(ado.id) AS total
-                    FROM adms_daman_acquisition_status AS adas
-                    LEFT JOIN adms_daman_orders AS ado ON ado.adms_daman_acquisition_status_id = adas.id 
+            $sql = "SELECT
+                    adas.id,
+                    adas.name,
+                    adas.color,
+                    adas.icon,
+                    COUNT(ado.id) AS total
+                FROM adms_daman_acquisition_status AS adas
+                LEFT JOIN adms_daman_orders AS ado
+                    ON ado.adms_daman_acquisition_status_id = adas.id
                     {$joinCondition}
-                    GROUP BY adas.id, adas.name
-                    ORDER BY adas.id ASC";
+                GROUP BY adas.id, adas.name, adas.color, adas.icon
+                ORDER BY adas.id ASC";
 
             $stmt = $this->getConnection()->prepare($sql);
 
@@ -105,6 +111,7 @@ class StatusRepository extends DbConnection
             }
 
             $stmt->execute();
+
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             GenerateLog::generateLog("error", "Erro ao contar status.", ['error' => $e->getMessage()]);

@@ -38,18 +38,18 @@ class OrdersRepository extends DbConnection
 
 
         /*
-     * =====================================================
-     * ACESSO POR OBRA
-     * =====================================================
-     */
+        * =====================================================
+        * ACESSO POR OBRA
+        * =====================================================
+        */
         if ($accessibleProjectIds !== null) {
 
             /*
-         * Usuário comum sem nenhuma obra vinculada.
-         *
-         * A condição sempre falsa garante que nenhum
-         * pedido seja recuperado.
-         */
+            * Usuário comum sem nenhuma obra vinculada.
+            *
+            * A condição sempre falsa garante que nenhum
+            * pedido seja recuperado.
+            */
             if (empty($accessibleProjectIds)) {
 
                 $conditions[] = '1 = 0';
@@ -85,10 +85,10 @@ class OrdersRepository extends DbConnection
 
 
         /*
-     * =====================================================
-     * FILTROS DA TELA
-     * =====================================================
-     */
+        * =====================================================
+        * FILTROS DA TELA
+        * =====================================================
+        */
         $map = [
             'order_number'
             => 'ado.id',
@@ -101,6 +101,9 @@ class OrdersRepository extends DbConnection
 
             'adms_daman_category_id'
             => 'ado.adms_daman_category_id',
+
+            'adms_daman_acquisition_types_id'
+            => 'ado.adms_daman_acquisition_types_id',
         ];
 
 
@@ -118,10 +121,10 @@ class OrdersRepository extends DbConnection
 
 
         /*
-     * =====================================================
-     * INTERVALO DE DATAS
-     * =====================================================
-     */
+        * =====================================================
+        * INTERVALO DE DATAS
+        * =====================================================
+        */
         if (!empty($filters['data_inicio'])) {
 
             $conditions[] =
@@ -145,10 +148,10 @@ class OrdersRepository extends DbConnection
 
 
         /*
-     * =====================================================
-     * PESQUISA PELOS ITENS DO PEDIDO
-     * =====================================================
-     */
+        * =====================================================
+        * PESQUISA PELOS ITENS DO PEDIDO
+        * =====================================================
+        */
         if (!empty($filters['description'])) {
 
             $conditions[] = "
@@ -164,6 +167,25 @@ class OrdersRepository extends DbConnection
 
             $params['description'] =
                 '%' . $filters['description'] . '%';
+        }
+
+        // Filtrar pedidos que estão no status atual há mais de determinada quantidade de dias
+        if (!empty($filters['status_older_than_days'])) {
+            $days = max(1, (int) $filters['status_older_than_days']);
+
+            $conditions[] = "COALESCE(ado.status_date, ado.created_at) < DATE_SUB(NOW(), INTERVAL {$days} DAY)";
+        }
+
+        // Filtrar locações ativas com informações obrigatórias incompletas
+        if (!empty($filters['rental_incomplete'])) {
+                $conditions[] = "ado.adms_daman_acquisition_status_id IN (7, 9)";
+
+                $conditions[] = "(
+                    ado.adms_daman_supplier_id IS NULL
+                    OR ado.adms_daman_supplier_id = 0
+                    OR ado.rental_contract IS NULL
+                    OR TRIM(ado.rental_contract) = ''
+                )";
         }
 
 
@@ -190,15 +212,15 @@ class OrdersRepository extends DbConnection
      * @param int $limitResult Número máximo de resultados por página.
      * @return array Lista de pedidos recuperados do banco de dados.
      */
-    public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [], ?array $accessibleProjectIds = null) : array
+    public function getAllOrders(int $page = 1, int $limitResult = 10, ?array $filters = [], ?array $accessibleProjectIds = null): array
     {
         $offset = max(0, ($page - 1) * $limitResult);
 
         $queryData =
-        $this->buildOrderConditions(
-            $filters,
-            $accessibleProjectIds
-        );
+            $this->buildOrderConditions(
+                $filters,
+                $accessibleProjectIds
+            );
 
 
         $where =
@@ -258,10 +280,10 @@ class OrdersRepository extends DbConnection
     public function getAmountOrders(?array $filters = [], ?array $accessibleProjectIds = null): int
     {
         $queryData =
-        $this->buildOrderConditions(
-            $filters,
-            $accessibleProjectIds
-        );
+            $this->buildOrderConditions(
+                $filters,
+                $accessibleProjectIds
+            );
 
         $where =
             $queryData['where'];
@@ -494,7 +516,18 @@ class OrdersRepository extends DbConnection
         try {
 
             // QUERY para atualizar PEDIDO
-            $sql = 'UPDATE adms_daman_orders SET adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id, adms_daman_project_id = :adms_daman_project_id, adms_daman_category_id = :adms_daman_category_id, service = :service, observation = :observation, updated_at = :updated_at';
+            $sql = 'UPDATE adms_daman_orders SET
+                status_date = CASE
+                    WHEN adms_daman_acquisition_status_id <> :current_status_id
+                    THEN :status_date
+                    ELSE status_date
+                END,
+                adms_daman_acquisition_status_id = :adms_daman_acquisition_status_id,
+                adms_daman_project_id = :adms_daman_project_id,
+                adms_daman_category_id = :adms_daman_category_id,
+                service = :service,
+                observation = :observation,
+                updated_at = :updated_at';
 
             // Incluir campo de periodo de locação e id do fornecedor caso seja do tipo locação
             if ($data['adms_daman_acquisition_types_id'] == 2) {
@@ -505,16 +538,20 @@ class OrdersRepository extends DbConnection
 
             $sql .= ' WHERE id = :id';
 
+            $now = date("Y-m-d H:i:s");
+
             // Preparar a QUERY
             $stmt = $this->getConnection()->prepare($sql);
 
             // Substituir os links da QUERY pelo valor
+            $stmt->bindValue(':current_status_id', (int) $data['adms_daman_acquisition_status_id'], PDO::PARAM_INT);
+            $stmt->bindValue(':status_date', $now);
             $stmt->bindValue(':adms_daman_acquisition_status_id', $data['adms_daman_acquisition_status_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_project_id', $data['adms_daman_project_id'], PDO::PARAM_INT);
             $stmt->bindValue(':adms_daman_category_id', $data['adms_daman_category_id'], PDO::PARAM_INT);
             $stmt->bindValue(':service', $data['service'], PDO::PARAM_STR);
             $stmt->bindValue(':observation', $data['observation'], PDO::PARAM_STR);
-            $stmt->bindValue(':updated_at', date("Y-m-d H:i:s"));
+            $stmt->bindValue(':updated_at', $now);
             $stmt->bindValue(':id', $data['id'], PDO::PARAM_INT);
 
             // Substituir link campo de periodo de locação e id do fornecedor caso seja do tipo locação
@@ -769,24 +806,38 @@ class OrdersRepository extends DbConnection
     /**
      * Método exlcusivo para buscar quais obras tem pedido em análise e rankear a obra com mais pedidos em análise para para a que tem menos pedidos nesse status.
      */
-    public function rankProjectsStatusAnalisys(): array
+    /**
+     * Recuperar as obras com pedidos em análise respeitando
+     * as obras que o usuário possui acesso.
+     */
+    public function rankProjectsStatusAnalisys(?array $accessibleProjectIds = null): array
     {
-        $sql = "SELECT 
-            adp.id,
-            adp.name AS project_name,
-            COUNT(ado.id) AS total
-        FROM adms_daman_orders AS ado
-        INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
-        WHERE ado.adms_daman_acquisition_status_id = 1
-        GROUP BY adp.id, adp.name
-        ORDER BY total DESC";
+        $queryData = $this->buildOrderConditions(
+            ['adms_daman_acquisition_status_id' => 1],
+            $accessibleProjectIds
+        );
+
+        $where = $queryData['where'];
+        $params = $queryData['params'];
+
+        $sql = "SELECT
+                adp.id,
+                adp.name AS project_name,
+                COUNT(ado.id) AS total
+            FROM adms_daman_orders AS ado
+            INNER JOIN adms_daman_projects AS adp ON adp.id = ado.adms_daman_project_id
+            {$where}
+            GROUP BY adp.id, adp.name
+            ORDER BY total DESC";
 
         $stmt = $this->getConnection()->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+        }
+
         $stmt->execute();
 
-        $projectsRanked = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Aqui você pode usar a variável $projectsRanked para exibir ou processar os dados conforme necessário
-        return $projectsRanked;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

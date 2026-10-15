@@ -15,6 +15,9 @@
 
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/styles_admin.css">
 
+    <!-- Estilo Dashboard -->
+    <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/dashboard.css">
+
     <!-- Tema escuro -->
     <link rel="stylesheet" href="<?= $_ENV['URL_ADM']; ?>public/admsDaman/css/dark_theme.css">
 

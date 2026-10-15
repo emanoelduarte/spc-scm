@@ -12,160 +12,220 @@ use PDO;
 class PurchasingRepository extends DbConnection
 {
     /**
-     * Recuperar todos as compras com paginação.
+     * Recuperar todas as compras com paginação e filtros.
      *
-     * Este método retorna uma lista de compras da tabela `adms_daman_purchasing`, com suporte à paginação.
+     * Calcula o subtotal dos itens, desconto, frete e total da compra.
      *
-     * @param int $page Número da página para recuperação de compras (começa do 1).
-     * @param int $limitResult Número máximo de resultados por página.
-     * @return array Lista de compras recuperados do banco de dados.
+     * @param int $page Número da página.
+     * @param int $limitResult Quantidade de registros por página.
+     * @param array|null $filters Filtros da pesquisa.
+     * @return array|false Lista de compras.
      */
     public function getAllPurchasings(int $page = 1, int $limitResult = 10, ?array $filters = []): array|false
     {
-
-        // Calcular o registro inicial de cada página exemplo:
-        // 2(caso pagina 2) - 1 = 1 * $limite por página = 10
+        // Calcular o offset da paginação
+        $limitResult = max(1, $limitResult);
         $offset = max(0, ($page - 1) * $limitResult);
-
+    
         $conditions = [];
         $params = [];
-
-        // Mapeamento campo form → coluna banco
+    
+        // Mapear os filtros para suas respectivas colunas
         $map = [
             'purchasing_number' => 'adpu.id',
             'order_number' => 'adpu.adms_daman_order_id',
             'adms_daman_project_id' => 'adpu.adms_daman_project_id',
+            'adms_daman_category_id' => 'adpu.adms_daman_category_id',
             'adms_daman_acquisition_purchasing_status_id' => 'adpu.adms_daman_acquisition_purchasing_status_id',
         ];
-
+    
         foreach ($map as $field => $column) {
-            if (!empty($filters[$field])) {
+            if (isset($filters[$field]) && $filters[$field] !== '') {
                 $conditions[] = "{$column} = :{$field}";
                 $params[$field] = $filters[$field];
             }
         }
-
-        // Filtro por intervalo de datas
+    
+        // Filtrar por data inicial
         if (!empty($filters['data_inicio'])) {
             $conditions[] = "adpu.created_at >= :data_inicio";
             $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
         }
-
+    
+        // Filtrar por data final
         if (!empty($filters['data_fim'])) {
             $conditions[] = "adpu.created_at <= :data_fim";
             $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
-
-        // Pesquisar por Fornecedor
+    
+        // Filtrar pelo nome do fornecedor
         if (!empty($filters['legal_name'])) {
-            $conditions[] = "EXISTS (
-                SELECT 1 
-                FROM adms_daman_suppliers ads
-                WHERE ads.id = adpu.adms_daman_supplier_id
-                AND ads.legal_name LIKE :legal_name
-            )";
-
+            $conditions[] = "ads.legal_name LIKE :legal_name";
             $params['legal_name'] = '%' . $filters['legal_name'] . '%';
         }
-
+    
         $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
-
-        $sql = "SELECT adpu.id, adpu.adms_daman_order_id,
-                adp.name AS project_name,
-                ads.trade_name,
-                adu.name AS buyer_name,
-                adaps.id AS purchasing_status_id,
-                adaps.name AS purchasing_status
+    
+        // Recuperar as compras com seus respectivos valores
+        $sql = "SELECT
+                    adpu.id,
+                    adpu.adms_daman_order_id,
+                    adpu.created_at,
+    
+                    adp.name AS project_name,
+                    ads.trade_name,
+                    adu.name AS buyer_name,
+                    adaps.id AS purchasing_status_id,
+                    adaps.name AS purchasing_status,
+    
+                    COALESCE(totals.subtotal, 0) AS subtotal,
+                    COALESCE(adpu.discount, 0) AS discount,
+                    COALESCE(adpu.delivery_value, 0) AS delivery_value,
+    
+                    (
+                        COALESCE(totals.subtotal, 0)
+                        - COALESCE(adpu.discount, 0)
+                        + COALESCE(adpu.delivery_value, 0)
+                    ) AS total_purchase
+    
                 FROM adms_daman_purchasings AS adpu
-                INNER JOIN adms_daman_suppliers AS ads ON ads.id = adpu.adms_daman_supplier_id
-                INNER JOIN adms_daman_projects AS adp ON adp.id = adpu.adms_daman_project_id
-                INNER JOIN adms_daman_users AS adu ON adu.id = adpu.adms_daman_user_id
-                INNER JOIN adms_daman_acquisition_purchasing_status AS adaps ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id 
-
+    
+                INNER JOIN adms_daman_suppliers AS ads
+                    ON ads.id = adpu.adms_daman_supplier_id
+    
+                INNER JOIN adms_daman_projects AS adp
+                    ON adp.id = adpu.adms_daman_project_id
+    
+                INNER JOIN adms_daman_users AS adu
+                    ON adu.id = adpu.adms_daman_user_id
+    
+                INNER JOIN adms_daman_acquisition_purchasing_status AS adaps
+                    ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id
+    
+                LEFT JOIN (
+                    SELECT
+                        adms_daman_purchasing_id,
+                        SUM(purchased_quantity * unit_price) AS subtotal
+                    FROM adms_daman_purchasing_items
+                    GROUP BY adms_daman_purchasing_id
+                ) AS totals ON totals.adms_daman_purchasing_id = adpu.id
+    
                 {$where}
+    
                 ORDER BY adpu.id DESC
                 LIMIT :limit OFFSET :offset";
-
-        // Preparar a query
+    
+        // Preparar a consulta
         $stmt = $this->getConnection()->prepare($sql);
-
+    
+        // Vincular os parâmetros dos filtros
         foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value);
+            $stmt->bindValue(
+                ":{$key}",
+                $value,
+                is_int($value) || (is_string($value) && ctype_digit($value))
+                    ? PDO::PARAM_INT
+                    : PDO::PARAM_STR
+            );
         }
-
-        // Substituir o link da QUERY pelo valor
+    
+        // Vincular os parâmetros da paginação
         $stmt->bindValue(':limit', $limitResult, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
-        // Executar a Query
+    
+        // Executar a consulta
         $stmt->execute();
-
-        return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Recuperar a quantidade de compras para paginação
-     * @return int|bool Quantidade de compras encontrados no banco de dados
-     */
 
+    
+    /**
+     * Recuperar a quantidade total de compras conforme os filtros.
+     *
+     * Utilizado para calcular a paginação da listagem.
+     *
+     * @param array|null $filters Filtros da pesquisa.
+     * @return int Quantidade de compras encontradas.
+     */
     public function getAmountPurchasings(?array $filters = []): int
     {
         $conditions = [];
         $params = [];
-
-        if (!empty($filters['purchasing_number'])) {
-            $conditions[] = "id = :purchasing_number";
-            $params['purchasing_number'] = $filters['purchasing_number'];
+    
+        // Mapear os filtros para suas respectivas colunas
+        $map = [
+            'purchasing_number' => 'adpu.id',
+            'order_number' => 'adpu.adms_daman_order_id',
+            'adms_daman_project_id' => 'adpu.adms_daman_project_id',
+            'adms_daman_category_id' => 'adpu.adms_daman_category_id',
+            'adms_daman_acquisition_purchasing_status_id' => 'adpu.adms_daman_acquisition_purchasing_status_id',
+        ];
+    
+        foreach ($map as $field => $column) {
+            if (isset($filters[$field]) && $filters[$field] !== '') {
+                $conditions[] = "{$column} = :{$field}";
+                $params[$field] = $filters[$field];
+            }
         }
-
-        if (!empty($filters['order_number'])) {
-            $conditions[] = "id = :order_number";
-            $params['order_number'] = $filters['order_number'];
-        }
-
-        if (!empty($filters['adms_daman_project_id'])) {
-            $conditions[] = "adms_daman_project_id = :adms_daman_project_id";
-            $params['adms_daman_project_id'] = $filters['adms_daman_project_id'];
-        }
-
-        if (!empty($filters['adms_daman_acquisition_purchasing_status_id'])) {
-            $conditions[] = "adms_daman_acquisition_purchasing_status_id = :adms_daman_acquisition_purchasing_status_id";
-            $params['adms_daman_acquisition_purchasing_status_id'] = $filters['adms_daman_acquisition_purchasing_status_id'];
-        }
-
-        if (!empty($filters['adms_daman_category_id'])) {
-            $conditions[] = "adms_daman_category_id = :adms_daman_category_id";
-            $params['adms_daman_category_id'] = $filters['adms_daman_category_id'];
-        }
-
+    
+        // Filtrar por data inicial
         if (!empty($filters['data_inicio'])) {
-            $conditions[] = "created_at >= :data_inicio";
+            $conditions[] = "adpu.created_at >= :data_inicio";
             $params['data_inicio'] = $filters['data_inicio'] . ' 00:00:00';
         }
-
+    
+        // Filtrar por data final
         if (!empty($filters['data_fim'])) {
-            $conditions[] = "created_at <= :data_fim";
+            $conditions[] = "adpu.created_at <= :data_fim";
             $params['data_fim'] = $filters['data_fim'] . ' 23:59:59';
         }
-
-        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
-
-        // Criar Query para recuperar todos os registros no banco de dados
-        $sql = "SELECT COUNT(id) AS amount_records
-         FROM adms_daman_purchasings
-         {$where}";
-
-        // Preparar a Query
-        $stmt = $this->getConnection()->prepare($sql);
-
-        foreach ($params as $key => $value) {
-            $stmt->bindValue(":{$key}", $value, PDO::PARAM_INT);
+    
+        // Filtrar pelo nome do fornecedor
+        if (!empty($filters['legal_name'])) {
+            $conditions[] = "ads.legal_name LIKE :legal_name";
+            $params['legal_name'] = '%' . $filters['legal_name'] . '%';
         }
-
-        // Executar a query
+    
+        $where = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+    
+        // Contar as compras encontradas
+        $sql = "SELECT COUNT(adpu.id) AS amount_records
+                FROM adms_daman_purchasings AS adpu
+    
+                INNER JOIN adms_daman_suppliers AS ads
+                    ON ads.id = adpu.adms_daman_supplier_id
+    
+                INNER JOIN adms_daman_projects AS adp
+                    ON adp.id = adpu.adms_daman_project_id
+    
+                INNER JOIN adms_daman_users AS adu
+                    ON adu.id = adpu.adms_daman_user_id
+    
+                INNER JOIN adms_daman_acquisition_purchasing_status AS adaps
+                    ON adaps.id = adpu.adms_daman_acquisition_purchasing_status_id
+    
+                {$where}";
+    
+        // Preparar a consulta
+        $stmt = $this->getConnection()->prepare($sql);
+    
+        // Vincular os parâmetros
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(
+                ":{$key}",
+                $value,
+                is_int($value) || (is_string($value) && ctype_digit($value))
+                    ? PDO::PARAM_INT
+                    : PDO::PARAM_STR
+            );
+        }
+    
+        // Executar a consulta
         $stmt->execute();
-
-        return ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);
+    
+        return (int) ($stmt->fetch(PDO::FETCH_ASSOC)['amount_records'] ?? 0);
     }
 
     /**

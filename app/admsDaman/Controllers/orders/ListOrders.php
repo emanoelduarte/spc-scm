@@ -25,9 +25,7 @@ class ListOrders
     public function index(string|int $page = 1): void
     {
         // Recebe filtros do POST (quando aplica filtro) ou do GET (quando pagina)
-        $this->data['search'] = $_SERVER['REQUEST_METHOD'] === 'POST'
-            ? filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW)
-            : filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+        $this->data['search'] = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW) ?? [];
 
         // Remove campos internos que não são filtros do usuário
         unset(
