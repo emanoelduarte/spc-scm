@@ -372,7 +372,7 @@ class ProjectsRepository extends DbConnection
                 FROM adms_daman_projects AS p
                 {$join}
                 {$where}
-                ORDER BY p.id ASC";
+                ORDER BY p.name ASC";
 
         // Preparar a QUERY
         $stmt = $this->getConnection()->prepare($sql);

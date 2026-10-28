@@ -98,6 +98,8 @@ $getInstallmentStatus =
             $status === 'OK'
             ||
             $status === 'AP'
+            ||
+            $status === 'RN'
         ) {
             return $status;
         }
@@ -191,6 +193,12 @@ $statusMeta = [
         'label' => 'AP',
         'class' => 'bg-info text-dark',
         'title' => 'Permuta',
+    ],
+
+    'RN' => [
+        'label' => 'RN',
+        'class' => 'bg-secondary',
+        'title' => 'Renegociada',
     ],
 ];
 
@@ -434,6 +442,7 @@ $statusMeta = [
                         'ON' => 'Vencida',
                         'OK' => 'Paga',
                         'AP' => 'Permuta',
+                        'RN' => 'Renegociada',
                     ];
 
                     ?>
@@ -909,8 +918,8 @@ $statusMeta = [
                         <div>
 
                             <div class="text-muted small mb-1">
-
-                                Valor dos Lançamentos
+                                <?php // Aqui não somamos as negociações?>
+                                Valor dos Documentos Originais
 
                             </div>
 
@@ -997,6 +1006,15 @@ $statusMeta = [
 
                 <i class="fa-solid fa-file-circle-plus me-1"></i>
                 Nova Obrigação Financeira
+
+            </a>
+
+            <a
+                href="<?= $_ENV['URL_ADM']; ?>create-financial-renegotiation"
+                class="btn btn-info btn-sm">
+
+                <i class="fa-solid fa-handshake-angle me-1"></i>
+                Nova Renegociação
 
             </a>
 
@@ -1341,6 +1359,9 @@ $statusMeta = [
                                         $isFinancialObligation =
                                             $documentOrigin === 'FINANCIAL_OBLIGATION';
 
+                                        $isRenegotiation =
+                                            $documentOrigin === 'RENEGOTIATION';
+
 
                                         $viewPurchaseDocumentUrl =
                                             $_ENV['URL_ADM']
@@ -1356,7 +1377,30 @@ $statusMeta = [
                                             title="Abrir lançamento">
 
 
-                                            <?php if ($isFinancialObligation): ?>
+                                            <?php if ($isRenegotiation): ?>
+
+                                                <div class="fw-semibold text-primary">
+
+                                                    <?= htmlspecialchars(
+                                                        $purchaseDocument['document_number']
+                                                            ?? '-'
+                                                    ); ?>
+
+                                                </div>
+
+                                                <small class="text-muted">
+
+                                                    Renegociação Financeira
+
+                                                    <i
+                                                        class="fa-solid
+                           fa-arrow-up-right-from-square
+                           ms-1">
+                                                    </i>
+
+                                                </small>
+
+                                            <?php elseif ($isFinancialObligation): ?>
 
                                                 <div class="fw-semibold text-primary">
 
@@ -1774,7 +1818,7 @@ $statusMeta = [
                                                         </span>
 
 
-                                                        <?php if ($status !== 'OK'): ?>
+                                                        <?php if (!in_array($status, ['OK', 'RN'], true)): ?>
 
                                                             <!-- Dar baixa -->
                                                             <button

@@ -203,6 +203,7 @@ class ListPurchaseDocuments
             'ON',
             'OK',
             'AP',
+            'RN',
         ];
 
         $allowedPaymentScheduleStatuses = [

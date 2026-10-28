@@ -63,6 +63,7 @@ class ListFinancialDisbursements
         $allowedOrigins = [
             'purchase',
             'financial_obligation',
+            'renegotiation',
             'direct',
         ];
 

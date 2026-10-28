@@ -1160,6 +1160,7 @@ class ExportFinancialDisbursementsExcel
         $allowedOrigins = [
             'purchase',
             'financial_obligation',
+            'renegotiation',
             'direct',
         ];
 

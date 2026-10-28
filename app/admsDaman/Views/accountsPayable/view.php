@@ -17,6 +17,18 @@ $paymentsByInstallment =
     $this->data['paymentsByInstallment']
     ?? [];
 
+$renegotiation =
+    $this->data['renegotiation']
+    ?? null;
+
+$renegotiationOrigins =
+    $this->data['renegotiationOrigins']
+    ?? [];
+
+$renegotiationsBySourceInstallment =
+    $this->data['renegotiationsBySourceInstallment']
+    ?? [];
+
 
 /*
  * Formas do pagamento efetivamente realizado.
@@ -112,8 +124,15 @@ $isFinancialObligation =
     ||
     $documentOrigin === 'FINANCIAL_OBLIGATION';
 
+$isRenegotiation =
+    $financialEntryType === 'renegotiation'
+    ||
+    $documentOrigin === 'RENEGOTIATION';
+
 $isNfe =
     !$isFinancialObligation
+    &&
+    !$isRenegotiation
     &&
     (
         $documentOrigin === 'NFE'
@@ -124,7 +143,9 @@ $isNfe =
 $isManual =
     !$isNfe
     &&
-    !$isFinancialObligation;
+    !$isFinancialObligation
+    &&
+    !$isRenegotiation;
 
 
 /*
@@ -155,6 +176,8 @@ $getInstallmentStatus = function (array $installment): string {
         $storedStatus === 'OK'
         ||
         $storedStatus === 'AP'
+        ||
+        $storedStatus === 'RN'
     ) {
         return $storedStatus;
     }
@@ -245,6 +268,12 @@ $statusMeta = [
         'class' => 'bg-info text-dark',
         'icon' => 'fa-right-left',
     ],
+
+    'RN' => [
+        'label' => 'Renegociada',
+        'class' => 'bg-secondary',
+        'icon' => 'fa-handshake-angle',
+    ],
 ];
 
 
@@ -254,6 +283,7 @@ $statusMeta = [
  * ============================================================
  */
 $installmentsTotal = 0;
+$hasRenegotiatedInstallments = false;
 
 foreach ($installments as $installment) {
 
@@ -262,6 +292,13 @@ foreach ($installments as $installment) {
             $installment['original_amount']
             ?? 0
         );
+
+    if (
+        strtoupper((string) ($installment['status'] ?? ''))
+        === 'RN'
+    ) {
+        $hasRenegotiatedInstallments = true;
+    }
 }
 
 
@@ -310,13 +347,19 @@ $difference =
         <div>
 
             <h2 class="mt-3 mb-1">
-                <?= $isFinancialObligation
-                    ? 'Obrigação Financeira'
-                    : 'Lançamento de Compra'; ?>
+                <?= $isRenegotiation
+                    ? 'Renegociação Financeira'
+                    : (
+                        $isFinancialObligation
+                            ? 'Obrigação Financeira'
+                            : 'Lançamento de Compra'
+                    ); ?>
             </h2>
 
             <p class="text-muted">
-                <?php if ($isFinancialObligation): ?>
+                <?php if ($isRenegotiation): ?>
+                    Detalhes do acordo e das parcelas que deram origem à renegociação
+                <?php elseif ($isFinancialObligation): ?>
                     Detalhes do lançamento da obrigação financeira
                 <?php elseif ($isManual): ?>
                     Detalhes do lançamento financeiro da compra avulsa
@@ -400,7 +443,157 @@ $difference =
     <!-- DADOS DA NF-e OU COMPRA                                -->
     <!-- ====================================================== -->
 
-    <?php if ($isFinancialObligation): ?>
+    <?php if ($isRenegotiation): ?>
+
+        <!-- Card Renegociação Financeira -->
+        <div class="card mb-4 border-light shadow">
+
+            <div class="card-header d-flex align-items-center">
+                <div>
+                    <i class="fa-solid fa-handshake-angle me-2"></i>
+                    <strong>Dados da Renegociação</strong>
+                </div>
+
+                <span class="badge bg-info text-dark ms-auto">
+                    <i class="fa-solid fa-handshake-angle me-1"></i>
+                    Renegociação Financeira
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4">
+
+                    <div class="col-xl-3 col-md-6">
+                        <span class="text-muted d-block mb-1">
+                            Número / Referência do Acordo
+                        </span>
+                        <strong class="fs-5">
+                            <?= htmlspecialchars(
+                                (string) (
+                                    $renegotiation['agreement_number']
+                                    ?? $purchaseDocument['document_number']
+                                    ?? '-'
+                                )
+                            ); ?>
+                        </strong>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <span class="text-muted d-block mb-1">
+                            Fornecedor
+                        </span>
+                        <strong>
+                            <?= htmlspecialchars(
+                                (string) (
+                                    $renegotiation['supplier_name']
+                                    ?? $purchaseDocument['supplier_name']
+                                    ?? '-'
+                                )
+                            ); ?>
+                        </strong>
+                        <?php if (!empty($purchaseDocument['supplier_cnpj'])): ?>
+                            <div class="text-muted small mt-1">
+                                CNPJ: <?= htmlspecialchars(
+                                    (string) $purchaseDocument['supplier_cnpj']
+                                ); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="col-xl-2 col-md-6">
+                        <span class="text-muted d-block mb-1">
+                            Data da Negociação
+                        </span>
+                        <strong>
+                            <?php
+                            $agreementDate =
+                                $renegotiation['agreement_date']
+                                ?? $purchaseDocument['purchase_date']
+                                ?? null;
+
+                            echo !empty($agreementDate)
+                                ? date('d/m/Y', strtotime((string) $agreementDate))
+                                : '-';
+                            ?>
+                        </strong>
+                    </div>
+
+                    <div class="col-xl-4 col-md-6 text-xl-end">
+                        <span class="text-muted d-block mb-1">
+                            Total Renegociado
+                        </span>
+                        <strong class="fs-4 text-success">
+                            R$ <?= number_format(
+                                (float) (
+                                    $renegotiation['renegotiated_amount']
+                                    ?? $purchaseDocument['total_value']
+                                    ?? 0
+                                ),
+                                2,
+                                ',',
+                                '.'
+                            ); ?>
+                        </strong>
+                    </div>
+
+                    <?php if ($renegotiation): ?>
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <span class="text-muted small d-block">
+                                            Principal Consolidado
+                                        </span>
+                                        <strong>
+                                            R$ <?= number_format(
+                                                (float) ($renegotiation['original_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <span class="text-muted small d-block">Juros</span>
+                                        <strong>
+                                            R$ <?= number_format(
+                                                (float) ($renegotiation['interest_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <span class="text-muted small d-block">Multa / Encargos</span>
+                                        <strong>
+                                            R$ <?= number_format(
+                                                (float) ($renegotiation['penalty_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <span class="text-muted small d-block">Desconto</span>
+                                        <strong>
+                                            R$ <?= number_format(
+                                                (float) ($renegotiation['discount_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+            </div>
+        </div>
+
+    <?php elseif ($isFinancialObligation): ?>
 
         <!-- Card Obrigação Financeira -->
 
@@ -914,14 +1107,22 @@ $difference =
 
         <div class="card-header">
 
-            <i class="fa-solid <?= $isFinancialObligation
-                                    ? 'fa-file-invoice-dollar'
-                                    : 'fa-cart-shopping'; ?> me-2"></i>
+            <i class="fa-solid <?= $isRenegotiation
+                                    ? 'fa-handshake-angle'
+                                    : (
+                                        $isFinancialObligation
+                                            ? 'fa-file-invoice-dollar'
+                                            : 'fa-cart-shopping'
+                                    ); ?> me-2"></i>
 
             <strong>
-                <?= $isFinancialObligation
-                    ? 'Dados do Lançamento'
-                    : 'Dados da Compra'; ?>
+                <?= $isRenegotiation
+                    ? 'Dados do Acordo'
+                    : (
+                        $isFinancialObligation
+                            ? 'Dados do Lançamento'
+                            : 'Dados da Compra'
+                    ); ?>
             </strong>
 
         </div>
@@ -989,7 +1190,7 @@ $difference =
                 <div class="col-xl-3 col-md-6">
 
                     <span class="text-muted d-block mb-1">
-                        Comprador
+                        <?= $isRenegotiation ? 'Responsável' : 'Comprador'; ?>
                     </span>
 
                     <strong>
@@ -1008,9 +1209,13 @@ $difference =
                 <div class="col-xl-2 col-md-6">
 
                     <span class="text-muted d-block mb-1">
-                        <?= $isFinancialObligation
-                            ? 'Data de Geração'
-                            : 'Data da Compra'; ?>
+                        <?= $isRenegotiation
+                            ? 'Data da Negociação'
+                            : (
+                                $isFinancialObligation
+                                    ? 'Data de Geração'
+                                    : 'Data da Compra'
+                            ); ?>
                     </span>
 
                     <strong>
@@ -1043,10 +1248,19 @@ $difference =
                 <div class="col-xl-2 col-md-6">
 
                     <span class="text-muted d-block mb-1">
-                        Condição de Pagamento
+                        <?= $isRenegotiation
+                            ? 'Cronograma do Acordo'
+                            : 'Condição de Pagamento'; ?>
                     </span>
 
-                    <?php if ($isPaymentSchedulePending): ?>
+                    <?php if ($isRenegotiation): ?>
+
+                        <strong>
+                            <?= count($installments); ?>
+                            parcela<?= count($installments) !== 1 ? 's' : ''; ?>
+                        </strong>
+
+                    <?php elseif ($isPaymentSchedulePending): ?>
 
                         <div>
 
@@ -1097,7 +1311,9 @@ $difference =
                         match ($documentStatus) {
 
                             'closed' =>
-                            'Pago',
+                            $hasRenegotiatedInstallments
+                                ? 'Encerrado / Renegociado'
+                                : 'Pago',
 
                             'open' =>
                             'Em Aberto',
@@ -1110,7 +1326,9 @@ $difference =
                         match ($documentStatus) {
 
                             'closed' =>
-                            'bg-success',
+                            $hasRenegotiatedInstallments
+                                ? 'bg-secondary'
+                                : 'bg-success',
 
                             'open' =>
                             'bg-primary',
@@ -1441,6 +1659,121 @@ $difference =
     </div>
 
 
+
+    <?php if ($isRenegotiation && $renegotiation): ?>
+
+        <!-- ================================================== -->
+        <!-- COMPOSIÇÃO DA RENEGOCIAÇÃO                         -->
+        <!-- ================================================== -->
+        <div class="card mb-4 border-light shadow">
+            <div class="card-header hstack gap-2">
+                <span>
+                    <i class="fa-solid fa-link me-2"></i>
+                    <strong>Composição do Acordo</strong>
+                </span>
+
+                <span class="badge bg-secondary ms-auto">
+                    <?= count($renegotiationOrigins); ?>
+                    parcela<?= count($renegotiationOrigins) !== 1 ? 's' : ''; ?>
+                    de origem
+                </span>
+            </div>
+
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    Estas são as parcelas antigas consolidadas neste acordo.
+                    As novas parcelas abaixo pertencem ao acordo como um todo;
+                    não existe correspondência individual com uma NF específica.
+                </p>
+
+                <?php if (!empty($renegotiationOrigins)): ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Origem</th>
+                                    <th>Parcela</th>
+                                    <th>Vencimento Original</th>
+                                    <th class="text-end">Valor Original</th>
+                                    <th class="text-end">Já Pago</th>
+                                    <th class="text-end">Principal Incluído</th>
+                                    <th class="text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($renegotiationOrigins as $origin): ?>
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-light text-dark border me-1">
+                                                <?= htmlspecialchars(
+                                                    (string) ($origin['document_type_label'] ?? 'Documento')
+                                                ); ?>
+                                            </span>
+                                            <?= htmlspecialchars(
+                                                (string) ($origin['document_number'] ?? '-')
+                                            ); ?>
+                                        </td>
+                                        <td>
+                                            <?= (int) ($origin['installment_number'] ?? 0); ?>ª
+                                        </td>
+                                        <td>
+                                            <?= !empty($origin['due_date'])
+                                                ? date('d/m/Y', strtotime((string) $origin['due_date']))
+                                                : '-'; ?>
+                                        </td>
+                                        <td class="text-end">
+                                            R$ <?= number_format(
+                                                (float) ($origin['source_original_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </td>
+                                        <td class="text-end">
+                                            R$ <?= number_format(
+                                                (float) ($origin['source_paid_principal'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </td>
+                                        <td class="text-end fw-semibold">
+                                            R$ <?= number_format(
+                                                (float) ($origin['included_principal_amount'] ?? 0),
+                                                2, ',', '.'
+                                            ); ?>
+                                        </td>
+                                        <td class="text-end">
+                                            <a
+                                                class="btn btn-outline-secondary btn-sm"
+                                                href="<?= $_ENV['URL_ADM']; ?>view-purchase-document/<?= (int) ($origin['source_purchase_document_id'] ?? 0); ?>"
+                                                title="Abrir documento de origem">
+                                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-semibold">
+                                    <td colspan="5">Principal consolidado</td>
+                                    <td class="text-end text-success">
+                                        R$ <?= number_format(
+                                            (float) ($renegotiation['original_amount'] ?? 0),
+                                            2, ',', '.'
+                                        ); ?>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-warning mb-0">
+                        Não foi possível recuperar as parcelas de origem deste acordo.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    <?php endif; ?>
+
     <!-- ====================================================== -->
     <!-- PARCELAS                                               -->
     <!-- ====================================================== -->
@@ -1612,6 +1945,25 @@ $difference =
 
                                 </div>
 
+                                <?php
+                                $sourceRenegotiation =
+                                    $renegotiationsBySourceInstallment[$installmentId]
+                                    ?? null;
+                                ?>
+
+                                <?php if ($displayStatus === 'RN' && $sourceRenegotiation): ?>
+                                    <div class="px-3 pt-3">
+                                        <a
+                                            class="btn btn-outline-info btn-sm w-100"
+                                            href="<?= $_ENV['URL_ADM']; ?>view-purchase-document/<?= (int) ($sourceRenegotiation['renegotiation_purchase_document_id'] ?? 0); ?>">
+                                            <i class="fa-solid fa-handshake-angle me-1"></i>
+                                            Ver acordo
+                                            <?= htmlspecialchars(
+                                                (string) ($sourceRenegotiation['agreement_number'] ?? '')
+                                            ); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
 
                                 <div class="card-body">
 
@@ -1766,7 +2118,7 @@ $difference =
 
                                     <div class="d-flex flex-wrap gap-2">
 
-                                        <?php if ($remainingPrincipal > 0): ?>
+                                        <?php if ($remainingPrincipal > 0 && !in_array($displayStatus, ['OK', 'RN'], true)): ?>
 
                                             <!--
             Botão preparado para utilizar o mesmo modal

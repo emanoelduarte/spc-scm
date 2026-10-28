@@ -236,12 +236,12 @@ class AddAdmsDamanPaymentMethods extends AbstractSeed
 
         ## 19 CARTÃO
         // Verificar se a natureza de negócio com o nome especificado já existe
-        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO 1X'])->fetch();
+        $existingRecord = $this->query('SELECT id FROM adms_daman_payment_methods WHERE name=:name', ['name' => 'CARTÃO'])->fetch();
 
         // Se o nível a natureza de negócio não existir, adicione seu dados ao array $data
         if (!$existingRecord) {
             $data[] = [
-                'name' => 'CARTÃO 1',
+                'name' => 'CARTÃO',
                 'created_at' => date("Y-m-d H:i:s"),
             ];
         }

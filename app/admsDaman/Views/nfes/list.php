@@ -202,7 +202,8 @@ $statusClasses = [
  * financial_status:
  * pending = FB / parcelas ainda não confirmadas;
  * open    = lançamento com saldo em aberto;
- * paid    = lançamento totalmente quitado.
+ * paid         = lançamento totalmente quitado;
+ * renegotiated = saldo remanescente transferido para acordo financeiro.
  */
 $financialStatusMeta = [
 
@@ -225,6 +226,13 @@ $financialStatusMeta = [
         'class' => 'bg-success',
         'icon'  => 'fa-circle-check',
         'title' => 'Documento encerrado',
+    ],
+
+    'renegotiated' => [
+        'label' => 'Renegociado',
+        'class' => 'bg-secondary',
+        'icon'  => 'fa-handshake-angle',
+        'title' => 'Saldo transferido para renegociação financeira',
     ],
 ];
 
@@ -971,6 +979,12 @@ $financialStatusMeta = [
                                     ?? 0
                                 );
 
+                            $renegotiatedAmount =
+                                (float) (
+                                    $financial['renegotiated_amount']
+                                    ?? 0
+                                );
+
                             ?>
 
 
@@ -1169,6 +1183,24 @@ $financialStatusMeta = [
 
                                             </div>
 
+
+                                            <?php if ($renegotiatedAmount > 0): ?>
+
+                                                <div class="small">
+                                                    <span class="text-muted">
+                                                        Renegociado:
+                                                    </span>
+                                                    <strong>
+                                                        R$ <?= number_format(
+                                                            $renegotiatedAmount,
+                                                            2,
+                                                            ',',
+                                                            '.'
+                                                        ); ?>
+                                                    </strong>
+                                                </div>
+
+                                            <?php endif; ?>
 
                                             <?php if ($financialStatus === 'open'): ?>
 

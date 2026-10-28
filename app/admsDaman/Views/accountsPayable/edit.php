@@ -99,6 +99,11 @@ $getInstallmentStatus =
         }
 
 
+        if ($storedStatus === 'RN') {
+            return 'RN';
+        }
+
+
         if ($nature === 'AP') {
             return 'AP';
         }
@@ -166,6 +171,11 @@ $statusMeta = [
     'AP' => [
         'label' => 'Permuta',
         'class' => 'bg-info text-dark',
+    ],
+
+    'RN' => [
+        'label' => 'Renegociada',
+        'class' => 'bg-secondary',
     ],
 ];
 

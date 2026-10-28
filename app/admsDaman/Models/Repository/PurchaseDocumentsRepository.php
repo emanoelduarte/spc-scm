@@ -303,6 +303,9 @@ class PurchaseDocumentsRepository extends DbConnection
                     WHEN pi_filter.status = 'AP'
                         THEN 'AP'
 
+                    WHEN pi_filter.status = 'RN'
+                        THEN 'RN'
+
 
                     /*
                     * Demais status são calculados
@@ -384,6 +387,8 @@ class PurchaseDocumentsRepository extends DbConnection
                             THEN 'NFE'
                         WHEN pd.financial_entry_type = 'financial_obligation'
                             THEN 'FINANCIAL_OBLIGATION'
+                        WHEN pd.financial_entry_type = 'renegotiation'
+                            THEN 'RENEGOTIATION'
                         ELSE 'MANUAL'
                     END AS document_origin,
 
@@ -830,6 +835,9 @@ class PurchaseDocumentsRepository extends DbConnection
                     WHEN pi_filter.status = 'AP'
                         THEN 'AP'
 
+                    WHEN pi_filter.status = 'RN'
+                        THEN 'RN'
+
 
                     /*
                     * Demais status são calculados
@@ -1230,6 +1238,8 @@ class PurchaseDocumentsRepository extends DbConnection
                         THEN 'NFE'
                     WHEN pd.financial_entry_type = 'financial_obligation'
                         THEN 'FINANCIAL_OBLIGATION'
+                    WHEN pd.financial_entry_type = 'renegotiation'
+                        THEN 'RENEGOTIATION'
                     ELSE 'MANUAL'
                 END AS document_origin,
 
@@ -1492,7 +1502,7 @@ class PurchaseDocumentsRepository extends DbConnection
             if (
                 !in_array(
                     $financialEntryType,
-                    ['purchase', 'financial_obligation'],
+                    ['purchase', 'financial_obligation', 'renegotiation'],
                     true
                 )
             ) {
@@ -1921,7 +1931,7 @@ class PurchaseDocumentsRepository extends DbConnection
              * Nenhuma das duas representa
              * valor financeiro em aberto.
              */
-                "pi.status NOT IN ('OK')"
+                "pi.status NOT IN ('OK', 'RN')"
             ];
 
             $params = [];
@@ -2168,6 +2178,9 @@ class PurchaseDocumentsRepository extends DbConnection
 
                         WHEN pi.status = 'AP'
                             THEN 'AP'
+
+                        WHEN pi.status = 'RN'
+                            THEN 'RN'
 
 
                         /*
@@ -2693,7 +2706,10 @@ class PurchaseDocumentsRepository extends DbConnection
 
         try {
 
-            $conditions = [];
+            $conditions = [
+                // Renegociação substitui saldo anterior; não é novo valor de compra.
+                "COALESCE(pd.financial_entry_type, 'purchase') <> 'renegotiation'"
+            ];
             $params = [];
 
             $projectAllocationJoin = '';
@@ -2938,6 +2954,9 @@ class PurchaseDocumentsRepository extends DbConnection
 
                             WHEN pi_filter.status = 'AP'
                                 THEN 'AP'
+
+                            WHEN pi_filter.status = 'RN'
+                                THEN 'RN'
 
                             WHEN pi_filter.due_date < CURDATE()
                                 THEN 'ON'
@@ -3361,6 +3380,9 @@ class PurchaseDocumentsRepository extends DbConnection
                             WHEN pi.status = 'AP'
                                 THEN 'AP'
 
+                            WHEN pi.status = 'RN'
+                                THEN 'RN'
+
 
                             /*
                              * Demais status são calculados
@@ -3541,6 +3563,34 @@ class PurchaseDocumentsRepository extends DbConnection
                         0
                     ) AS paid_amount,
 
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN pi.status = 'RN' THEN 1
+                                ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS renegotiated_installments_count,
+
+                    COALESCE(
+                        SUM(
+                            CASE
+                                WHEN pi.status = 'RN' THEN
+                                    GREATEST(
+                                        pi.original_amount
+                                        - COALESCE(
+                                            payments.principal_paid,
+                                            0
+                                        ),
+                                        0
+                                    )
+                                ELSE 0
+                            END
+                        ),
+                        0
+                    ) AS renegotiated_amount,
+
                     CASE
                         /*
                          * FB continua sendo uma obrigação integral,
@@ -3566,14 +3616,17 @@ class PurchaseDocumentsRepository extends DbConnection
 
                         ELSE COALESCE(
                             SUM(
-                                GREATEST(
-                                    pi.original_amount
-                                    - COALESCE(
-                                        payments.principal_paid,
+                                CASE
+                                    WHEN pi.status = 'RN' THEN 0
+                                    ELSE GREATEST(
+                                        pi.original_amount
+                                        - COALESCE(
+                                            payments.principal_paid,
+                                            0
+                                        ),
                                         0
-                                    ),
-                                    0
-                                )
+                                    )
+                                END
                             ),
                             0
                         )
@@ -3706,7 +3759,16 @@ class PurchaseDocumentsRepository extends DbConnection
                     )
                 ) {
 
-                    $financialStatus = 'paid';
+                    $renegotiatedInstallmentsCount =
+                        (int) (
+                            $row['renegotiated_installments_count']
+                            ?? 0
+                        );
+
+                    $financialStatus =
+                        $renegotiatedInstallmentsCount > 0
+                            ? 'renegotiated'
+                            : 'paid';
                 } else {
 
                     $financialStatus = 'open';

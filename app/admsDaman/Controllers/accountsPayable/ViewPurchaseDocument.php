@@ -9,6 +9,7 @@ use App\admsDaman\Views\Services\LoadViewService;
 use App\admsDaman\Models\Repository\PurchaseDocumentAllocationsRepository;
 use App\admsDaman\Models\Repository\PaymentMethodsRepository;
 use App\admsDaman\Models\Repository\PurchaseInstallmentPaymentsRepository;
+use App\admsDaman\Models\Repository\FinancialRenegotiationsRepository;
 
 class ViewPurchaseDocument
 {
@@ -189,6 +190,61 @@ class ViewPurchaseDocument
                 $purchaseDocumentId
             );
 
+
+        /*
+        * =====================================================
+        * COMPOSIÇÃO DA RENEGOCIAÇÃO
+        * =====================================================
+        */
+        $this->data['renegotiation'] = null;
+        $this->data['renegotiationOrigins'] = [];
+        $this->data['renegotiationsBySourceInstallment'] = [];
+
+        /*
+         * Também recuperar o vínculo inverso para parcelas RN.
+         * Assim a nota/documento de origem mostra exatamente qual acordo
+         * absorveu aquela parcela, sem inventar rateio entre as novas parcelas.
+         */
+        if (!empty($installmentIds)) {
+            $renegotiationsRepository =
+                new FinancialRenegotiationsRepository();
+
+            $this->data['renegotiationsBySourceInstallment'] =
+                $renegotiationsRepository
+                    ->getBySourceInstallmentIds($installmentIds);
+        }
+
+        if (
+            strtolower(
+                (string) (
+                    $purchaseDocument['financial_entry_type']
+                    ?? 'purchase'
+                )
+            ) === 'renegotiation'
+        ) {
+
+            $renegotiationsRepository =
+                new FinancialRenegotiationsRepository();
+
+            $renegotiation =
+                $renegotiationsRepository
+                    ->getByPurchaseDocumentId(
+                        $purchaseDocumentId
+                    );
+
+            if ($renegotiation) {
+
+                $this->data['renegotiation'] =
+                    $renegotiation;
+
+                $this->data['renegotiationOrigins'] =
+                    $renegotiationsRepository
+                        ->getOriginsByRenegotiationId(
+                            (int) $renegotiation['id']
+                        );
+            }
+        }
+
         /*
         * =====================================================
         * CONDIÇÕES DE PAGAMENTO PARA FB
@@ -245,7 +301,14 @@ class ViewPurchaseDocument
             (
                 ($purchaseDocument['status'] ?? 'open')
                 !== 'closed'
-            );
+            )
+            &&
+            strtolower(
+                (string) (
+                    $purchaseDocument['financial_entry_type']
+                    ?? 'purchase'
+                )
+            ) !== 'renegotiation';
 
 
         if ($canDeletePurchaseDocument) {
@@ -264,12 +327,16 @@ class ViewPurchaseDocument
                  * legado sem histórico de pagamento associado.
                  */
                 if (
-                    strtoupper(
-                        (string) (
-                            $installment['status']
-                            ?? ''
-                        )
-                    ) === 'OK'
+                    in_array(
+                        strtoupper(
+                            (string) (
+                                $installment['status']
+                                ?? ''
+                            )
+                        ),
+                        ['OK', 'RN'],
+                        true
+                    )
                 ) {
 
                     $canDeletePurchaseDocument =

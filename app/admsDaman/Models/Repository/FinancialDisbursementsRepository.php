@@ -794,6 +794,11 @@ class FinancialDisbursementsRepository extends DbConnection
                         'purchase'
                     ) = 'financial_obligation'
                         THEN 'financial_obligation'
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'renegotiation'
+                        THEN 'renegotiation'
                     ELSE 'purchase'
                 END AS origin,
 
@@ -803,6 +808,11 @@ class FinancialDisbursementsRepository extends DbConnection
                         'purchase'
                     ) = 'financial_obligation'
                         THEN 'Obrigação Financeira'
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'renegotiation'
+                        THEN 'Renegociação'
                     ELSE 'Compra'
                 END AS origin_label,
 
@@ -812,6 +822,11 @@ class FinancialDisbursementsRepository extends DbConnection
                         'purchase'
                     ) = 'financial_obligation'
                         THEN 'financial_obligation'
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'renegotiation'
+                        THEN 'renegotiation'
                     ELSE 'purchase'
                 END AS category_key,
 
@@ -823,6 +838,11 @@ class FinancialDisbursementsRepository extends DbConnection
                         'purchase'
                     ) = 'financial_obligation'
                         THEN 'Obrigação Financeira'
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'renegotiation'
+                        THEN 'Renegociação'
                     ELSE 'Compra'
                 END AS category_name,
 
@@ -840,6 +860,11 @@ class FinancialDisbursementsRepository extends DbConnection
                         'purchase'
                     ) = 'financial_obligation'
                         THEN 'Obrigação Financeira'
+                    WHEN COALESCE(
+                        purchase_document.financial_entry_type,
+                        'purchase'
+                    ) = 'renegotiation'
+                        THEN 'Renegociação'
                     WHEN purchase_document.adms_daman_nfe_id IS NOT NULL
                         THEN 'NF-e'
                     ELSE COALESCE(

@@ -281,13 +281,22 @@ class PurchaseInstallmentPaymentService extends DbConnection
              * Não permitir nova baixa em parcela
              * já totalmente quitada.
              */
-            if (
-                ($installment['status'] ?? '')
-                === 'OK'
-            ) {
+            $storedInstallmentStatus =
+                strtoupper(
+                    (string) ($installment['status'] ?? '')
+                );
+
+            if ($storedInstallmentStatus === 'OK') {
 
                 throw new InvalidArgumentException(
                     'Esta parcela já está quitada.'
+                );
+            }
+
+            if ($storedInstallmentStatus === 'RN') {
+
+                throw new InvalidArgumentException(
+                    'Esta parcela foi renegociada e não pode receber nova baixa. Realize o pagamento nas parcelas do acordo.'
                 );
             }
 

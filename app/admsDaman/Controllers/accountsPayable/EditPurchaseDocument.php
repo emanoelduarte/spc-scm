@@ -298,7 +298,9 @@ class EditPurchaseDocument
             $isLocked =
                 !empty($paymentHistory)
                 ||
-                $storedStatus === 'OK';
+                $storedStatus === 'OK'
+                ||
+                $storedStatus === 'RN';
 
 
             $installment['edit_locked'] =

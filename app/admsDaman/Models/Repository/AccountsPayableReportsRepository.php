@@ -35,7 +35,7 @@ class AccountsPayableReportsRepository extends DbConnection
         try {
 
             $conditions = [
-                "pi.status <> 'OK'"
+                "pi.status NOT IN ('OK', 'RN')"
             ];
 
             $params = [];
@@ -829,7 +829,7 @@ class AccountsPayableReportsRepository extends DbConnection
         try {
 
             $conditions = [
-                "pi.status <> 'OK'"
+                "pi.status NOT IN ('OK', 'RN')"
             ];
 
             $params = [];
@@ -1952,7 +1952,7 @@ class AccountsPayableReportsRepository extends DbConnection
             * Permuta também fica fora porque este relatório
             * representa necessidade de CAIXA.
             */
-            "pi.status NOT IN ('OK', 'AP')",
+            "pi.status NOT IN ('OK', 'AP', 'RN')",
         ];
 
 

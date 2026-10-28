@@ -365,10 +365,12 @@ class PurchaseDocumentService extends DbConnection
                     $totalValue
                 );
 
-            $this->validateCardPaymentSchedule(
-                $paymentMethodId,
-                $installments
-            );
+            if ($paymentMethodId > 0) {
+                $this->validateCardPaymentSchedule(
+                    $paymentMethodId,
+                    $installments
+                );
+            }
         }
 
 
@@ -933,6 +935,7 @@ class PurchaseDocumentService extends DbConnection
         $allowedFinancialEntryTypes = [
             'purchase',
             'financial_obligation',
+            'renegotiation',
         ];
 
         if (
@@ -999,6 +1002,8 @@ class PurchaseDocumentService extends DbConnection
             !$paymentSchedulePending
             &&
             $paymentMethodId <= 0
+            &&
+            $financialEntryType !== 'renegotiation'
         ) {
 
             throw new \RuntimeException(
@@ -1107,12 +1112,20 @@ class PurchaseDocumentService extends DbConnection
                     $totalValue
                 );
 
-            $this->validateCardPaymentSchedule(
-                $paymentMethodId,
-                $installments
-            );
+            if ($paymentMethodId > 0) {
+                $this->validateCardPaymentSchedule(
+                    $paymentMethodId,
+                    $installments
+                );
+            }
         }
 
+
+        $connection =
+            $this->getConnection();
+
+        $transactionStarted =
+            false;
 
         try {
 
@@ -1120,9 +1133,18 @@ class PurchaseDocumentService extends DbConnection
          * =================================================
          * INICIAR TRANSAÇÃO
          * =================================================
+         *
+         * createManual também é reutilizado pela renegociação.
+         * Quando já existir uma transação externa, este método
+         * participa dela sem realizar commit isoladamente.
          */
-            $this->getConnection()
-                ->beginTransaction();
+            if (!$connection->inTransaction()) {
+
+                $connection->beginTransaction();
+
+                $transactionStarted =
+                    true;
+            }
 
 
             /*
@@ -1287,8 +1309,10 @@ class PurchaseDocumentService extends DbConnection
             * CONFIRMAR TRANSAÇÃO
             * =================================================
             */
-            $this->getConnection()
-                ->commit();
+            if ($transactionStarted) {
+
+                $connection->commit();
+            }
 
 
             return $purchaseDocumentId;
@@ -1299,12 +1323,12 @@ class PurchaseDocumentService extends DbConnection
             * desfazer todas as alterações.
             */
             if (
-                $this->getConnection()
-                ->inTransaction()
+                $transactionStarted
+                &&
+                $connection->inTransaction()
             ) {
 
-                $this->getConnection()
-                    ->rollBack();
+                $connection->rollBack();
             }
 
 
@@ -2181,7 +2205,9 @@ class PurchaseDocumentService extends DbConnection
                 $isLocked =
                     $hasPaymentHistory
                     ||
-                    $existingStatus === 'OK';
+                    $existingStatus === 'OK'
+                    ||
+                    $existingStatus === 'RN';
 
 
                 $existingAmountCents =
@@ -2840,6 +2866,21 @@ class PurchaseDocumentService extends DbConnection
             }
 
 
+            if (
+                strtolower(
+                    (string) (
+                        $purchaseDocument['financial_entry_type']
+                        ?? 'purchase'
+                    )
+                ) === 'renegotiation'
+            ) {
+
+                throw new RuntimeException(
+                    'Uma renegociação financeira não pode ser excluída diretamente, pois preserva o vínculo histórico com as parcelas de origem.'
+                );
+            }
+
+
             /*
              * Documento encerrado é tratado como movimentado,
              * inclusive para proteger registros legados.
@@ -2897,17 +2938,21 @@ class PurchaseDocumentService extends DbConnection
                  * inconsistente sem pagamento correspondente.
                  */
                 if (
-                    strtoupper(
-                        (string) (
-                            $installment['status']
-                            ?? ''
-                        )
-                    ) === 'OK'
+                    in_array(
+                        strtoupper(
+                            (string) (
+                                $installment['status']
+                                ?? ''
+                            )
+                        ),
+                        ['OK', 'RN'],
+                        true
+                    )
                 ) {
 
                     throw new RuntimeException(
                         'Não é possível excluir este lançamento, '
-                            . 'pois ele já possui histórico financeiro.'
+                            . 'pois ele já possui histórico financeiro ou parcela renegociada.'
                     );
                 }
             }

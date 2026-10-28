@@ -496,6 +496,19 @@ $getPaginationPages =
                         </option>
 
                         <option
+                            value="renegotiation"
+                            <?= (
+                                ($filters['origin'] ?? '')
+                                === 'renegotiation'
+                            )
+                                ? 'selected'
+                                : ''; ?>>
+
+                            Renegociações
+
+                        </option>
+
+                        <option
                             value="direct"
                             <?= (
                                 ($filters['origin'] ?? '')
